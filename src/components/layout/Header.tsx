@@ -25,7 +25,16 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -131,9 +140,10 @@ export function Header() {
               {muted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-[#FFFFFF]" />}
             </button>
             <button
-              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors"
+              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors focus-visible:ring-1 focus-visible:ring-white"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle navigation"
+              aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>

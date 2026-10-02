@@ -11,7 +11,7 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {
-    serverActions: { bodySizeLimit: '500mb' },
+    serverActions: { bodySizeLimit: '10mb' },
   },
   headers: async () => [
     {

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 interface MotionFadeProps {
@@ -18,29 +18,6 @@ export function MotionFade({
   className,
 }: MotionFadeProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '120px' }
-    );
-    observer.observe(ref.current);
-
-    // Guaranteed fallback timer so elements are NEVER stuck at opacity: 0
-    const timer = setTimeout(() => setInView(true), 350);
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-    };
-  }, []);
 
   const getOffset = () => {
     if (prefersReducedMotion || direction === 'none') return { x: 0, y: 0 };
@@ -60,9 +37,9 @@ export function MotionFade({
 
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, x: offset.x, y: offset.y }}
-      animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : offset.x, y: inView ? 0 : offset.y }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: '-20px' }}
       transition={{
         duration: prefersReducedMotion ? 0.1 : duration,
         delay: prefersReducedMotion ? 0 : delay,
@@ -85,34 +62,12 @@ export function StaggerContainer({
   className?: string;
 }) {
   const prefersReducedMotion = useReducedMotion();
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '120px' }
-    );
-    observer.observe(ref.current);
-
-    const timer = setTimeout(() => setInView(true), 350);
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-    };
-  }, []);
 
   return (
     <motion.div
-      ref={ref}
       initial="hidden"
-      animate={inView ? 'show' : 'hidden'}
+      whileInView="show"
+      viewport={{ once: true, margin: '-20px' }}
       variants={{
         hidden: {},
         show: {

@@ -71,11 +71,28 @@ export function LutSlider({
       {/* INTERACTIVE COMPARISON SCREEN */}
       <div
         ref={containerRef}
+        role="slider"
+        tabIndex={0}
+        aria-label="LUT split comparison slider"
+        aria-valuenow={position}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            setPosition((prev) => Math.min(100, prev + 2));
+            playHoverTick();
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            setPosition((prev) => Math.max(0, prev - 2));
+            playHoverTick();
+          }
+        }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        className="relative aspect-video w-full bg-[#050507] overflow-hidden cursor-ew-resize group/lut"
+        className="relative aspect-video w-full bg-[#050507] overflow-hidden cursor-ew-resize group/lut focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
       >
         {/* BASE LAYER: FLAT UNGRADED LOG STILL (S-LOG3 / ARRI RAW) */}
         <div className="absolute inset-0 w-full h-full">

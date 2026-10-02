@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { Play, ArrowRight } from 'lucide-react';
-import { MagneticButton } from '@/components/ui/MagneticButton';
 import { HeroBackground } from './HeroBackground';
 
 interface HeroSectionProps {
@@ -20,39 +19,48 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
     50, 68, 82, 60, 92, 75, 96, 65, 52, 80, 86, 62, 70, 88, 95, 58
   ]);
 
-  // Real-time audio spectrum movement with hardware Peak-Hold markers
+  // Real-time audio spectrum movement with hardware Peak-Hold markers synchronized via RAF
   useEffect(() => {
     if (prefersReduced) return;
 
-    const interval = setInterval(() => {
-      setVuLevels((prev) => {
-        const next = prev.map((val) => {
-          const delta = (Math.random() - 0.5) * 26;
-          return Math.max(12, Math.min(98, Math.round(val + delta)));
+    let animId: number;
+    let lastTick = performance.now();
+
+    const loop = (time: number) => {
+      if (time - lastTick >= 140) {
+        lastTick = time;
+        setVuLevels((prev) => {
+          const next = prev.map((val) => {
+            const delta = (Math.random() - 0.5) * 26;
+            return Math.max(12, Math.min(98, Math.round(val + delta)));
+          });
+
+          // Compute peak holds with decay
+          setPeakLevels((prevPeaks) =>
+            prevPeaks.map((peak, idx) => {
+              const current = next[idx];
+              if (current >= peak) return current;
+              return Math.max(12, Math.round(peak - 1.8)); // Slow gravity drop
+            })
+          );
+
+          return next;
         });
+      }
+      animId = requestAnimationFrame(loop);
+    };
 
-        // Compute peak holds with decay
-        setPeakLevels((prevPeaks) =>
-          prevPeaks.map((peak, idx) => {
-            const current = next[idx];
-            if (current >= peak) return current;
-            return Math.max(12, Math.round(peak - 1.8)); // Slow gravity drop
-          })
-        );
-
-        return next;
-      });
-    }, 140);
-
-    return () => clearInterval(interval);
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
   }, [prefersReduced]);
 
-  // Dynamic Year.Month edition string
-  const editionString = (() => {
+  // Dynamic Year.Month edition string (hydration safe)
+  const [editionString, setEditionString] = useState('2026.10');
+  useEffect(() => {
     const d = new Date();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
-    return `${d.getFullYear()}.${mm}`;
-  })();
+    setEditionString(`${d.getFullYear()}.${mm}`);
+  }, []);
 
   return (
     <section className="relative flex flex-col justify-between border-b border-[#1F1F24] overflow-hidden bg-[#070708]">
@@ -104,18 +112,20 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
 
             {/* ACTION TRIGGERS */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link href="/today">
-                <MagneticButton className="px-8 py-4 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.18em] border border-[#FFFFFF] hover:bg-[#E4E4E7] active:scale-95 transition-all flex items-center gap-2.5 focus-visible:ring-1 focus-visible:ring-white">
-                  <Play size={12} className="fill-current" />
-                  ACCESS TODAY'S DROP
-                </MagneticButton>
+              <Link
+                href="/today"
+                className="px-8 py-4 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.18em] border border-[#FFFFFF] hover:bg-[#E4E4E7] active:scale-95 transition-all inline-flex items-center gap-2.5 focus-visible:ring-1 focus-visible:ring-white"
+              >
+                <Play size={12} className="fill-current" />
+                ACCESS TODAY'S DROP
               </Link>
 
-              <Link href="/vault">
-                <MagneticButton className="px-8 py-4 bg-[#0E0E11] text-[#FFFFFF] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] hover:border-[#FFFFFF] hover:bg-[#18181B] transition-all flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-white">
-                  ARCHIVE REEL
-                  <ArrowRight size={13} />
-                </MagneticButton>
+              <Link
+                href="/vault"
+                className="px-8 py-4 bg-[#0E0E11] text-[#FFFFFF] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] hover:border-[#FFFFFF] hover:bg-[#18181B] transition-all inline-flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-white"
+              >
+                ARCHIVE REEL
+                <ArrowRight size={13} />
               </Link>
             </div>
 

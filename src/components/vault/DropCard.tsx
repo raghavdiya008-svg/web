@@ -52,14 +52,31 @@ function LutComparisonPreview() {
     setIsDragging(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSliderPos((prev) => Math.min(100, prev + 5));
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSliderPos((prev) => Math.max(0, prev - 5));
+    }
+  };
+
   return (
     <div
       ref={containerRef}
+      role="slider"
+      tabIndex={0}
+      aria-label="LUT comparison slider"
+      aria-valuenow={sliderPos}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      onKeyDown={handleKeyDown}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className="relative h-32 bg-[#060608] border-b border-[#2A2A2C] overflow-hidden cursor-ew-resize select-none group/lut"
+      className="relative h-32 bg-[#060608] border-b border-[#2A2A2C] overflow-hidden cursor-ew-resize select-none group/lut focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
     >
       {/* BEFORE LAYER: FLAT RAW LOG */}
       <div className="absolute inset-0 bg-[#141418] flex items-end p-2.5">
@@ -222,6 +239,13 @@ function KineticCategoryPreview({ isHovered }: { isHovered: boolean }) {
 export function DropCard({ drop }: DropCardProps) {
   const [downloadState, setDownloadState] = useState<'idle' | 'extracting' | 'complete' | 'error'>('idle');
   const [isHovered, setIsHovered] = useState(false);
+  const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   const categoryName = drop.categories?.name || 'ASSET';
   const categorySlug = drop.categories?.slug || 'asset';
@@ -248,8 +272,14 @@ export function DropCard({ drop }: DropCardProps) {
     try {
       const res = await fetch(`/api/download?dropId=${drop.id}`);
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      const data = await res.json();
-      if (data.url) {
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Invalid response from server');
+      }
+
+      if (data && data.url) {
         const a = document.createElement('a');
         a.href = data.url;
         a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
@@ -258,13 +288,14 @@ export function DropCard({ drop }: DropCardProps) {
         document.body.removeChild(a);
         setDownloadState('complete');
       } else {
-        throw new Error(data.error || 'Empty download URL returned');
+        throw new Error(data?.error || 'Empty download URL returned');
       }
     } catch (err) {
       console.error('Download error:', err);
       setDownloadState('error');
     } finally {
-      setTimeout(() => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = setTimeout(() => {
         setDownloadState('idle');
       }, 4000);
     }

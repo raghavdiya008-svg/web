@@ -50,11 +50,25 @@ function getAudioContext(): AudioContext | null {
   if (!audioCtx) {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (AudioContextClass) {
-      audioCtx = new AudioContextClass();
+      try {
+        audioCtx = new AudioContextClass();
+      } catch {
+        return null;
+      }
     }
   }
   if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {});
+    // Only attempt resume if document has already received user activation, or attach once listener
+    const resume = () => {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    };
+    if ((navigator as any).userActivation?.hasBeenActive) {
+      resume();
+    } else {
+      window.addEventListener('pointerdown', resume, { once: true, passive: true });
+    }
   }
   return audioCtx;
 }

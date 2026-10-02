@@ -14,14 +14,17 @@ export const metadata: Metadata = {
 const ITEMS_PER_PAGE = 24;
 
 export default async function VaultPage(props: {
-  searchParams: Promise<{ page?: string; category?: string; sort?: string; q?: string }>;
+  searchParams: Promise<{ page?: string | string[]; category?: string | string[]; sort?: string | string[]; q?: string | string[] }>;
 }) {
   const session = await auth();
   const resolvedParams = await props.searchParams;
-  const page = parseInt(resolvedParams.page ?? '1', 10);
-  const category = resolvedParams.category;
-  const sort = resolvedParams.sort ?? 'newest';
-  const query = resolvedParams.q;
+  const rawPage = Array.isArray(resolvedParams.page) ? resolvedParams.page[0] : resolvedParams.page;
+  const parsedPage = parseInt(rawPage ?? '1', 10);
+  const page = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const category = Array.isArray(resolvedParams.category) ? resolvedParams.category[0] : resolvedParams.category;
+  const rawSort = Array.isArray(resolvedParams.sort) ? resolvedParams.sort[0] : resolvedParams.sort;
+  const sort = rawSort ?? 'newest';
+  const query = Array.isArray(resolvedParams.q) ? resolvedParams.q[0] : resolvedParams.q;
 
   const supabase = createSupabaseServerClient();
   const isConfigured =

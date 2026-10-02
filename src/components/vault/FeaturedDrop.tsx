@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Download,
   Disc,
@@ -38,6 +38,15 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
   const [downloaded, setDownloaded] = useState(false);
   const [downloadError, setDownloadError] = useState(false);
   const [playbackProgress, setPlaybackProgress] = useState(48);
+  const downloadTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const errorTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    };
+  }, []);
 
   const timecode = useSmpteTimecode(0, 0, 14, 21);
 
@@ -57,14 +66,16 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         a.click();
         document.body.removeChild(a);
         setDownloaded(true);
-        setTimeout(() => setDownloaded(false), 4500);
+        if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);
+        downloadTimerRef.current = setTimeout(() => setDownloaded(false), 4500);
       } else {
         throw new Error('Missing download URL');
       }
     } catch (err) {
       console.error('Download error:', err);
       setDownloadError(true);
-      setTimeout(() => setDownloadError(false), 4000);
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      errorTimerRef.current = setTimeout(() => setDownloadError(false), 4000);
     } finally {
       setDownloading(false);
     }
@@ -74,6 +85,16 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
     setPlaybackProgress(Math.round((x / rect.width) * 100));
+  };
+
+  const handleKeyDownSeek = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setPlaybackProgress((prev) => Math.min(100, prev + 5));
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setPlaybackProgress((prev) => Math.max(0, prev - 5));
+    }
   };
 
   const categoryName = drop.categories?.name || 'ANALOG SFX';
@@ -106,7 +127,7 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         </div>
       </div>
 
-      {/* SMPTE CALIBRATED PROGRESS BAR (CLICKABLE TO SEEK) */}
+      {/* SMPTE CALIBRATED PROGRESS BAR (CLICKABLE TO SEEK & KEYBOARD ACCESSIBLE) */}
       <div
         role="progressbar"
         tabIndex={0}
@@ -115,7 +136,8 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         aria-valuemax={100}
         aria-label="Transport scrubber position"
         onClick={handleSeek}
-        className="relative w-full h-1.5 bg-[#16161A] overflow-hidden cursor-pointer group"
+        onKeyDown={handleKeyDownSeek}
+        className="relative w-full h-1.5 bg-[#16161A] overflow-hidden cursor-pointer group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
       >
         <div
           className="h-full bg-[#FFFFFF] group-hover:bg-[#FF4400] transition-all duration-150 ease-out"

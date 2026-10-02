@@ -45,7 +45,8 @@ export default function ErrorBoundary({
         <div className="pt-4 border-t border-[#1F1F24] flex items-center gap-4">
           <button
             onClick={() => reset()}
-            className="flex-1 py-3 px-4 bg-[#FFFFFF] hover:bg-[#E4E4E7] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.16em] flex items-center justify-center gap-2 transition-all cursor-pointer select-none"
+            aria-label="Reload module"
+            className="flex-1 py-3 px-4 bg-[#FFFFFF] hover:bg-[#E4E4E7] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.16em] flex items-center justify-center gap-2 transition-all cursor-pointer select-none focus-visible:ring-1 focus-visible:ring-white"
           >
             <RotateCcw size={12} />
             RELOAD MODULE

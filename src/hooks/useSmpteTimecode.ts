@@ -15,14 +15,26 @@ export function useSmpteTimecode(baseHours = 0, baseMinutes = 0, baseSeconds = 1
   });
 
   useEffect(() => {
-    let frame = initialFrame;
+    let totalFrames =
+      baseHours * 3600 * 30 +
+      baseMinutes * 60 * 30 +
+      baseSeconds * 30 +
+      initialFrame;
+
     const interval = setInterval(() => {
-      frame = (frame + 1) % 30;
-      const hh = String(baseHours).padStart(2, '0');
-      const mm = String(baseMinutes).padStart(2, '0');
-      const ss = String(baseSeconds).padStart(2, '0');
-      const ff = String(frame).padStart(2, '0');
-      setTimecode(`${hh}:${mm}:${ss}:${ff}`);
+      totalFrames += 1;
+      const ff = totalFrames % 30;
+      const totalSec = Math.floor(totalFrames / 30);
+      const ss = totalSec % 60;
+      const totalMin = Math.floor(totalSec / 60);
+      const mm = totalMin % 60;
+      const hh = Math.floor(totalMin / 60) % 24;
+
+      const hhStr = String(hh).padStart(2, '0');
+      const mmStr = String(mm).padStart(2, '0');
+      const ssStr = String(ss).padStart(2, '0');
+      const ffStr = String(ff).padStart(2, '0');
+      setTimecode(`${hhStr}:${mmStr}:${ssStr}:${ffStr}`);
     }, 33.33);
 
     return () => clearInterval(interval);

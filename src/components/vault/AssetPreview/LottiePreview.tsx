@@ -31,17 +31,19 @@ export function LottiePreview({
   const currentPath = PRESETS.find((p) => p.id === activeTab)?.path || animationUrl;
 
   useEffect(() => {
-    let isMounted = true;
-    fetch(currentPath)
+    const controller = new AbortController();
+    fetch(currentPath, { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
-        if (isMounted) setAnimData(data);
+        setAnimData(data);
       })
       .catch((err) => {
-        console.warn('Lottie load failed:', err);
+        if (err.name !== 'AbortError') {
+          console.warn('Lottie load failed:', err);
+        }
       });
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [currentPath]);
 

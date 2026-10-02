@@ -361,6 +361,17 @@ export function WaveformPlayer({
           aria-valuemax={100}
           aria-valuenow={progress}
           tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+              e.preventDefault();
+              setProgress((prev) => Math.min(100, prev + 2));
+              playClick();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              setProgress((prev) => Math.max(0, prev - 2));
+              playClick();
+            }
+          }}
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const clickX = e.clientX - rect.left;

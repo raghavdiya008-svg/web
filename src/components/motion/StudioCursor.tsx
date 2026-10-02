@@ -20,18 +20,34 @@ export function StudioCursor() {
     const handleMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
+    };
 
+    const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (target) {
         const isClickable = Boolean(
-          target.closest('button, a, [role="slider"], input, select, textarea, .cursor-pointer, [data-interactive]')
+          target.closest('button, a, [role="slider"], [role="progressbar"], input, select, textarea, .cursor-pointer, [data-interactive]')
         );
         setIsHoveringInteractive(isClickable);
       }
     };
 
+    const handleMouseOut = (e: MouseEvent) => {
+      // If leaving window or target, clear hover state
+      if (!e.relatedTarget) {
+        setIsHoveringInteractive(false);
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseover', handleMouseOver, { passive: true });
+    document.addEventListener('mouseout', handleMouseOut, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+    };
   }, [cursorX, cursorY]);
 
   if (!mounted) return null;

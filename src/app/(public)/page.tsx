@@ -123,7 +123,7 @@ export default async function HomePage() {
       file_format: 'wav',
       file_size: 142_000_000,
       license: 'MIT',
-      scheduled_for: new Date().toISOString(),
+      scheduled_for: '2026-10-02T14:00:00.000Z',
       download_count: 842,
       compatible_software: ['Adobe Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Reaper'],
     };
@@ -132,19 +132,19 @@ export default async function HomePage() {
         id: 'mock-2',
         title: 'Kodak 5219 500T Cine Emulation LUT',
         categories: { slug: 'luts', name: 'COLOR LUT', color: '#FFB000' },
-        scheduled_for: new Date(Date.now() + 86_400_000).toISOString(),
+        scheduled_for: '2026-10-03T14:00:00.000Z',
       },
       {
         id: 'mock-3',
         title: 'Kinetic 3D Typography Rigs v2',
         categories: { slug: 'animations', name: '3D KINETICS', color: '#00FF41' },
-        scheduled_for: new Date(Date.now() + 172_800_000).toISOString(),
+        scheduled_for: '2026-10-04T14:00:00.000Z',
       },
       {
         id: 'mock-4',
         title: 'Commercial Production Retainer & NDA Kit',
         categories: { slug: 'contracts', name: 'CONTRACT SPEC', color: '#FFB000' },
-        scheduled_for: new Date(Date.now() + 259_200_000).toISOString(),
+        scheduled_for: '2026-10-05T14:00:00.000Z',
       },
     ];
     pastDrops = [

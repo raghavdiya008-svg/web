@@ -55,8 +55,14 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
+    let resizeTimer: NodeJS.Timeout | null = null;
+    const debouncedResize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 100);
+    };
+
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', debouncedResize);
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     // 3D Projection configuration
@@ -379,7 +385,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', debouncedResize);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);

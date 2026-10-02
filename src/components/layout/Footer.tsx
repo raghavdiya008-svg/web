@@ -1,6 +1,4 @@
-'use client';
 import Link from 'next/link';
-import { Activity, ShieldCheck, Terminal, Disc } from 'lucide-react';
 
 const LINKS = [
   { href: '/legal/terms', label: 'TERMS' },
