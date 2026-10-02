@@ -3,7 +3,6 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import '@/app/globals.css';
 import { Providers } from '@/components/providers/Providers';
 import { GrainOverlay } from '@/components/layout/GrainOverlay';
-import { StudioCursor } from '@/components/motion/StudioCursor';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 const spaceGrotesk = Space_Grotesk({
@@ -47,7 +46,6 @@ export default function RootLayout({
         suppressHydrationWarning
         className="bg-background text-text-primary antialiased selection:bg-accent/30 selection:text-white min-h-screen flex flex-col relative"
       >
-        <StudioCursor />
         <GrainOverlay />
         <Providers>
           {children}

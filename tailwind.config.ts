@@ -19,7 +19,7 @@ const config: Config = {
         'border-hover': '#4A4A52',
         'text-primary': '#FFFFFF',
         'text-secondary': '#A1A1AA',
-        'text-muted': '#52525B',
+        'text-muted': '#71717A',
         accent: {
           DEFAULT: '#FFFFFF',
           glow: 'rgba(255, 255, 255, 0.25)',

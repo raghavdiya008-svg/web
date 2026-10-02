@@ -18,7 +18,7 @@ export function Marquee({ content, speed = 30, className }: MarqueeProps) {
       )}
     >
       <div
-        className="flex whitespace-nowrap will-change-transform py-0.5"
+        className="flex whitespace-nowrap will-change-transform py-0.5 hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] motion-reduce:animate-none"
         style={{
           animation: `marquee ${animationDuration} linear infinite`,
         }}
