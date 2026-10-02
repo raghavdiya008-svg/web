@@ -147,7 +147,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         if (pNear.visible && pFar.visible) {
           const distAlpha = Math.max(0, 1 - Math.abs(i) / (numLinesX + 1));
-          ctx.strokeStyle = `rgba(255, 255, 255, ${0.045 * distAlpha})`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 * distAlpha})`;
           ctx.beginPath();
           ctx.moveTo(pNear.x, pNear.y);
           ctx.lineTo(pFar.x, pFar.y);
@@ -165,7 +165,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         if (pLeft.visible && pRight.visible) {
           const depthRatio = Math.max(0, 1 - (currentZ - minZ) / (maxZ - minZ));
-          ctx.strokeStyle = `rgba(255, 255, 255, ${0.055 * depthRatio})`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${0.18 * depthRatio})`;
           ctx.beginPath();
           ctx.moveTo(pLeft.x, pLeft.y);
           ctx.lineTo(pRight.x, pRight.y);
@@ -175,9 +175,9 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           for (let i = -numLinesX; i <= numLinesX; i += dotStep) {
             const pDot = project(i * gridSpacingX, groundY, currentZ, vpX, vpY);
             if (pDot.visible) {
-              const dotAlpha = 0.16 * depthRatio;
-              ctx.fillStyle = i === 0 ? `rgba(255, 255, 255, ${dotAlpha * 2})` : `rgba(161, 161, 170, ${dotAlpha})`;
-              ctx.fillRect(pDot.x - 1, pDot.y - 1, 2, 2);
+              const dotAlpha = 0.42 * depthRatio;
+              ctx.fillStyle = i === 0 ? `rgba(255, 255, 255, ${Math.min(1, dotAlpha * 2)})` : `rgba(200, 200, 210, ${dotAlpha})`;
+              ctx.fillRect(pDot.x - 1.5, pDot.y - 1.5, 3, 3);
             }
           }
         }
@@ -219,7 +219,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           [0, 4], [1, 5], [2, 6], [3, 7],
         ];
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
         ctx.lineWidth = 1;
         edges.forEach(([v1, v2]) => {
           const p1 = projVerts[v1];
@@ -234,7 +234,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         projVerts.forEach((pv) => {
           if (pv.visible) {
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
             const bSize = 3;
             ctx.beginPath();
             ctx.moveTo(pv.x - bSize, pv.y);
@@ -394,7 +394,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
   return (
     <div
       className={`absolute inset-0 pointer-events-none select-none overflow-hidden z-0 ${className}`}
-      style={{ opacity: 0.2 }}
+      style={{ opacity: 0.7 }}
       aria-hidden="true"
     >
       <canvas

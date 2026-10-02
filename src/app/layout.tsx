@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { IBM_Plex_Sans, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import '@/app/globals.css';
 import { Providers } from '@/components/providers/Providers';
 import { GrainOverlay } from '@/components/layout/GrainOverlay';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  variable: '--font-body',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display',
@@ -40,7 +45,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+      className={`${ibmPlexSans.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body
         suppressHydrationWarning
