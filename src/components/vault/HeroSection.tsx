@@ -1,11 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { Play, ArrowRight } from 'lucide-react';
 import { MagneticButton } from '@/components/ui/MagneticButton';
-
 import { HeroBackground } from './HeroBackground';
 
 interface HeroSectionProps {
@@ -18,19 +16,43 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
   const [vuLevels, setVuLevels] = useState<number[]>([
     45, 62, 78, 54, 88, 70, 92, 60, 48, 76, 82, 58, 65, 84, 91, 52
   ]);
+  const [peakLevels, setPeakLevels] = useState<number[]>([
+    50, 68, 82, 60, 92, 75, 96, 65, 52, 80, 86, 62, 70, 88, 95, 58
+  ]);
 
-  // Real-time audio spectrum movement
+  // Real-time audio spectrum movement with hardware Peak-Hold markers
   useEffect(() => {
+    if (prefersReduced) return;
+
     const interval = setInterval(() => {
-      setVuLevels((prev) =>
-        prev.map((val) => {
+      setVuLevels((prev) => {
+        const next = prev.map((val) => {
           const delta = (Math.random() - 0.5) * 26;
           return Math.max(12, Math.min(98, Math.round(val + delta)));
-        })
-      );
+        });
+
+        // Compute peak holds with decay
+        setPeakLevels((prevPeaks) =>
+          prevPeaks.map((peak, idx) => {
+            const current = next[idx];
+            if (current >= peak) return current;
+            return Math.max(12, Math.round(peak - 1.8)); // Slow gravity drop
+          })
+        );
+
+        return next;
+      });
     }, 140);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [prefersReduced]);
+
+  // Dynamic Year.Month edition string
+  const editionString = (() => {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    return `${d.getFullYear()}.${mm}`;
+  })();
 
   return (
     <section className="relative flex flex-col justify-between border-b border-[#1F1F24] overflow-hidden bg-[#070708]">
@@ -51,7 +73,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             </span>
             <span className="text-[#27272A]">/</span>
             <span className="font-mono text-[9px] text-[#FFFFFF] tracking-[0.16em] uppercase font-bold">
-              EDITION 2026.10
+              EDITION {editionString}
             </span>
           </div>
         </div>
@@ -80,17 +102,17 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
               Zero friction, zero paywalls. Published daily at 14:00 UTC.
             </p>
 
-            {/* ACTION TRIGGERS: HIGH CONTRAST INVERTED BUTTONS */}
+            {/* ACTION TRIGGERS */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link href="/today">
-                <MagneticButton className="px-8 py-4 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.18em] border border-[#FFFFFF] hover:bg-[#E4E4E7] active:scale-95 transition-all flex items-center gap-2.5">
+                <MagneticButton className="px-8 py-4 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.18em] border border-[#FFFFFF] hover:bg-[#E4E4E7] active:scale-95 transition-all flex items-center gap-2.5 focus-visible:ring-1 focus-visible:ring-white">
                   <Play size={12} className="fill-current" />
                   ACCESS TODAY'S DROP
                 </MagneticButton>
               </Link>
 
               <Link href="/vault">
-                <MagneticButton className="px-8 py-4 bg-[#0E0E11] text-[#FFFFFF] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] hover:border-[#FFFFFF] hover:bg-[#18181B] transition-all flex items-center gap-2">
+                <MagneticButton className="px-8 py-4 bg-[#0E0E11] text-[#FFFFFF] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] hover:border-[#FFFFFF] hover:bg-[#18181B] transition-all flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-white">
                   ARCHIVE REEL
                   <ArrowRight size={13} />
                 </MagneticButton>
@@ -99,7 +121,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
 
           </div>
 
-          {/* RIGHT 5 COLS — HIGH-CONTRAST SPECTRUM & AUDIO TELEMETRY UNIT */}
+          {/* RIGHT 5 COLS — SPECTRUM & AUDIO TELEMETRY UNIT */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div className="metal-chassis p-6 space-y-5 h-full flex flex-col justify-between">
               
@@ -134,19 +156,29 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* REAL-TIME VU SPECTRUM */}
+              {/* REAL-TIME VU SPECTRUM WITH HARDWARE PEAK-HOLD TICS */}
               <div className="p-4 bg-[#070708] border border-[#1F1F24] space-y-2 flex-1 flex flex-col justify-between min-h-[140px]">
                 <div className="flex items-center justify-between text-[8px] font-mono text-[#52525B] uppercase tracking-[0.18em] pb-1">
                   <span>SPECTRUM ANALYZER [20Hz - 22kHz]</span>
-                  <span className="text-[#FFFFFF] font-bold">PEAK HOLD</span>
+                  <span className="text-[#FFFFFF] font-bold">PEAK HOLD ACTIVE</span>
                 </div>
 
-                <div className="h-28 flex items-end gap-1.5 px-1 bg-[#050506] border border-[#16161A] p-2">
+                <div className="h-28 flex items-end gap-1.5 px-1 bg-[#050506] border border-[#16161A] p-2 relative">
                   {vuLevels.map((lvl, idx) => {
+                    const peak = peakLevels[idx] || lvl;
                     const isPeak = lvl > 85;
                     const isMid = lvl > 60;
                     return (
-                      <div key={idx} className="flex-1 flex flex-col justify-end h-full">
+                      <div key={idx} className="flex-1 flex flex-col justify-end h-full relative">
+                        {/* Peak hold marker */}
+                        <div
+                          className="absolute w-full h-[2px] bg-[#FFFFFF] transition-all duration-100 shadow-[0_0_4px_#FFFFFF] z-10"
+                          style={{
+                            bottom: `${peak}%`,
+                          }}
+                        />
+
+                        {/* VU Bar */}
                         <div
                           className="w-full transition-all duration-100 ease-out"
                           style={{
@@ -181,7 +213,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
         </div>
 
         {/* ============================================================
-            HIGH-CONTRAST SWISS STATS GRID (CLEAN ASYMMETRIC BORDERS)
+            HIGH-CONTRAST STATS GRID WITH DYNAMIC OBSERVER COUNTER
             ============================================================ */}
         <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#1F1F24] divide-y md:divide-y-0 md:divide-x divide-[#1F1F24] bg-[#0E0E11]">
           
@@ -252,7 +284,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
       {/* ASSET SYSTEM WATERMARK BADGE */}
       <div className="absolute bottom-3 right-4 z-20 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1 bg-[#0E0E11] border border-[#1F1F24] font-mono text-[9px] text-[#A1A1AA] uppercase tracking-wider">
         <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
-        <span>SYSTEM VERSION 2026.10</span>
+        <span>SYSTEM VERSION {editionString}</span>
       </div>
     </section>
   );

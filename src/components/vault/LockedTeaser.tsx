@@ -24,12 +24,14 @@ function useScrambleText(targetText: string, trigger: boolean) {
   const [displayText, setDisplayText] = useState(targetText);
 
   useEffect(() => {
+    let isMounted = true;
     let iteration = 0;
     const maxIterations = targetText.length;
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | null = null;
 
     if (trigger) {
       interval = setInterval(() => {
+        if (!isMounted) return;
         setDisplayText(
           targetText
             .split('')
@@ -45,13 +47,13 @@ function useScrambleText(targetText: string, trigger: boolean) {
 
         iteration += 1;
         if (iteration > maxIterations) {
-          clearInterval(interval);
+          if (interval) clearInterval(interval);
         }
       }, 40);
     } else {
-      // Revert to encrypted scrambled state
       let step = 0;
       interval = setInterval(() => {
+        if (!isMounted) return;
         setDisplayText(
           targetText
             .split('')
@@ -64,13 +66,16 @@ function useScrambleText(targetText: string, trigger: boolean) {
         );
         step++;
         if (step > 4) {
-          clearInterval(interval);
+          if (interval) clearInterval(interval);
           setDisplayText(targetText);
         }
       }, 50);
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      if (interval) clearInterval(interval);
+    };
   }, [targetText, trigger]);
 
   return displayText;
@@ -133,7 +138,7 @@ export function LockedTeaser({ drop }: LockedTeaserProps) {
         {/* ASSET TITLE WITH TEXT SCRAMBLE ON HOVER */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <ShieldAlert size={12} className={cn('transition-colors', isHovered ? 'text-[#FF9E1B]' : 'text-[#8A8A8E]')} />
+            <ShieldAlert size={12} className={cn('transition-colors', isHovered ? 'text-[#FF4400]' : 'text-[#8A8A8E]')} />
             <span className="font-mono text-[8px] text-[#8A8A8E] uppercase tracking-[0.16em]">
               {isHovered ? 'DECRYPTING PAYLOAD HEADER...' : 'ENCRYPTED CIPHERTEXT'}
             </span>
@@ -146,7 +151,7 @@ export function LockedTeaser({ drop }: LockedTeaserProps) {
           </p>
         </div>
 
-        {/* CIRCULAR STOPWATCH COUNTDOWN DIAL WITH LED SEGMENT STYLING */}
+        {/* CIRCULAR STOPWATCH COUNTDOWN DIAL */}
         <div className="pt-2 border-t border-[#1E1E22]">
           <CountdownTimer targetDate={drop.scheduled_for} size="md" />
         </div>

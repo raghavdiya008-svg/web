@@ -1,9 +1,10 @@
-'use client';
-
 // Web Audio API Synthesizer for tactile hardware UI micro-interactions
 let audioCtx: AudioContext | null = null;
 
 const STORAGE_KEY = 'editx_sfx_muted';
+
+let lastHoverTickTime = 0;
+const HOVER_TICK_THROTTLE_MS = 65;
 
 /**
  * Check if SFX is muted. Default is true (OFF) per browser autoplay policies.
@@ -88,10 +89,14 @@ export function playClick() {
 }
 
 /**
- * 2. Subtle high-frequency micro-tick for subtle button or menu hover
+ * 2. Subtle high-frequency micro-tick for subtle button or menu hover with throttling
  */
 export function playHoverTick() {
   if (isSfxMuted()) return;
+  const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  if (now - lastHoverTickTime < HOVER_TICK_THROTTLE_MS) return;
+  lastHoverTickTime = now;
+
   try {
     const ctx = getAudioContext();
     if (!ctx) return;

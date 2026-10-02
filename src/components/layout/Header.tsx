@@ -49,8 +49,8 @@ export function Header() {
         className={cn(
           'fixed top-0 left-0 right-0 z-50 h-14 border-b transition-all duration-200',
           scrolled
-            ? 'bg-[#0A0A0C]/95 backdrop-blur-md border-[#2A2A2C] shadow-[0_4px_25px_rgba(0,0,0,0.85)]'
-            : 'bg-[#0A0A0C]/80 backdrop-blur-sm border-[#2A2A2C]/60'
+            ? 'bg-[#0A0A0C]/95 backdrop-blur-md border-[#1F1F24] shadow-[0_4px_25px_rgba(0,0,0,0.85)]'
+            : 'bg-[#0A0A0C]/80 backdrop-blur-sm border-[#1F1F24]/60'
         )}
       >
         <div className="max-w-[1280px] mx-auto px-5 lg:px-8 h-full flex items-center justify-between">
@@ -91,13 +91,13 @@ export function Header() {
 
           {/* DESKTOP CTA & HARDWARE SFX TOGGLE */}
           <div className="hidden md:flex items-center gap-4">
-            {/* HARDWARE SFX TOGGLE SWITCH (PHASE 6) */}
+            {/* HARDWARE SFX TOGGLE SWITCH */}
             <button
               onClick={handleToggleSfx}
               onMouseEnter={() => playHoverTick()}
               aria-label={muted ? 'Unmute studio SFX' : 'Mute studio SFX'}
               title={muted ? 'Enable tactile sound FX' : 'Mute sound FX'}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-[9px] font-mono font-bold tracking-[0.16em] uppercase border border-[#27272A] bg-[#0E0E11] hover:border-[#FFFFFF] text-[#FFFFFF] transition-all select-none"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-[9px] font-mono font-bold tracking-[0.16em] uppercase border border-[#27272A] bg-[#0E0E11] hover:border-[#FFFFFF] text-[#FFFFFF] transition-all select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
             >
               <span className={muted ? 'w-1.5 h-1.5 bg-[#52525B]' : 'w-1.5 h-1.5 bg-[#FFFFFF] animate-pulse'} />
               <span>AUDIO: {muted ? 'OFF' : 'ON'}</span>
@@ -126,12 +126,12 @@ export function Header() {
             <button
               onClick={handleToggleSfx}
               aria-label={muted ? 'Unmute studio SFX' : 'Mute studio SFX'}
-              className="p-2 text-[#8A8A8E] hover:text-[#00FF41] transition-colors"
+              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors"
             >
-              {muted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-[#00FF41]" />}
+              {muted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-[#FFFFFF]" />}
             </button>
             <button
-              className="p-2 text-[#8A8A8E] hover:text-[#F5F5F5] transition-colors"
+              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle navigation"
             >
@@ -143,16 +143,16 @@ export function Header() {
 
       {/* MOBILE MENU */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col bg-[#0A0A0C] pt-14 border-b border-[#2A2A2C]">
-          <div className="flex-1 flex flex-col p-6 space-y-2 border-t border-[#2A2A2C]">
+        <div className="fixed inset-0 z-40 flex flex-col bg-[#0A0A0C] pt-14 border-b border-[#1F1F24]">
+          <div className="flex-1 flex flex-col p-6 space-y-2 border-t border-[#1F1F24]">
             {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => playClick()}
                 className={cn(
-                  'py-4 text-base font-mono uppercase tracking-wider border-b border-[#1E1E22] transition-colors',
-                  pathname === href ? 'text-[#00FF41]' : 'text-[#8A8A8E] hover:text-[#F5F5F5]'
+                  'py-4 text-base font-mono uppercase tracking-wider border-b border-[#1F1F24] transition-colors',
+                  pathname === href ? 'text-[#FFFFFF] font-bold' : 'text-[#8A8A8E] hover:text-[#FFFFFF]'
                 )}
               >
                 {label}
@@ -161,11 +161,11 @@ export function Header() {
             <div className="pt-6 space-y-3">
               <button
                 onClick={handleToggleSfx}
-                className="w-full flex items-center justify-between px-4 py-3 border border-[#2A2A2C] bg-[#141418] font-mono text-xs uppercase"
+                className="w-full flex items-center justify-between px-4 py-3 border border-[#27272A] bg-[#141418] font-mono text-xs uppercase text-[#FFFFFF]"
               >
                 <span>STUDIO AUDIO SFX</span>
                 <span className="flex items-center gap-2">
-                  <span className={muted ? 'led-amber' : 'led-green animate-pulse'} />
+                  <span className={muted ? 'w-1.5 h-1.5 bg-[#52525B]' : 'w-1.5 h-1.5 bg-[#FFFFFF] animate-pulse'} />
                   {muted ? 'MUTED' : 'ACTIVE'}
                 </span>
               </button>
@@ -174,7 +174,7 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => playClick()}
-                className="flex items-center justify-center gap-2 px-5 py-3 border border-[#00FF41] text-[#00FF41] bg-[#00FF41]/10 font-mono text-sm tracking-wider uppercase font-bold"
+                className="flex items-center justify-center gap-2 px-5 py-3 border border-[#FFFFFF] text-[#000000] bg-[#FFFFFF] font-mono text-sm tracking-wider uppercase font-bold"
               >
                 JOIN DISCORD
               </a>

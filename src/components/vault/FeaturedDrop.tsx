@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Download,
   Disc,
@@ -8,9 +8,10 @@ import {
   Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { formatBytes } from '@/lib/utils/cn';
-import { playClick, playSubThump, playHoverTick } from '@/lib/audio/soundFx';
+import { formatBytes } from '@/lib/utils/format';
+import { playSubThump } from '@/lib/audio/soundFx';
 import { WaveformPlayer } from '@/components/vault/AssetPreview/WaveformPlayer';
+import { useSmpteTimecode } from '@/hooks/useSmpteTimecode';
 
 interface FeaturedDropProps {
   drop: {
@@ -29,31 +30,24 @@ interface FeaturedDropProps {
       color?: string;
     };
   };
-  session?: any;
+  session?: unknown;
 }
 
 export function FeaturedDrop({ drop }: FeaturedDropProps) {
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
-  const [timecode, setTimecode] = useState('00:00:14:21');
+  const [downloadError, setDownloadError] = useState(false);
   const [playbackProgress, setPlaybackProgress] = useState(48);
 
-  // Real ticking SMPTE timecode (ticking frames 00 to 29 in real-time)
-  useEffect(() => {
-    let frame = 21;
-    const interval = setInterval(() => {
-      frame = (frame + 1) % 30;
-      const frameStr = frame.toString().padStart(2, '0');
-      setTimecode(`00:00:14:${frameStr}`);
-    }, 33);
-    return () => clearInterval(interval);
-  }, []);
+  const timecode = useSmpteTimecode(0, 0, 14, 21);
 
   const handleDownload = async () => {
     playSubThump();
     setDownloading(true);
+    setDownloadError(false);
     try {
       const res = await fetch(`/api/download?dropId=${drop.id}`);
+      if (!res.ok) throw new Error('Download failed');
       const data = await res.json();
       if (data.url) {
         const a = document.createElement('a');
@@ -64,12 +58,22 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         document.body.removeChild(a);
         setDownloaded(true);
         setTimeout(() => setDownloaded(false), 4500);
+      } else {
+        throw new Error('Missing download URL');
       }
     } catch (err) {
       console.error('Download error:', err);
+      setDownloadError(true);
+      setTimeout(() => setDownloadError(false), 4000);
     } finally {
       setDownloading(false);
     }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    setPlaybackProgress(Math.round((x / rect.width) * 100));
   };
 
   const categoryName = drop.categories?.name || 'ANALOG SFX';
@@ -102,10 +106,19 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         </div>
       </div>
 
-      {/* SMPTE CALIBRATED PROGRESS BAR */}
-      <div className="relative w-full h-1 bg-[#16161A] overflow-hidden">
+      {/* SMPTE CALIBRATED PROGRESS BAR (CLICKABLE TO SEEK) */}
+      <div
+        role="progressbar"
+        tabIndex={0}
+        aria-valuenow={playbackProgress}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Transport scrubber position"
+        onClick={handleSeek}
+        className="relative w-full h-1.5 bg-[#16161A] overflow-hidden cursor-pointer group"
+      >
         <div
-          className="h-full bg-[#FFFFFF] transition-all duration-150 ease-out"
+          className="h-full bg-[#FFFFFF] group-hover:bg-[#FF4400] transition-all duration-150 ease-out"
           style={{ width: `${playbackProgress}%` }}
         />
       </div>
@@ -146,12 +159,12 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         </div>
 
         {/* ============================================================
-            ROW 2: CUSTOM DAW-STYLE SCRUBBER PLAYER (TASK 2)
+            ROW 2: CUSTOM DAW-STYLE SCRUBBER PLAYER
             ============================================================ */}
         <WaveformPlayer title={drop.title} />
 
         {/* ============================================================
-            ROW 3: TECHNICAL SPEC DATA SHEET (CHISELED BEVELS) & EXTRACTION
+            ROW 3: TECHNICAL SPEC DATA SHEET & EXTRACTION
             ============================================================ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
@@ -237,14 +250,16 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
               </div>
             </div>
 
-            {/* BUTTON WITH HIGH-CONTRAST INVERSION */}
+            {/* BUTTON WITH HIGH-CONTRAST INVERSION & ERROR HANDLING */}
             <button
               onClick={handleDownload}
               disabled={downloading}
               className={cn(
-                'w-full py-4 px-4 font-mono text-xs font-black uppercase tracking-[0.18em] flex items-center justify-center gap-2 border cursor-pointer select-none transition-all',
+                'w-full py-4 px-4 font-mono text-xs font-black uppercase tracking-[0.18em] flex items-center justify-center gap-2 border cursor-pointer select-none transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
                 downloaded
                   ? 'bg-[#FFFFFF] text-[#000000] border-[#FFFFFF]'
+                  : downloadError
+                  ? 'bg-[#FF3333] text-[#FFFFFF] border-[#FF3333]'
                   : downloading
                   ? 'bg-[#E4E4E7] text-[#000000] border-[#E4E4E7]'
                   : 'bg-[#FFFFFF] hover:bg-[#E4E4E7] text-[#000000] border-[#FFFFFF]'
@@ -258,6 +273,11 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
                 <>
                   <span className="w-1.5 h-1.5 bg-[#000000]" />
                   COMPLETE [SAVED]
+                </>
+              ) : downloadError ? (
+                <>
+                  <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
+                  DOWNLOAD FAILED
                 </>
               ) : (
                 <>

@@ -5,6 +5,18 @@ interface HeroBackgroundProps {
   className?: string;
 }
 
+interface BoundingBox {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+  h: number;
+  d: number;
+  label: string;
+  rotY: number;
+  rotSpeed: number;
+}
+
 export function HeroBackground({ className = '' }: HeroBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -15,8 +27,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || window.innerWidth);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || window.innerHeight);
+    let width = (canvas.parentElement?.clientWidth || window.innerWidth);
+    let height = (canvas.parentElement?.clientHeight || window.innerHeight);
 
     // Mouse coordinates with smooth lerp
     let mouseTargetX = 0;
@@ -26,7 +38,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-      // Normalized between -1 and 1
       mouseTargetX = ((e.clientX - rect.left) / width - 0.5) * 2;
       mouseTargetY = ((e.clientY - rect.top) / height - 0.5) * 2;
     };
@@ -36,9 +47,12 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = canvas.parentElement.clientWidth;
       height = canvas.parentElement.clientHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
+      
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      
+      // Reset transform before re-applying scale to avoid DPR accumulation
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     handleResize();
@@ -47,27 +61,14 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
     // 3D Projection configuration
     const focalLength = 380;
-    const horizonY = height * 0.48; // horizon level
+    const horizonY = height * 0.48;
     let zOffset = 0;
-    const speed = 0.85; // Z-axis forward scroll speed
+    const speed = 0.85;
 
     // Telemetry mock state
     let frameCount = 0;
     let smpteFrames = 21;
     let lastSmpteUpdate = 0;
-
-    // 3D Bounding Boxes (CAD Scene Objects)
-    interface BoundingBox {
-      x: number;
-      y: number;
-      z: number;
-      w: number;
-      h: number;
-      d: number;
-      label: string;
-      rotY: number;
-      rotSpeed: number;
-    }
 
     const boxes: BoundingBox[] = [
       {
@@ -94,7 +95,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       },
     ];
 
-    // Helper: 3D Point to 2D Screen projection
     const project = (
       px: number,
       py: number,
@@ -109,41 +109,32 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       return { x: sx, y: sy, scale, visible: true };
     };
 
-    // Render loop (Strict 60 FPS requestAnimationFrame)
     const render = (time: number) => {
       animationFrameId = requestAnimationFrame(render);
       frameCount++;
 
-      // Smooth mouse damping (Lerp)
       mouseX += (mouseTargetX - mouseX) * 0.045;
       mouseY += (mouseTargetY - mouseY) * 0.045;
 
-      // Update Z scroll
       zOffset = (zOffset + speed) % 120;
 
-      // Vanishing point shift based on mouse parallax
       const vpX = width * 0.5 + mouseX * 70;
       const vpY = horizonY + mouseY * 35;
 
       ctx.clearRect(0, 0, width, height);
-
-      // Save context
       ctx.save();
 
-      // ========================================================
       // 1. THE FOUNDATION: PERSPECTIVE 3D BLUEPRINT GRID
-      // ========================================================
       const gridSpacingX = 140;
-      const numLinesX = 14; // Left and right from center
+      const numLinesX = 14;
       const maxZ = 1200;
       const minZ = 60;
       const stepZ = 120;
 
-      // Longitudinal lines converging into vanishing point
       ctx.lineWidth = 1;
       for (let i = -numLinesX; i <= numLinesX; i++) {
         const worldX = i * gridSpacingX;
-        const groundY = 180; // Distance below horizon
+        const groundY = 180;
 
         const pNear = project(worldX, groundY, minZ, vpX, vpY);
         const pFar = project(worldX, groundY, maxZ, vpX, vpY);
@@ -158,7 +149,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         }
       }
 
-      // Transverse lines scrolling forward along Z
       for (let z = minZ; z <= maxZ; z += stepZ) {
         const currentZ = z - zOffset;
         if (currentZ < minZ) continue;
@@ -168,7 +158,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         const pRight = project(numLinesX * gridSpacingX, groundY, currentZ, vpX, vpY);
 
         if (pLeft.visible && pRight.visible) {
-          // Falloff with depth
           const depthRatio = Math.max(0, 1 - (currentZ - minZ) / (maxZ - minZ));
           ctx.strokeStyle = `rgba(255, 255, 255, ${0.055 * depthRatio})`;
           ctx.beginPath();
@@ -176,8 +165,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           ctx.lineTo(pRight.x, pRight.y);
           ctx.stroke();
 
-          // Dot-Matrix Intersections along transverse line (Crisp Monochrome dots)
-          const dotStep = 2; // Every 2 columns
+          const dotStep = 2;
           for (let i = -numLinesX; i <= numLinesX; i += dotStep) {
             const pDot = project(i * gridSpacingX, groundY, currentZ, vpX, vpY);
             if (pDot.visible) {
@@ -189,15 +177,12 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         }
       }
 
-      // ========================================================
-      // 2. 3D WIREFRAME BOUNDING BOXES (CAD OBJECT VOLUMES)
-      // ========================================================
+      // 2. 3D WIREFRAME BOUNDING BOXES
       boxes.forEach((box) => {
         box.rotY += box.rotSpeed;
         const cos = Math.cos(box.rotY);
         const sin = Math.sin(box.rotY);
 
-        // 8 local vertices of the cuboid
         const halfW = box.w / 2;
         const halfH = box.h / 2;
         const halfD = box.d / 2;
@@ -213,7 +198,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           [-halfW, halfH, halfD],
         ];
 
-        // Transform vertices: Rotate around Y, translate to box.x, box.y, box.z
         const projVerts = localVerts.map(([vx, vy, vz]) => {
           const rx = vx * cos - vz * sin;
           const rz = vx * sin + vz * cos;
@@ -223,14 +207,12 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           return project(wx, wy, wz, vpX, vpY);
         });
 
-        // 12 edges connecting cuboid vertices
         const edges = [
-          [0, 1], [1, 2], [2, 3], [3, 0], // front
-          [4, 5], [5, 6], [6, 7], [7, 4], // back
-          [0, 4], [1, 5], [2, 6], [3, 7], // sides
+          [0, 1], [1, 2], [2, 3], [3, 0],
+          [4, 5], [5, 6], [6, 7], [7, 4],
+          [0, 4], [1, 5], [2, 6], [3, 7],
         ];
 
-        // Draw faint wireframe edges
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
         edges.forEach(([v1, v2]) => {
@@ -244,7 +226,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           }
         });
 
-        // CAD Corner Brackets / Vertex Crosshairs
         projVerts.forEach((pv) => {
           if (pv.visible) {
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
@@ -258,7 +239,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           }
         });
 
-        // Object Wireframe Label
         const topCenter = projVerts[0];
         if (topCenter && topCenter.visible) {
           ctx.font = '8px var(--font-mono, monospace)';
@@ -268,10 +248,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         }
       });
 
-      // ========================================================
       // 3. THE DYNAMIC ELEMENT: OSCILLOSCOPE WAVEFORM
-      // ========================================================
-      // Single glowing green sine wave monitoring live telemetry signal
       const waveY = horizonY + 25 + mouseY * 15;
       const wavePoints: { x: number; y: number }[] = [];
       const numWavePoints = 80;
@@ -279,9 +256,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
       for (let i = 0; i <= numWavePoints; i++) {
         const x = i * stepX;
-        // Waveform calculation with carrier frequency & harmonic modulation
         const normX = x / width;
-        const envelope = Math.sin(normX * Math.PI); // Taper at edges
+        const envelope = Math.sin(normX * Math.PI);
         const waveTime = time * 0.0018;
 
         const primarySine = Math.sin(normX * 12 + waveTime * 4.2);
@@ -292,9 +268,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         wavePoints.push({ x, y: waveY + yOffset });
       }
 
-      // Draw faint secondary phosphor ghost trace
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255, 158, 27, 0.08)';
+      ctx.strokeStyle = 'rgba(255, 68, 0, 0.08)';
       ctx.lineWidth = 3;
       for (let i = 0; i < wavePoints.length; i++) {
         const pt = wavePoints[i];
@@ -303,7 +278,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       }
       ctx.stroke();
 
-      // Draw primary crisp oscilloscope beam with glow
       ctx.shadowColor = '#FFFFFF';
       ctx.shadowBlur = 4;
       ctx.beginPath();
@@ -315,9 +289,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         else ctx.lineTo(pt.x, pt.y);
       }
       ctx.stroke();
-      ctx.shadowBlur = 0; // Reset shadow
+      ctx.shadowBlur = 0;
 
-      // Lead cursor point on the oscilloscope wave
       const leadIdx = Math.floor((frameCount * 0.8) % wavePoints.length);
       const leadPt = wavePoints[leadIdx];
       if (leadPt) {
@@ -328,26 +301,20 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         ctx.shadowBlur = 0;
       }
 
-      // ========================================================
-      // 4. THE HUD OVERLAYS: CAD AXES, CROSSHAIRS & CALIPERS
-      // ========================================================
-      // Center Crosshairs spanning the viewport
+      // 4. THE HUD OVERLAYS: CAD AXES & CROSSHAIRS
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.lineWidth = 1;
 
-      // X-Axis (Horizontal)
       ctx.beginPath();
       ctx.moveTo(0, vpY);
       ctx.lineTo(width, vpY);
       ctx.stroke();
 
-      // Y-Axis (Vertical)
       ctx.beginPath();
       ctx.moveTo(vpX, 0);
       ctx.lineTo(vpX, height);
       ctx.stroke();
 
-      // Caliper Ticks along X-Axis
       const tickSpacing = 40;
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
       for (let tx = tickSpacing; tx < width; tx += tickSpacing) {
@@ -358,7 +325,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         ctx.stroke();
       }
 
-      // Caliper Ticks along Y-Axis
       for (let ty = tickSpacing; ty < height; ty += tickSpacing) {
         const tickW = ty % (tickSpacing * 4) === 0 ? 6 : 3;
         ctx.beginPath();
@@ -367,9 +333,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
         ctx.stroke();
       }
 
-      // Coordinate Labels at Axis Intersections
       ctx.font = '8px var(--font-mono, monospace)';
-      ctx.fillStyle = 'rgba(255, 158, 27, 0.45)';
+      ctx.fillStyle = 'rgba(255, 68, 0, 0.45)';
 
       const rawX = mouseX * 180;
       const rawY = mouseY * -120;
@@ -377,10 +342,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.fillText(`Y: ${rawY > 0 ? '+' : ''}${rawY.toFixed(2)}`, vpX + 8, vpY + 16);
       ctx.fillText('Z: 0.00', vpX + 8, vpY + 28);
 
-      // ========================================================
-      // 5. SCATTERED MONOSPACE TELEMETRY DATA READOUTS
-      // ========================================================
-      // SMPTE Frame calculation (30 fps frame counter)
+      // 5. SCATTERED TELEMETRY DATA READOUTS
       if (time - lastSmpteUpdate > 33) {
         smpteFrames = (smpteFrames + 1) % 30;
         lastSmpteUpdate = time;
@@ -391,24 +353,20 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.font = '8px var(--font-mono, monospace)';
       ctx.fillStyle = 'rgba(230, 230, 235, 0.35)';
 
-      // Top-Left Telemetry
       ctx.fillText('VIEW: CAD_PERSP // CAM_01', 28, 48);
       ctx.fillText('PROJ: 35MM EQUIV · FL: 380MM', 28, 62);
       ctx.fillText(`SYNC: ${blink ? '● ONLINE' : '○ ONLINE'}`, 28, 76);
 
-      // Top-Right Telemetry
       const trX = width - 180;
       ctx.fillText(`SMPTE: ${smpteStr}`, trX, 48);
       ctx.fillText('TIMEBASE: 29.97 NDF', trX, 62);
       ctx.fillText('CALIBRATION: MATRIX_01', trX, 76);
 
-      // Bottom-Left Telemetry
       const blY = height - 48;
       ctx.fillText('VRAM: 12.4 GB / 24.0 GB', 28, blY);
       ctx.fillText('BUFFER: 24-BIT DUAL-CH', 28, blY + 14);
       ctx.fillText('RENDER: 60.0 FPS [LOCKED]', 28, blY + 28);
 
-      // Bottom-Right Telemetry
       const brX = width - 200;
       ctx.fillText('GRID: 100.0 MM [ORTHO-Z]', brX, blY);
       ctx.fillText('NODE: 01/A · STACK: 04', brX, blY + 14);
@@ -429,7 +387,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
   return (
     <div
       className={`absolute inset-0 pointer-events-none select-none overflow-hidden z-0 ${className}`}
-      style={{ opacity: 0.85 }} // Overall wrapper is subtle, canvas elements draw with low 0.08 - 0.3 alpha
+      style={{ opacity: 0.2 }}
       aria-hidden="true"
     >
       <canvas
