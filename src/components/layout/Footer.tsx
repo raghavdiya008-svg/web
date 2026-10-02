@@ -86,7 +86,7 @@ export function Footer() {
             </nav>
 
             <a
-              href="https://discord.gg/editx"
+              href="https://discord.gg/mHAhsUYDtt"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-wider transition-colors hover:bg-[#E4E4E7]"

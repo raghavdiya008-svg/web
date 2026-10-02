@@ -120,7 +120,7 @@ export function Header() {
               ARCHIVE
             </Link>
             <a
-              href="https://discord.gg/editx"
+              href="https://discord.gg/mHAhsUYDtt"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playClick()}
@@ -180,7 +180,7 @@ export function Header() {
                 </span>
               </button>
               <a
-                href="https://discord.gg/editx"
+                href="https://discord.gg/mHAhsUYDtt"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => playClick()}

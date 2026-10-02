@@ -11,7 +11,7 @@ export function SettingsForm() {
   const [dropTime, setDropTime] = useState('14:00');
   const [dropTimezone, setDropTimezone] = useState('Asia/Kolkata');
   const [discordServerId, setDiscordServerId] = useState('1538957031455596544');
-  const [discordInviteUrl, setDiscordInviteUrl] = useState('https://discord.gg/editx');
+  const [discordInviteUrl, setDiscordInviteUrl] = useState('https://discord.gg/mHAhsUYDtt');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [maxFileSizeMb, setMaxFileSizeMb] = useState(500);
   const [rateLimitHour, setRateLimitHour] = useState(50);
