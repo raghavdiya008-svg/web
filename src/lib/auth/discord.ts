@@ -1,15 +1,21 @@
 export async function verifyGuildMembership(accessToken: string): Promise<boolean> {
-  const serverId = process.env.DISCORD_SERVER_ID!;
+  const serverId = process.env.DISCORD_SERVER_ID;
+  if (!serverId || serverId.includes('placeholder')) {
+    return true; // Pass through if server ID not configured
+  }
+
   try {
     const res = await fetch('https://discord.com/api/users/@me/guilds', {
       headers: { Authorization: `Bearer ${accessToken}` },
       next: { revalidate: 0 },
     });
-    if (!res.ok) return true;
+    if (!res.ok) return false;
     const guilds = await res.json();
-    return true;
-  } catch {
-    return true;
+    if (!Array.isArray(guilds)) return false;
+    return guilds.some((guild: { id: string }) => guild.id === serverId);
+  } catch (err) {
+    console.error('Discord guild verification error:', err);
+    return false;
   }
 }
 

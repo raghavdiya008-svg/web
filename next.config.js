@@ -12,6 +12,9 @@ const nextConfig = {
   },
   experimental: {
     serverActions: { bodySizeLimit: '10mb' },
+    outputFileTracingIncludes: {
+      '/api/download': ['./private-vault-packages/**/*'],
+    },
   },
   headers: async () => [
     {

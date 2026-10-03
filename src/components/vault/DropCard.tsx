@@ -270,26 +270,52 @@ export function DropCard({ drop }: DropCardProps) {
     setDownloadState('extracting');
 
     try {
-      const res = await fetch(`/api/download?dropId=${drop.id}`);
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      let data: any;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error('Invalid response from server');
+      const downloadUrl = `/api/download?dropId=${drop.id}`;
+      const res = await fetch(downloadUrl);
+      if (!res.ok) {
+        let msg = `Server returned ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData?.error) msg = errData.error;
+        } catch {}
+        throw new Error(msg);
       }
 
-      if (data && data.url) {
-        const a = document.createElement('a');
-        a.href = data.url;
-        a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setDownloadState('complete');
-      } else {
-        throw new Error(data?.error || 'Empty download URL returned');
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.url) {
+          const a = document.createElement('a');
+          a.href = data.url;
+          a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setDownloadState('complete');
+          return;
+        }
+        throw new Error(data.error || 'Download URL missing');
       }
+
+      // Direct binary file stream from server (ZIP/WAV/CUBE/PDF)
+      const blob = await res.blob();
+      const disposition = res.headers.get('content-disposition') || '';
+      let filename = `${drop.title}.${drop.file_format || 'zip'}`;
+      const filenameMatch = disposition.match(/filename="?([^"]+)"?/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setDownloadState('complete');
     } catch (err) {
       console.error('Download error:', err);
       setDownloadState('error');

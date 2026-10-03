@@ -115,7 +115,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0C]">
+    <div className="min-h-screen bg-background text-text-primary transition-colors duration-200">
       {/* ================================================================
           HERO: THE COMMAND CENTER
       ================================================================ */}

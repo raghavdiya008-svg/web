@@ -76,17 +76,44 @@ export function TodayDownloadSection({ drop }: TodayDownloadSectionProps) {
     setDownloading(true);
     try {
       const res = await fetch(`/api/download?dropId=${drop.id}`);
-      const data = await res.json();
-      if (data.url) {
-        const a = document.createElement('a');
-        a.href = data.url;
-        a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setDownloaded(true);
-        setTimeout(() => setDownloaded(false), 4000);
+      if (!res.ok) {
+        throw new Error(`Download failed with status ${res.status}`);
       }
+
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data.url) {
+          const a = document.createElement('a');
+          a.href = data.url;
+          a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setDownloaded(true);
+          setTimeout(() => setDownloaded(false), 4000);
+          return;
+        }
+      }
+
+      // Direct binary stream from server (ZIP/WAV/CUBE/PDF)
+      const blob = await res.blob();
+      const disposition = res.headers.get('content-disposition') || '';
+      let filename = `${drop.title}.${drop.file_format || 'zip'}`;
+      const match = disposition.match(/filename="?([^"]+)"?/);
+      if (match && match[1]) filename = match[1];
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+
+      setDownloaded(true);
+      setTimeout(() => setDownloaded(false), 4000);
     } catch (err) {
       console.error('Download error:', err);
     } finally {

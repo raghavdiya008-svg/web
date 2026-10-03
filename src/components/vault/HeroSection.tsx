@@ -63,24 +63,24 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
   }, []);
 
   return (
-    <section className="relative flex flex-col justify-between border-b border-[#1F1F24] overflow-hidden bg-[#070708]">
+    <section className="relative flex flex-col justify-between border-b border-[#1F1F24] light:border-[#E4E4E7] overflow-hidden bg-[#070708] light:bg-[#FAFAFA] transition-colors duration-200">
       {/* CAD BLUEPRINT & TELEMETRY VIEWPORT */}
       <HeroBackground />
 
       {/* AMBIENT LIGHT FIELD */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-white/[0.015] blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-white/[0.015] light:bg-black/[0.015] blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-8 pt-8 pb-10 sm:pt-12 sm:pb-12 flex-1 flex flex-col justify-center z-10">
         
         {/* TOP STATUS BAR */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-[#0E0E11] border border-[#1F1F24]">
-            <span className="w-2 h-2 rounded-full bg-[#FFFFFF] animate-pulse" />
-            <span className="font-mono text-[9px] tracking-[0.2em] text-[#A1A1AA] uppercase font-semibold">
+          <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-[#0E0E11] light:bg-[#FFFFFF] border border-[#1F1F24] light:border-[#E4E4E7] shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#FFFFFF] light:bg-[#000000] animate-pulse" />
+            <span className="font-mono text-[9px] tracking-[0.2em] text-[#A1A1AA] light:text-[#71717A] uppercase font-semibold">
               INDEX // DAILY PRODUCTION ASSETS
             </span>
-            <span className="text-[#27272A]">/</span>
-            <span className="font-mono text-[9px] text-[#FFFFFF] tracking-[0.16em] uppercase font-bold">
+            <span className="text-[#27272A] light:text-[#D4D4D8]">/</span>
+            <span className="font-mono text-[9px] text-[#FFFFFF] light:text-[#09090B] tracking-[0.16em] uppercase font-bold">
               EDITION {editionString}
             </span>
           </div>
@@ -94,18 +94,18 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-[#FF4400]" />
-                <span className="font-mono text-[10px] tracking-[0.3em] text-[#A1A1AA] uppercase font-bold">
+                <span className="font-mono text-[10px] tracking-[0.3em] text-[#A1A1AA] light:text-[#71717A] uppercase font-bold">
                   CURATED REPOSITORY FOR EDITORS & 3D ARTISTS
                 </span>
               </div>
-              <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-[#FFFFFF] uppercase tracking-[-0.045em] leading-[0.88] text-balance">
+              <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-[#FFFFFF] light:text-[#09090B] uppercase tracking-[-0.045em] leading-[0.88] text-balance">
                 PRECISION<br />
                 TOOLS FOR<br />
-                <span className="text-[#A1A1AA]">CREATORS.</span>
+                <span className="text-[#A1A1AA] light:text-[#71717A]">CREATORS.</span>
               </h1>
             </div>
 
-            <p className="text-base sm:text-lg text-[#A1A1AA] max-w-xl leading-relaxed text-pretty font-body font-normal">
+            <p className="text-base sm:text-lg text-[#A1A1AA] light:text-[#52525B] max-w-xl leading-relaxed text-pretty font-body font-normal">
               Tactile audio stems, 35mm film grains, color-science LUTs, and motion geometry packs.
               Zero friction, zero paywalls. Published daily at 14:00 UTC.
             </p>

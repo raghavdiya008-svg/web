@@ -135,10 +135,10 @@ INSERT INTO categories (slug, name, description, icon, color, sort_order) VALUES
 
 -- Insert default settings
 INSERT INTO settings (key, value, description) VALUES
-('drop_time', '\"14:00\"', 'Daily drop time in 24h format (IST)'),
-('drop_timezone', '\"Asia/Kolkata\"', 'Timezone for scheduled drops'),
-('discord_server_id', '\"1538957031455596544\"', 'EditX Discord server ID for membership verification'),
-('discord_invite_url', '\"https://discord.gg/editx\"', 'Public Discord invite link'),
+('drop_time', '"14:00"', 'Daily drop time in 24h format (IST)'),
+('drop_timezone', '"Asia/Kolkata"', 'Timezone for scheduled drops'),
+('discord_server_id', '"1538957031455596544"', 'EditX Discord server ID for membership verification'),
+('discord_invite_url', '"https://discord.gg/editx"', 'Public Discord invite link'),
 ('maintenance_mode', 'false', 'Enable maintenance mode for non-admins'),
 ('max_file_size_mb', '500', 'Maximum upload size in MB'),
 ('rate_limit_downloads_per_hour', '50', 'Max downloads per user per hour'),
@@ -206,4 +206,4 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_drops_updated_at BEFORE UPDATE ON drops FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_settings_updated_at BEFORE UPDATE ON settings FOR ALL EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_settings_updated_at BEFORE UPDATE ON settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
