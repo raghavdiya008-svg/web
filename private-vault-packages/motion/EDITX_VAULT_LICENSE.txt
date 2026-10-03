@@ -1,7 +1,7 @@
 ================================================================================
 EDITX CREATIVE VAULT // STUDIO MASTER CANISTER
-Asset: 4K Cinema Aspect Ratio Mattes Pack
-Category: Overlays
+Asset: Kinetic 3D Typography Rig Pack
+Category: Motion Graphics
 License: Commercial Royalty-Free (MIT / CC0 Equivalent)
 Calibration: Verified Industry Standard
 

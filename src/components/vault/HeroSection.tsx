@@ -114,15 +114,15 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 href="/today"
-                className="px-8 py-4 bg-[#FFFFFF] text-[#000000] font-mono text-xs font-black uppercase tracking-[0.18em] border border-[#FFFFFF] hover:bg-[#E4E4E7] active:scale-95 transition-all inline-flex items-center gap-2.5 focus-visible:ring-1 focus-visible:ring-white"
+                className="px-8 py-4 bg-[#FFFFFF] dark:bg-[#FFFFFF] light:bg-[#111113] text-[#000000] dark:text-[#000000] light:text-[#FFFFFF] font-mono text-xs font-black uppercase tracking-[0.18em] border border-transparent light:border-[#111113] hover:opacity-90 active:scale-95 transition-all inline-flex items-center gap-2.5 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
               >
                 <Play size={12} className="fill-current" />
-                ACCESS TODAY'S DROP
+                ACCESS TODAY&apos;S DROP
               </Link>
 
               <Link
                 href="/vault"
-                className="px-8 py-4 bg-[#0E0E11] text-[#FFFFFF] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] hover:border-[#FFFFFF] hover:bg-[#18181B] transition-all inline-flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-white"
+                className="px-8 py-4 bg-[#0E0E11] dark:bg-[#0E0E11] light:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#FFFFFF] light:text-[#111113] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] light:border-[#E2E2E6] hover:border-[#FFFFFF] light:hover:border-[#111113] hover:bg-[#18181B] light:hover:bg-[#F0F0F2] transition-all inline-flex items-center gap-2 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
               >
                 ARCHIVE REEL
                 <ArrowRight size={13} />

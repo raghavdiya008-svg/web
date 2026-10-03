@@ -1,15 +1,14 @@
 ================================================================================
 EDITX CREATIVE VAULT // STUDIO MASTER CANISTER
-Asset: Kodak 5219 & Arri 35 Cine Suite
+Asset: Kodak & Fuji 33-Point 3D LUT Pack
 Category: Color Science
-License: CC-0 Creative Commons
-Quality: Verified Studio Calibration
+License: Commercial Royalty-Free (MIT / CC0 Equivalent)
+Calibration: Verified Industry Standard
 
 TERMS OF USE:
 - Permitted for 100% royalty-free commercial, client, and personal productions.
-- No attribution required in final video exports or motion renders.
-- Direct resale or repackaging as raw standalone assets prohibited.
+- No attribution required in final client exports, broadcasts, or YouTube uploads.
+- Redistribution, repackaging, or reselling of standalone source files is prohibited.
 
-COMMUNITY:
-Official EditX Discord Server: https://discord.gg/editx
+Official EditX Creator Community: https://discord.gg/editx
 ================================================================================

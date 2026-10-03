@@ -246,7 +246,7 @@ export default function UploadPage() {
               <span className="font-mono text-[10px] text-accent">Auto-analyzed</span>
             </div>
             <p className="text-xs text-[#71717A] leading-relaxed">
-              We've generated peak amplitude data and a 30-second preview stem from your uploaded binary.
+              We&apos;ve generated peak amplitude data and a 30-second preview stem from your uploaded binary.
             </p>
             <div className="h-16 bg-[#0A0A0A] border border-[#1A1A1A] flex items-center px-4 gap-1">
               {Array.from({ length: 40 }).map((_, i) => (

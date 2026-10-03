@@ -135,7 +135,7 @@ export default async function HomePage() {
                 EXHIBIT 01 // ACTIVE DROP
               </span>
               <h2 className="font-display font-black text-3xl md:text-4xl text-[#FFFFFF] uppercase tracking-[-0.03em]">
-                TODAY'S DROP
+                TODAY&apos;S DROP
               </h2>
             </div>
             <div className="flex items-center gap-2 text-[10px] font-mono text-[#FFFFFF] uppercase tracking-widest font-bold">

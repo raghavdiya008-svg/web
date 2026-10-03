@@ -24,43 +24,46 @@
   --color-amber: oklch(0.68 0.22 38);
 }
 
-/* DAY MODE (THE CREATIVE GALLERY / CLEAN PRECISION STUDIO) */
+/* DAY MODE (ARCHIVAL EDITORIAL STUDIO — WARM PORCELAIN & GRAPHITE INK) */
 .light, [data-theme="light"] {
-  --color-background: oklch(0.98 0.002 260);
-  --color-surface: oklch(1.00 0 0);
-  --color-surface-elevated: oklch(0.95 0.003 260);
-  --color-border: oklch(0.85 0.005 260 / 0.8);
-  --color-border-subtle: oklch(0.90 0.005 260 / 0.7);
+  /* Warm editorial porcelain canvas */
+  --color-background: #F7F7F8;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F0F0F2;
+  --color-border: #E2E2E6;
+  --color-border-subtle: #ECECED;
 
-  --color-text-primary: oklch(0.12 0.005 260);
-  --color-text-secondary: oklch(0.35 0.005 260);
-  --color-text-muted: oklch(0.55 0.005 260);
+  /* High legibility graphite ink typography */
+  --color-text-primary: #111113;
+  --color-text-secondary: #4A4A52;
+  --color-text-muted: #747480;
 
-  --color-accent: #000000;
-  --color-orange: oklch(0.55 0.22 38);
-  --color-amber: oklch(0.55 0.22 38);
+  /* Vibrant Swiss Vermilion / Amber accents */
+  --color-accent: #111113;
+  --color-orange: #E03E00;
+  --color-amber: #D97706;
 }
 
 /* Day Mode Universal Overrides: Invert harsh hardcoded dark chassis & text */
 .light header {
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  border-color: #E4E4E7 !important;
+  background-color: rgba(247, 247, 248, 0.90) !important;
+  border-color: #E2E2E6 !important;
 }
 
 .light header a,
 .light header span.font-display {
-  color: #09090B !important;
+  color: #111113 !important;
 }
 
 .light header span.text-\[\#A1A1AA\] {
-  color: #71717A !important;
+  color: #747480 !important;
 }
 
 .light .metal-chassis,
 .light [class*="metal-chassis"] {
   background: #FFFFFF !important;
-  border-color: #E4E4E7 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  border-color: #E2E2E6 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02) !important;
 }
 
 .light .bg-\[\#070708\],
@@ -81,40 +84,60 @@
 .light .border-\[\#16161A\],
 .light .border-\[\#18181C\],
 .light .border-\[\#1A1A1E\] {
-  border-color: #E4E4E7 !important;
+  border-color: #E2E2E6 !important;
 }
 
 .light .text-\[\#FFFFFF\],
 .light .text-\[\#F5F5F5\] {
-  color: #09090B !important;
+  color: #111113 !important;
 }
 
 .light .text-\[\#A1A1AA\],
 .light .text-\[\#8A8A8E\] {
-  color: #52525B !important;
+  color: #4A4A52 !important;
 }
 
 .light .text-\[\#71717A\],
 .light .text-\[\#52525B\],
 .light .text-\[\#525256\] {
-  color: #71717A !important;
+  color: #747480 !important;
 }
 
 .light .divide-\[\#1F1F24\] > :not([hidden]) ~ :not([hidden]) {
-  border-color: #E4E4E7 !important;
+  border-color: #E2E2E6 !important;
+}
+
+/* Stamped badges & telemetry panels in Day Mode */
+.light .stamped-metal-badge {
+  background: #F0F0F2 !important;
+  border-color: #E2E2E6 !important;
+}
+
+.light .led-segment-display {
+  background: #F7F7F8 !important;
+  border-color: #E2E2E6 !important;
+}
+
+.light .canister-glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: #E2E2E6 !important;
+}
+
+.light .rivet {
+  background: #C4C4CC !important;
 }
 
 .light footer {
-  background-color: #F4F4F5 !important;
-  border-color: #E4E4E7 !important;
+  background-color: #F0F0F2 !important;
+  border-color: #E2E2E6 !important;
 }
 
 .light footer div.bg-\[\#0A0A0C\] {
-  background-color: #E4E4E7 !important;
+  background-color: #E6E6EB !important;
 }
 
 .light ::-webkit-scrollbar-track {
-  background: #F4F4F5;
+  background: #F7F7F8;
 }
 .light ::-webkit-scrollbar-thumb {
   background: #D4D4D8;
