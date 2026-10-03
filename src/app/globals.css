@@ -25,7 +25,7 @@
 }
 
 /* DAY MODE (THE CREATIVE GALLERY / CLEAN PRECISION STUDIO) */
-.light {
+.light, [data-theme="light"] {
   --color-background: oklch(0.98 0.002 260);
   --color-surface: oklch(1.00 0 0);
   --color-surface-elevated: oklch(0.95 0.003 260);
@@ -40,6 +40,89 @@
   --color-orange: oklch(0.55 0.22 38);
   --color-amber: oklch(0.55 0.22 38);
 }
+
+/* Day Mode Universal Overrides: Invert harsh hardcoded dark chassis & text */
+.light header {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-color: #E4E4E7 !important;
+}
+
+.light header a,
+.light header span.font-display {
+  color: #09090B !important;
+}
+
+.light header span.text-\[\#A1A1AA\] {
+  color: #71717A !important;
+}
+
+.light .metal-chassis,
+.light [class*="metal-chassis"] {
+  background: #FFFFFF !important;
+  border-color: #E4E4E7 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+.light .bg-\[\#070708\],
+.light .bg-\[\#0A0A0C\],
+.light .bg-\[\#0E0E11\],
+.light .bg-\[\#0E0E12\],
+.light .bg-\[\#0C0C0F\],
+.light .bg-\[\#050506\],
+.light .bg-\[\#060608\],
+.light .bg-\[\#141417\],
+.light .bg-\[\#16161A\] {
+  background-color: #FFFFFF !important;
+}
+
+.light .border-\[\#1F1F24\],
+.light .border-\[\#27272A\],
+.light .border-\[\#2A2A2C\],
+.light .border-\[\#16161A\],
+.light .border-\[\#18181C\],
+.light .border-\[\#1A1A1E\] {
+  border-color: #E4E4E7 !important;
+}
+
+.light .text-\[\#FFFFFF\],
+.light .text-\[\#F5F5F5\] {
+  color: #09090B !important;
+}
+
+.light .text-\[\#A1A1AA\],
+.light .text-\[\#8A8A8E\] {
+  color: #52525B !important;
+}
+
+.light .text-\[\#71717A\],
+.light .text-\[\#52525B\],
+.light .text-\[\#525256\] {
+  color: #71717A !important;
+}
+
+.light .divide-\[\#1F1F24\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E4E4E7 !important;
+}
+
+.light footer {
+  background-color: #F4F4F5 !important;
+  border-color: #E4E4E7 !important;
+}
+
+.light footer div.bg-\[\#0A0A0C\] {
+  background-color: #E4E4E7 !important;
+}
+
+.light ::-webkit-scrollbar-track {
+  background: #F4F4F5;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}
+
 
 /* ============================================================
    BASE

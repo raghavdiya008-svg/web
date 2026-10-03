@@ -130,6 +130,10 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.clearRect(0, 0, width, height);
       ctx.save();
 
+      const isLight = document.documentElement.classList.contains('light');
+      const strokeBase = isLight ? '0, 0, 0' : '255, 255, 255';
+      const textBase = isLight ? '#09090B' : '#FFFFFF';
+
       // 1. THE FOUNDATION: PERSPECTIVE 3D BLUEPRINT GRID
       const gridSpacingX = 140;
       const numLinesX = 14;
@@ -147,7 +151,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         if (pNear.visible && pFar.visible) {
           const distAlpha = Math.max(0, 1 - Math.abs(i) / (numLinesX + 1));
-          ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 * distAlpha})`;
+          ctx.strokeStyle = `rgba(${strokeBase}, ${0.16 * distAlpha})`;
           ctx.beginPath();
           ctx.moveTo(pNear.x, pNear.y);
           ctx.lineTo(pFar.x, pFar.y);
@@ -219,7 +223,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           [0, 4], [1, 5], [2, 6], [3, 7],
         ];
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+        ctx.strokeStyle = `rgba(${strokeBase}, 0.28)`;
         ctx.lineWidth = 1;
         edges.forEach(([v1, v2]) => {
           const p1 = projVerts[v1];
@@ -234,7 +238,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         projVerts.forEach((pv) => {
           if (pv.visible) {
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+            ctx.strokeStyle = `rgba(${strokeBase}, 0.65)`;
             const bSize = 3;
             ctx.beginPath();
             ctx.moveTo(pv.x - bSize, pv.y);
@@ -399,8 +403,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
     >
       <canvas
         ref={canvasRef}
-        className="w-full h-full block"
-        style={{ mixBlendMode: 'screen' }}
+        className="w-full h-full block dark:mix-blend-screen light:mix-blend-multiply"
       />
     </div>
   );
