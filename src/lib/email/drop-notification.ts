@@ -38,7 +38,7 @@ export async function sendDropNotificationEmail(drop: { id: string; title: strin
 
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
-    to: users.map(u => u.email!),
+    to: users.map((u: any) => u.email!),
     subject: `New Drop: ${drop.title} — EditX Vault`,
     html: emailHtml,
   });
