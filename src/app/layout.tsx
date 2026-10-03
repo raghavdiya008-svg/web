@@ -1,19 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Syne, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import '@/app/globals.css';
 import { Providers } from '@/components/providers/Providers';
 import { GrainOverlay } from '@/components/layout/GrainOverlay';
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-body',
-  weight: ['400', '500', '600', '700', '800'],
-  display: 'swap',
-});
-const syne = Syne({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['600', '700', '800'],
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
 const jetbrainsMono = JetBrains_Mono({
@@ -101,7 +95,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${syne.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
       <head>
         <script

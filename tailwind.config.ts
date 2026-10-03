@@ -36,9 +36,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
-        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-mono)', 'monospace'],
+        display: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
         'display-xl': ['clamp(3.5rem, 8.5vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.045em', fontWeight: '900' }],
