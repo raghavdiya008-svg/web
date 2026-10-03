@@ -16,18 +16,17 @@ import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
 export const metadata: Metadata = {
   title: 'EditX Vault — Precision Creative Asset Repository',
   description:
-    'Curated SFX packs, 35mm film grains, color-science LUTs, and motion geometry packs — 100% free for 3D artists, video editors, and animators. New drops daily at 14:00 UTC.',
+    'Curated 35mm film grains, color-science LUTs, typography suites, and motion geometry packs — 100% free for video editors and animators. New drops daily at 14:00 UTC.',
   openGraph: {
     title: 'EditX Vault — Precision Creative Asset Repository',
     description:
-      'Curated SFX packs, 35mm film grains, color-science LUTs, and motion geometry packs — free for video editors and 3D artists.',
+      'Curated 35mm film grains, color-science LUTs, typography suites, and motion geometry packs — free for video editors and animators.',
     type: 'website',
     siteName: 'EditX Vault',
   },
 };
 
 const MARQUEE_CATEGORIES = [
-  'ANALOG SFX',
   '35MM FILM GRAIN',
   'COLOR-SCIENCE LUTS',
   'LOTTIE KINETICS',
@@ -36,7 +35,8 @@ const MARQUEE_CATEGORIES = [
   'TYPOGRAPHY PACKS',
   'VECTOR SVG SETS',
   'BLENDER 3D SHADERS',
-  'AUDIO STEMS',
+  'ANAMORPHIC MATTES',
+  'PRODUCTION CONTRACTS',
 ];
 
 

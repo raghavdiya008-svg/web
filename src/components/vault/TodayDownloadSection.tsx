@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Download, Check, Play, Pause, Share2, Copy } from 'lucide-react';
+import { Download, Check, Share2, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { playMechanicalClick, playToggleThud } from '@/lib/audio/soundFx';
 
@@ -21,55 +21,7 @@ interface TodayDownloadSectionProps {
 export function TodayDownloadSection({ drop }: TodayDownloadSectionProps) {
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(30);
   const [copied, setCopied] = useState(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 1.8));
-      }, 150);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
-  const toggleAudio = () => {
-    playMechanicalClick();
-    try {
-      if (!isPlaying) {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioContextClass) {
-          const ctx = new AudioContextClass();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(65, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 1.4);
-
-          gain.gain.setValueAtTime(0.25, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.8);
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-
-          audioCtxRef.current = ctx;
-        }
-        setIsPlaying(true);
-      } else {
-        if (audioCtxRef.current) {
-          audioCtxRef.current.close().catch(() => {});
-        }
-        setIsPlaying(false);
-      }
-    } catch {
-      setIsPlaying(!isPlaying);
-    }
-  };
 
   const handleDownload = async () => {
     playToggleThud();
@@ -145,71 +97,64 @@ export function TodayDownloadSection({ drop }: TodayDownloadSectionProps) {
           <div className="flex items-center gap-2">
             <span className="rivet" />
             <span className="font-mono text-[9px] font-bold text-[#F5F5F5] uppercase tracking-[0.16em]">
-              HARDWARE BUS #01 // 24-BIT STEM AUDITION
+              HARDWARE BUS #01 // {drop.categories?.slug === 'luts' ? 'COLOR SCIENCE CALIBRATION' : drop.categories?.slug === 'typography' ? 'TYPOGRAPHIC SPECIMEN ENGINE' : 'ASSET SPECIFICATION MONITOR'}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-[8px] text-[#00FF41] bg-[#00FF41]/10 border border-[#00FF41]/40 px-2 py-0.5 uppercase tracking-wider font-bold">
-              CALIBRATED 48kHz STEREO
+              {drop.categories?.slug === 'luts' ? '33x33x33 3D CUBE MATRIX' : drop.categories?.slug === 'typography' ? 'VARIABLE WEIGHT OTF/TTF' : '4K UHD PRORES / ALPHA'}
             </span>
             <span className="rivet" />
           </div>
         </div>
 
-        {/* WAVEFORM PREVIEW */}
-        <div className="flex items-center gap-4 bg-[#060608] p-3 border border-[#222226] shadow-hardware-inset">
-          <button
-            onClick={toggleAudio}
-            className="w-12 h-12 flex items-center justify-center bg-[#00FF41] text-[#0A0A0C] hover:bg-[#00FF41]/90 transition-all shrink-0 active:scale-95 shadow-[0_0_12px_rgba(0,255,65,0.3)] cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00FF41]"
-            aria-label={isPlaying ? 'Pause audio preview' : 'Play audio preview stem'}
-          >
-            {isPlaying ? (
-              <Pause size={18} className="fill-current" />
-            ) : (
-              <Play size={18} className="fill-current translate-x-0.5" />
-            )}
-          </button>
-
-          <div
-            role="slider"
-            aria-label="Audio playback position"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={progress}
-            tabIndex={0}
-            className="flex-1 flex items-center gap-1 h-12 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00FF41] px-1"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const clickX = e.clientX - rect.left;
-              setProgress(Math.round((clickX / rect.width) * 100));
-              playMechanicalClick();
-            }}
-          >
-            {Array.from({ length: 48 }).map((_, i) => {
-              const barPercent = (i / 48) * 100;
-              const isPlayed = barPercent <= progress;
-              const height = Math.round(15 + Math.sin(i * 0.4) * 40 + Math.cos(i * 0.2) * 35);
-              return (
-                <div
-                  key={i}
-                  className="w-full transition-all duration-150"
-                  style={{
-                    height: `${Math.min(100, Math.max(12, height))}%`,
-                    backgroundColor: isPlayed ? '#00FF41' : '#222228',
-                    boxShadow: isPlayed && isPlaying ? '0 0 6px rgba(0, 255, 65, 0.45)' : 'none',
-                  }}
-                />
-              );
-            })}
+        {/* DYNAMIC TELEMETRY DISPLAY */}
+        {drop.categories?.slug === 'luts' ? (
+          <div className="bg-[#060608] p-4 border border-[#222226] shadow-hardware-inset space-y-3 font-mono">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px]">
+              <div className="p-2 border border-[#1A1A1E] bg-[#0B0B0E]">
+                <span className="text-[#71717A] block text-[8px] uppercase tracking-wider">LUT SIZE</span>
+                <span className="text-[#00FF41] font-bold">33×33×33 (35.9K PTS)</span>
+              </div>
+              <div className="p-2 border border-[#1A1A1E] bg-[#0B0B0E]">
+                <span className="text-[#71717A] block text-[8px] uppercase tracking-wider">GAMMA CURVE</span>
+                <span className="text-[#FFFFFF] font-bold">KODAK 5219 S-CURVE</span>
+              </div>
+              <div className="p-2 border border-[#1A1A1E] bg-[#0B0B0E]">
+                <span className="text-[#71717A] block text-[8px] uppercase tracking-wider">TARGET SPACE</span>
+                <span className="text-[#FFFFFF] font-bold">REC.709 / LOG</span>
+              </div>
+              <div className="p-2 border border-[#1A1A1E] bg-[#0B0B0E]">
+                <span className="text-[#71717A] block text-[8px] uppercase tracking-wider">HOST NLE</span>
+                <span className="text-[#00FF41] font-bold">DAVINCI & LUMETRI</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-[9px] text-[#A1A1AA] pt-1 border-t border-[#16161A]">
+              <span>CALIBRATION: VERIFIED STUDIO SPECTRAL RESPONSE</span>
+              <span className="text-[#00FF41]">● SIGNAL LOCKED</span>
+            </div>
           </div>
-
-          <div className="font-mono text-xs text-[#8A8A8E] shrink-0 tabular-nums">
-            {isPlaying
-              ? `0:${String(Math.round((progress / 100) * 42)).padStart(2, '0')}`
-              : '0:14'}{' '}
-            / 0:42
+        ) : drop.categories?.slug === 'typography' ? (
+          <div className="bg-[#060608] p-4 border border-[#222226] shadow-hardware-inset space-y-2">
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-[#FFFFFF] font-sans">
+              THE QUICK BROWN FOX JUMPS OVER 123
+            </div>
+            <div className="flex items-center justify-between font-mono text-[9px] text-[#A1A1AA] pt-2 border-t border-[#16161A]">
+              <span>FORMAT: OPENTYPE / TRUETYPE VARIABLE (400–800)</span>
+              <span className="text-[#8B5CF6]">● SIL OFL-1.1 COMMERCIAL LICENSE</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-[#060608] p-4 border border-[#222226] shadow-hardware-inset font-mono text-[10px] space-y-2">
+            <div className="flex items-center justify-between text-[#FFFFFF]">
+              <span>CANISTER SPEC: {drop.title}</span>
+              <span className="text-[#00FF41]">STATUS: UNRESTRICTED</span>
+            </div>
+            <div className="text-[9px] text-[#71717A]">
+              COMPATIBLE NLE: ADOBE PREMIERE PRO // DAVINCI RESOLVE // FINAL CUT PRO // AFTER EFFECTS
+            </div>
+          </div>
+        )}
       </div>
 
       {/* DOWNLOAD & SHARE BUTTONS */}

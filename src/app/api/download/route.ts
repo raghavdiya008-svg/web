@@ -6,9 +6,9 @@ import fs from 'fs';
 import path from 'path';
 
 const LEGACY_ID_MAP: Record<string, string> = {
-  'mock-1': 'v-01',
-  'mock-today': 'v-01',
-  'mock-2': 'v-02',
+  'mock-1': 'v-02',
+  'mock-today': 'v-02',
+  'mock-2': 'v-06',
   'mock-3': 'v-03',
   'mock-4': 'v-04',
   'mock-5': 'v-02',
