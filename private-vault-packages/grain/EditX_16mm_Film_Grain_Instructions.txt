@@ -1,0 +1,20 @@
+# EDITX 16MM AUTHENTIC FILM GRAIN OVERLAY SETUP GUIDE
+
+SPECIFICATIONS:
+- Scan Type: Kodak Vision3 250D 16mm True Photochemical Optical Scan
+- Resolution: 3840 x 2160 (4K UHD)
+- Format: ProRes 422 QuickTime (.MOV) Loop
+- Blending Mode: Overlay / Soft Light (Opacity: 45% - 65%)
+
+HOW TO USE IN YOUR NLE:
+1. Adobe Premiere Pro:
+   - Place grain track on V2 above your graded video layer (V1).
+   - In Effect Controls > Opacity > Blend Mode: Select 'Overlay'.
+   - Recommended Opacity: 55%.
+
+2. DaVinci Resolve:
+   - Drop grain on timeline track 2.
+   - Inspector > Composite Mode: Select 'Overlay'.
+
+3. After Effects:
+   - Set Track Mode column to 'Overlay' or 'Soft Light'.

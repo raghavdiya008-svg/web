@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { CountdownTimer } from '@/components/vault/CountdownTimer';
 import { TodayDownloadSection } from '@/components/vault/TodayDownloadSection';
 import { formatBytes } from '@/lib/utils/cn';
+import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -56,37 +57,11 @@ export default async function TodayPage() {
   }
 
   if (!liveDrop) {
-    liveDrop = {
-      id: 'mock-today',
-      title: 'Cinematic Sub Bass & Impact Suite 01',
-      description:
-        'Handcrafted analog sub-drops, brass hits, and organic impact textures designed for high-tension cinematic trailers. Includes 45 dry stems, 20 processed impacts, and metadata for fast DAW search.',
-      instructions:
-        '1. Unzip the downloaded archive.\n2. Import WAV files at 24-bit 48kHz directly into your timeline, DAW, or sampler.\n3. Route through your low-end bus or master chain for maximum punch.',
-      categories: { slug: 'sfx', name: 'ANALOG SFX', color: '#00FF41' },
-      file_format: 'wav',
-      file_size: 142_000_000,
-      license: 'MIT',
-      compatible_software: [
-        'Premiere Pro',
-        'DaVinci Resolve',
-        'After Effects',
-        'Final Cut Pro',
-        'Ableton Live',
-        'Reaper',
-      ],
-      scheduled_for: new Date().toISOString(),
-      download_count: 842,
-    };
+    liveDrop = EDITX_VAULT_CATALOG.find(d => d.is_live && new Date(d.scheduled_for) <= new Date()) || EDITX_VAULT_CATALOG[0];
   }
 
   if (!nextDrop) {
-    nextDrop = {
-      id: 'mock-next',
-      title: 'Kodak 5219 500T Cine Emulation LUT',
-      categories: { slug: 'luts', name: 'COLOR LUT', color: '#FFB000' },
-      scheduled_for: new Date(Date.now() + 86_400_000).toISOString(),
-    };
+    nextDrop = EDITX_VAULT_CATALOG.find(d => !d.is_live && new Date(d.scheduled_for) > new Date()) || EDITX_VAULT_CATALOG[1];
   }
 
   const categoryName = liveDrop.categories?.name || 'ASSET';

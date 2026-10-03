@@ -140,7 +140,7 @@ export function FeaturedDrop({ drop }: FeaturedDropProps) {
         className="relative w-full h-1.5 bg-[#16161A] overflow-hidden cursor-pointer group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
       >
         <div
-          className="h-full bg-[#FFFFFF] group-hover:bg-[#FF4400] transition-all duration-150 ease-out"
+          className="h-full bg-[#FFFFFF] group-hover:bg-[#00FF41] transition-all duration-150 ease-out"
           style={{ width: `${playbackProgress}%` }}
         />
       </div>

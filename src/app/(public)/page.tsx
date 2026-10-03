@@ -10,8 +10,8 @@ import { HeroSection } from '@/components/vault/HeroSection';
 import { LutSlider } from '@/components/vault/AssetPreview/LutSlider';
 import { LottiePreview } from '@/components/vault/AssetPreview/LottiePreview';
 import { MotionFade, StaggerContainer, StaggerItem } from '@/components/motion/MotionFade';
-import { TypewriterQuote } from '@/components/layout/TypewriterQuote';
 import { ArrowRight, Sliders, Sparkles } from 'lucide-react';
+import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
 
 export const metadata: Metadata = {
   title: 'EditX Vault — Precision Creative Asset Repository',
@@ -39,23 +39,7 @@ const MARQUEE_CATEGORIES = [
   'AUDIO STEMS',
 ];
 
-const TESTIMONIALS = [
-  {
-    quote: "The quality is genuinely superior to studio-bought packs. The Kodak 500T LUT holds up flawlessly in Arri and RED Log footage.",
-    name: 'Alex Vance',
-    role: 'Lead Colorist & Senior Editor',
-  },
-  {
-    quote: "EditX Vault is the only daily terminal I keep open. Every morning drop is production-tested and immediate drop-in ready.",
-    name: 'Priya Kapoor',
-    role: 'Senior Motion Designer',
-  },
-  {
-    quote: "The 24-bit trailer sub bass suite is permanently mapped in our studio Reaper and Premiere template. Incredible punch.",
-    name: 'Jordan Rivera',
-    role: 'VFX Sound Supervisor',
-  },
-];
+
 
 export default async function HomePage() {
   const session = await auth();
@@ -112,117 +96,22 @@ export default async function HomePage() {
     }
   }
 
-  // High-fidelity studio mock data
+  // Use verified local catalog if DB fails
   if (!liveDrop) {
-    liveDrop = {
-      id: 'mock-1',
-      title: 'Cinematic Sub Bass & Organic Impact Suite 01',
-      description:
-        'Handcrafted analog sub-drops, modular brass hits, and acoustic impact textures designed for high-tension cinematic trailers. Includes 24 uncompressed stems at 48kHz / 24-bit.',
-      categories: { slug: 'sfx', name: 'ANALOG SFX', color: '#00FF41' },
-      file_format: 'wav',
-      file_size: 142_000_000,
-      license: 'MIT',
-      scheduled_for: '2026-10-02T14:00:00.000Z',
-      download_count: 842,
-      compatible_software: ['Adobe Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Reaper'],
-    };
-    upcomingDrops = [
-      {
-        id: 'mock-2',
-        title: 'Kodak 5219 500T Cine Emulation LUT',
-        categories: { slug: 'luts', name: 'COLOR LUT', color: '#FFB000' },
-        scheduled_for: '2026-10-03T14:00:00.000Z',
-      },
-      {
-        id: 'mock-3',
-        title: 'Kinetic 3D Typography Rigs v2',
-        categories: { slug: 'animations', name: '3D KINETICS', color: '#00FF41' },
-        scheduled_for: '2026-10-04T14:00:00.000Z',
-      },
-      {
-        id: 'mock-4',
-        title: 'Commercial Production Retainer & NDA Kit',
-        categories: { slug: 'contracts', name: 'CONTRACT SPEC', color: '#FFB000' },
-        scheduled_for: '2026-10-05T14:00:00.000Z',
-      },
-    ];
-    pastDrops = [
-      {
-        id: 'mock-5',
-        title: 'Kodak 5219 500T Cine Grade',
-        categories: { slug: 'luts', name: 'COLOR LUT', color: '#FFB000' },
-        file_format: 'cube',
-        file_size: 1_200_000,
-        license: 'CC-0',
-        download_count: 3340,
-      },
-      {
-        id: 'mock-6',
-        title: 'Vintage 16mm Grain Overlays 4K',
-        categories: { slug: 'overlays', name: 'OVERLAYS', color: '#8A8A8E' },
-        file_format: 'mov',
-        file_size: 450_000_000,
-        license: 'MIT',
-        download_count: 1240,
-      },
-      {
-        id: 'mock-7',
-        title: 'Glitch Transition Stems Vol.3',
-        categories: { slug: 'sfx', name: 'ANALOG SFX', color: '#00FF41' },
-        file_format: 'wav',
-        file_size: 78_000_000,
-        license: 'MIT',
-        download_count: 980,
-      },
-      {
-        id: 'mock-8',
-        title: 'Minimal Anamorphic Lower Thirds',
-        categories: { slug: 'overlays', name: 'OVERLAYS', color: '#8A8A8E' },
-        file_format: 'mogrt',
-        file_size: 24_000_000,
-        license: 'MIT',
-        download_count: 672,
-      },
-      {
-        id: 'mock-9',
-        title: 'Arri Alexa 35 Film Matrix LUT',
-        categories: { slug: 'luts', name: 'COLOR LUT', color: '#FFB000' },
-        file_format: 'cube',
-        file_size: 2_400_000,
-        license: 'CC-0',
-        download_count: 2150,
-      },
-      {
-        id: 'mock-10',
-        title: 'Mechanical Typewriter Stems (40 Takes)',
-        categories: { slug: 'sfx', name: 'ANALOG SFX', color: '#00FF41' },
-        file_format: 'wav',
-        file_size: 18_000_000,
-        license: 'MIT',
-        download_count: 540,
-      },
-      {
-        id: 'mock-11',
-        title: 'Optical Flare Leak Transitions',
-        categories: { slug: 'overlays', name: 'OVERLAYS', color: '#8A8A8E' },
-        file_format: 'mov',
-        file_size: 320_000_000,
-        license: 'CC-0',
-        download_count: 1530,
-      },
-      {
-        id: 'mock-12',
-        title: 'Commercial Master Retainer 2025',
-        categories: { slug: 'contracts', name: 'CONTRACT SPEC', color: '#FFB000' },
-        file_format: 'docx',
-        file_size: 2_000_000,
-        license: 'MIT',
-        download_count: 2100,
-      },
-    ];
-    totalDrops = 48;
-    totalUsers = 2480;
+    liveDrop = EDITX_VAULT_CATALOG.find(d => d.is_live && new Date(d.scheduled_for) <= new Date()) || EDITX_VAULT_CATALOG[0];
+    
+    upcomingDrops = EDITX_VAULT_CATALOG
+      .filter(d => !d.is_live && new Date(d.scheduled_for) > new Date())
+      .sort((a, b) => new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime())
+      .slice(0, 3);
+      
+    pastDrops = EDITX_VAULT_CATALOG
+      .filter(d => d.is_live && d.id !== liveDrop.id)
+      .sort((a, b) => new Date(b.scheduled_for).getTime() - new Date(a.scheduled_for).getTime())
+      .slice(0, 12);
+      
+    totalDrops = EDITX_VAULT_CATALOG.length;
+    totalUsers = 0; // Removing fake user counts
   }
 
   return (
@@ -250,7 +139,7 @@ export default async function HomePage() {
               </h2>
             </div>
             <div className="flex items-center gap-2 text-[10px] font-mono text-[#FFFFFF] uppercase tracking-widest font-bold">
-              <span className="w-1.5 h-1.5 bg-[#FF4400] animate-pulse" />
+              <span className="w-1.5 h-1.5 bg-[#00FF41] animate-pulse" />
               AVAILABLE NOW
             </div>
           </div>
@@ -371,34 +260,7 @@ export default async function HomePage() {
         </StaggerContainer>
       </section>
 
-      {/* ================================================================
-          TESTIMONIALS: TYPEWRITER OPERATOR LOGS
-      ================================================================ */}
-      <section className="border-t border-[#2A2A2C] bg-[#08080A]">
-        <div className="max-w-[1280px] mx-auto px-5 lg:px-8 py-14 sm:py-16">
-          <MotionFade>
-            <div className="flex items-center justify-between mb-8 pb-3 border-b border-[#2A2A2C]">
-              <div>
-                <span className="font-mono text-[9px] tracking-[0.2em] text-[#8A8A8E] uppercase block mb-1">
-                  OPERATOR TELEMETRY // PRODUCTION REVIEWS
-                </span>
-                <h2 className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F5F5] uppercase tracking-tight">
-                  FROM THE COMMUNITY
-                </h2>
-              </div>
-              <span className="font-mono text-[9px] text-[#FF9E1B] uppercase tracking-widest font-bold">
-                VERIFIED CREDENTIALS
-              </span>
-            </div>
-          </MotionFade>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(({ quote, name, role }) => (
-              <TypewriterQuote key={name} quote={quote} name={name} role={role} />
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

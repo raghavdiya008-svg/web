@@ -93,7 +93,7 @@ function LutComparisonPreview() {
         style={{ width: `${sliderPos}%` }}
       >
         <div className="w-[320px] sm:w-[380px] h-full bg-gradient-to-r from-[#2A1605] via-[#4A2608] to-[#113123] flex flex-col justify-end p-2.5">
-          <span className="font-mono text-[7px] font-extrabold text-[#FF4400] bg-[#0A0A0C]/90 px-1 py-0.5 border border-[#FF4400]/40 uppercase tracking-wider self-start">
+          <span className="font-mono text-[7px] font-extrabold text-[#00FF41] bg-[#0A0A0C]/90 px-1 py-0.5 border border-[#00FF41]/40 uppercase tracking-wider self-start">
             KODAK 5219 GRADE
           </span>
         </div>
@@ -151,8 +151,8 @@ function AudioCategoryPreview({ isHovered }: { isHovered: boolean }) {
       {/* TOP STATUS */}
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0A0A0C]/90 border border-[#2A2A2C]">
-          <Activity size={10} className="text-[#FF4400]" />
-          <span className="font-mono text-[8px] text-[#FF4400] font-bold uppercase tracking-wider">
+          <Activity size={10} className="text-[#00FF41]" />
+          <span className="font-mono text-[8px] text-[#00FF41] font-bold uppercase tracking-wider">
             {isHovered ? 'AUDITIONING STEM...' : '24-BIT / 48kHz'}
           </span>
         </div>
@@ -167,7 +167,7 @@ function AudioCategoryPreview({ isHovered }: { isHovered: boolean }) {
               key={i}
               className={cn(
                 'w-1 transition-all duration-100',
-                isHovered ? 'bg-[#FF4400] shadow-[0_0_6px_#FF4400]' : 'bg-[#2A2A30]'
+                isHovered ? 'bg-[#00FF41] shadow-[0_0_6px_#00FF41]' : 'bg-[#2A2A30]'
               )}
               style={{ height: `${isHovered ? h : 25}%` }}
             />
@@ -187,12 +187,12 @@ function ContractCategoryPreview() {
   return (
     <div className="relative h-32 bg-[#070709] border-b border-[#2A2A2C] overflow-hidden p-3 font-mono select-none flex flex-col justify-between">
       <div className="space-y-1">
-        <div className="flex items-center gap-1.5 text-[8px] text-[#FF4400] font-bold pb-1 border-b border-[#1A1A1E]">
+        <div className="flex items-center gap-1.5 text-[8px] text-[#00FF41] font-bold pb-1 border-b border-[#1A1A1E]">
           <FileText size={10} />
           <span>PRODUCTION MASTER SPECIFICATION // MIT LICENSE</span>
         </div>
         <div className="text-[7.5px] text-[#8A8A8E] leading-relaxed pt-1 space-y-0.5">
-          <p className="text-[#FF4400]/90">01 // EDITX MASTER COMMERCIAL RETAINER & NDA</p>
+          <p className="text-[#00FF41]/90">01 // EDITX MASTER COMMERCIAL RETAINER & NDA</p>
           <p>02 // SEC. 4.1: WORLDWIDE IRREVOCABLE COMMERCIAL GRANT</p>
           <p className="text-[#525256]">03 // SEC. 4.2: UNRESTRICTED DERIVATIVES & BROADCAST RIGHTS...</p>
         </div>
@@ -200,7 +200,7 @@ function ContractCategoryPreview() {
 
       <div className="flex items-center justify-between text-[7px] text-[#525256] border-t border-[#18181C] pt-1">
         <span>STATUS: LEGAL SIGN-OFF VERIFIED</span>
-        <span className="text-[#FF4400]">DOCX / PDF</span>
+        <span className="text-[#00FF41]">DOCX / PDF</span>
       </div>
     </div>
   );
@@ -216,20 +216,20 @@ function KineticCategoryPreview({ isHovered }: { isHovered: boolean }) {
       <div className="relative w-20 h-20 flex items-center justify-center">
         <div
           className={cn(
-            'absolute inset-0 rounded-full border border-[#FF4400]/30 transition-all duration-500',
-            isHovered && 'scale-110 border-[#FF4400]/60 shadow-[0_0_12px_rgba(255,68,0,0.3)]'
+            'absolute inset-0 rounded-full border border-[#00FF41]/30 transition-all duration-500',
+            isHovered && 'scale-110 border-[#00FF41]/60 shadow-[0_0_12px_rgba(255,68,0,0.3)]'
           )}
         />
         <div className="absolute w-12 h-12 rounded-full border border-dashed border-[#8A8A8E]/40 animate-spin" style={{ animationDuration: '8s' }} />
-        <div className="w-4 h-4 bg-[#FF4400]/20 border border-[#FF4400] flex items-center justify-center">
-          <span className="w-1.5 h-1.5 bg-[#FF4400] animate-pulse" />
+        <div className="w-4 h-4 bg-[#00FF41]/20 border border-[#00FF41] flex items-center justify-center">
+          <span className="w-1.5 h-1.5 bg-[#00FF41] animate-pulse" />
         </div>
       </div>
 
       <div className="absolute bottom-2 left-3 font-mono text-[7px] text-[#8A8A8E] uppercase tracking-wider">
         60 FPS KINETIC VECTOR
       </div>
-      <div className="absolute bottom-2 right-3 font-mono text-[7px] text-[#FF4400] uppercase tracking-wider">
+      <div className="absolute bottom-2 right-3 font-mono text-[7px] text-[#00FF41] uppercase tracking-wider">
         {isHovered ? 'ACTIVE LOOP' : 'READY'}
       </div>
     </div>
