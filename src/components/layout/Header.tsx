@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { isSfxMuted, toggleSfx, subscribeSfxChange, playClick, playHoverTick } from '@/lib/audio/soundFx';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 const NAV_LINKS = [
   { href: '/vault', label: 'VAULT ARCHIVE' },
@@ -99,18 +100,21 @@ export function Header() {
           </nav>
 
           {/* DESKTOP CTA & HARDWARE SFX TOGGLE */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             {/* HARDWARE SFX TOGGLE SWITCH */}
             <button
               onClick={handleToggleSfx}
               onMouseEnter={() => playHoverTick()}
               aria-label={muted ? 'Unmute studio SFX' : 'Mute studio SFX'}
               title={muted ? 'Enable tactile sound FX' : 'Mute sound FX'}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-[9px] font-mono font-bold tracking-[0.16em] uppercase border border-[#27272A] bg-[#0E0E11] hover:border-[#FFFFFF] text-[#FFFFFF] transition-all select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+              className="inline-flex items-center gap-2 px-2.5 py-1 text-[9px] font-mono font-bold tracking-[0.16em] uppercase border border-[#27272A] bg-[#0E0E11] hover:border-[#FFFFFF] text-[#FFFFFF] transition-all select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
             >
               <span className={muted ? 'w-1.5 h-1.5 bg-[#52525B]' : 'w-1.5 h-1.5 bg-[#FFFFFF] animate-pulse'} />
-              <span>AUDIO: {muted ? 'OFF' : 'ON'}</span>
+              <span>SFX: {muted ? 'OFF' : 'ON'}</span>
             </button>
+
+            {/* DAY / NIGHT THEME SWITCHER */}
+            <ThemeToggle />
 
             <Link
               href="/vault"
@@ -124,7 +128,7 @@ export function Header() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playClick()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-bold tracking-[0.16em] uppercase border border-[#FFFFFF] text-[#000000] bg-[#FFFFFF] hover:bg-[#E4E4E7] transition-all duration-150"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-[0.16em] uppercase border border-[#FFFFFF] text-[#000000] bg-[#FFFFFF] hover:bg-[#E4E4E7] transition-all duration-150"
             >
               COMMUNITY ↗
             </a>
@@ -132,6 +136,7 @@ export function Header() {
 
           {/* MOBILE CONTROLS */}
           <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
             <button
               onClick={handleToggleSfx}
               aria-label={muted ? 'Unmute studio SFX' : 'Mute studio SFX'}
