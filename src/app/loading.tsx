@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-6 bg-[#070708]">
+    <div className="flex-1 min-h-[60vh] flex items-center justify-center p-6 bg-[#070708]">
       <div className="flex flex-col items-center gap-4">
         <div className="w-8 h-8 border-2 border-[#27272A] border-t-[#FFFFFF] animate-spin rounded-none" />
         <div className="flex items-center gap-2">

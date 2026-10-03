@@ -14,7 +14,7 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-6 bg-[#070708]">
+    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-[#070708] overflow-hidden">
       <div className="max-w-md w-full metal-chassis p-8 border border-[#1F1F24] space-y-6">
         <div className="flex items-center justify-between pb-3 border-b border-[#1F1F24]">
           <div className="flex items-center gap-2">
