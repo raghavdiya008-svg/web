@@ -17,9 +17,10 @@ interface FeaturedDropProps {
     license?: string;
     categories?: { name?: string };
   };
+  session?: any;
 }
 
-export function FeaturedDrop({ drop }: FeaturedDropProps) {
+export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
   const [downloadError, setDownloadError] = useState(false);
