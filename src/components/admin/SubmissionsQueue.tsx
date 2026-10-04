@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Check, X, ExternalLink, Clock, MessageSquare, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils/cn';
+import { getCategoryBadgeClasses } from '@/lib/utils/categoryColor';
 
 export interface SubmissionItem {
   id: string;
@@ -132,12 +134,10 @@ export function SubmissionsQueue({ initialSubmissions }: SubmissionsQueueProps) 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <span
-                      className="font-mono text-[10px] px-2 py-0.5 border rounded-[2px] uppercase"
-                      style={{
-                        borderColor: `${item.category_color || '#06B6D4'}40`,
-                        color: item.category_color || '#06B6D4',
-                        backgroundColor: `${item.category_color || '#06B6D4'}10`,
-                      }}
+                      className={cn(
+                        'font-mono text-[10px] px-2 py-0.5 border rounded-[2px] uppercase',
+                        getCategoryBadgeClasses(item.category_name || item.category_color)
+                      )}
                     >
                       {item.category_name}
                     </span>

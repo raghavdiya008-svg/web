@@ -1,19 +1,31 @@
 {
   "mcpServers": {
+    "21st": {
+      "command": "npx",
+      "args": ["-y", "@21st-dev/magic@latest"]
+    },
     "figma": {
       "command": "npx",
-      "args": ["-y", "@figma/mcp-server"],
+      "args": ["-y", "figma-developer-mcp@latest"],
       "env": {
-        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}"
+        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}",
+        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
       }
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp-server"]
+      "args": ["-y", "@playwright/mcp@latest"]
     },
-    "vercel": {
+    "context7": {
       "command": "npx",
-      "args": ["-y", "@vercel/mcp-server"]
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "v0": {
+      "command": "npx",
+      "args": ["-y", "v0-mcp-server@latest"],
+      "env": {
+        "V0_API_KEY": "${V0_API_KEY}"
+      }
     }
   }
 }

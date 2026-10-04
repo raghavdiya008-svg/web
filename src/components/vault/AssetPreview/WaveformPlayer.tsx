@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, Pause } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
 import { playClick, playHoverTick } from '@/lib/audio/soundFx';
 import { useSmpteTimecode } from '@/hooks/useSmpteTimecode';
@@ -25,8 +25,8 @@ export function WaveformPlayer({
   const [progress, setProgress] = useState(25);
   const [hoverPos, setHoverPos] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'analyser' | 'spectrogram'>('analyser');
+  const prefersReduced = useReducedMotion();
   
-  // Clean shared SMPTE hook
   const timecode = useSmpteTimecode(0, 0, 14, 21);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -37,24 +37,21 @@ export function WaveformPlayer({
   const animFrameRef = useRef<number | null>(null);
   const isPlayingRef = useRef(false);
 
-  // Sync ref
   useEffect(() => {
     isPlayingRef.current = isPlaying;
     onPlayStateChange?.(isPlaying);
   }, [isPlaying, onPlayStateChange]);
 
-  // Timeline scrubber progress when playing
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isPlaying) {
+    if (isPlaying && !prefersReduced) {
       interval = setInterval(() => {
         setProgress((prev) => (prev >= 100 ? 0 : prev + 0.8));
       }, 100);
     }
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, prefersReduced]);
 
-  // Stop audio synthesis
   const stopAudio = useCallback(() => {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
@@ -70,7 +67,6 @@ export function WaveformPlayer({
     setIsPlaying(false);
   }, []);
 
-  // Audio Context cleanup on unmount - prevents audio node leaks
   useEffect(() => {
     return () => {
       stopAudio();
@@ -81,7 +77,6 @@ export function WaveformPlayer({
     };
   }, [stopAudio]);
 
-  // Dynamic canvas resize with ResizeObserver
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -101,7 +96,6 @@ export function WaveformPlayer({
     return () => resizeObserver.disconnect();
   }, [height]);
 
-  // Canvas drawing loop with real AnalyserNode frequency data mirrored top & bottom
   const drawAnalyser = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -114,12 +108,11 @@ export function WaveformPlayer({
 
     const render = () => {
       if (!isPlayingRef.current) return;
-      animFrameRef.current = requestAnimationFrame(render);
+      if (!prefersReduced) animFrameRef.current = requestAnimationFrame(render);
 
       if (analyser) {
         analyser.getByteFrequencyData(dataArray);
       } else {
-        // Fallback procedural animation
         for (let i = 0; i < bufferLength; i++) {
           dataArray[i] = Math.floor(60 + Math.random() * 140);
         }
@@ -131,8 +124,7 @@ export function WaveformPlayer({
 
       ctx.clearRect(0, 0, width, canvasHeight);
 
-      // Background subtle grid lines
-      ctx.strokeStyle = 'rgba(31, 31, 36, 0.6)';
+      ctx.strokeStyle = 'rgba(179, 179, 186, 0.4)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, centerY);
@@ -145,33 +137,28 @@ export function WaveformPlayer({
       const barWidth = Math.max(2, (width - totalSpacing) / numBars);
 
       for (let i = 0; i < numBars; i++) {
-        const val = dataArray[i] / 255; // 0.0 to 1.0
+        const val = dataArray[i] / 255;
         const barHeight = Math.max(3, val * (centerY - 4));
         const x = i * (barWidth + barSpacing);
 
-        // Vivid Orange (#FF4400) / Titanium contrast gradient
         const grad = ctx.createLinearGradient(x, centerY - barHeight, x, centerY + barHeight);
-        grad.addColorStop(0, '#FF4400');
-        grad.addColorStop(0.5, 'rgba(255, 68, 0, 0.35)');
-        grad.addColorStop(1, '#FF4400');
+        grad.addColorStop(0, 'var(--color-accent)');
+        grad.addColorStop(0.5, 'transparent');
+        grad.addColorStop(1, 'var(--color-accent)');
 
         ctx.fillStyle = grad;
-        ctx.shadowColor = '#FF4400';
+        ctx.shadowColor = 'var(--color-accent)';
         ctx.shadowBlur = val > 0.7 ? 8 : 2;
 
-        // Top bar (mirrored)
         ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
-        // Bottom bar (mirrored)
         ctx.fillRect(x, centerY, barWidth, barHeight);
       }
-
       ctx.shadowBlur = 0;
     };
 
     render();
-  }, []);
+  }, [prefersReduced]);
 
-  // Web Audio synthesizer trigger
   const startAudio = useCallback(() => {
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -185,40 +172,34 @@ export function WaveformPlayer({
         ctx.resume();
       }
 
-      // Analyser Node
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 64;
       analyser.smoothingTimeConstant = 0.8;
       analyserRef.current = analyser;
 
-      // Complex cinematic braam / synth hit generator
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const subOsc = ctx.createOscillator();
       const gain = ctx.createGain();
       const filter = ctx.createBiquadFilter();
 
-      // Dual detuned saw for cinematic trailer grit
       osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(55, ctx.currentTime); // A1
+      osc1.frequency.setValueAtTime(55, ctx.currentTime);
       osc1.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 3.0);
 
       osc2.type = 'sawtooth';
       osc2.frequency.setValueAtTime(55.8, ctx.currentTime);
       osc2.frequency.exponentialRampToValueAtTime(32.4, ctx.currentTime + 3.0);
 
-      // Deep sub bass sine
       subOsc.type = 'sine';
       subOsc.frequency.setValueAtTime(45, ctx.currentTime);
       subOsc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 3.0);
 
-      // Low pass filter envelope
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(450, ctx.currentTime);
       filter.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 3.0);
       filter.Q.value = 4.5;
 
-      // Gain envelope
       gain.gain.setValueAtTime(0.3, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3.2);
 
@@ -249,7 +230,6 @@ export function WaveformPlayer({
         drawAnalyser();
       }, 20);
     } catch (e) {
-      console.error(e);
       setIsPlaying(true);
     }
   }, [drawAnalyser]);
@@ -264,95 +244,69 @@ export function WaveformPlayer({
   };
 
   return (
-    <div
-      className={cn(
-        'metal-chassis p-5 space-y-4 border border-[#1F1F24] shadow-[0_4px_16px_rgba(0,0,0,0.85)]',
-        className
-      )}
-    >
-      {/* MASTER TRANSPORT TOP BAR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#1F1F24]">
+    <div className={cn('metal-chassis p-5 space-y-4 border border-border shadow-md', className)}>
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border">
         <div className="flex items-center gap-3">
-          <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
+          <span className="w-1.5 h-1.5 bg-primary" />
           <div className="flex items-center gap-2">
-            <span className={cn('w-2 h-2 rounded-full transition-all', isPlaying ? 'bg-[#FF4400] animate-pulse' : 'bg-[#FFFFFF]')} />
-            <span className="font-mono text-[9px] font-extrabold text-[#FFFFFF] tracking-[0.18em] uppercase">
+            <span className={cn('w-2 h-2 rounded-full transition-all', isPlaying ? 'bg-accent animate-pulse' : 'bg-primary')} />
+            <span className="font-mono text-[12px] font-extrabold text-primary uppercase">
               DAW AUDIO ENGINE // 24-BIT STEMS
             </span>
           </div>
-          <span className="text-[#27272A]">/</span>
-          <span className="font-mono text-[8px] text-[#A1A1AA] uppercase tracking-[0.14em]">
-            {isPlaying ? 'ENGINE ACTIVE [LIVE ANALYSER]' : 'STANDBY [SCRUB MODE]'}
+          <span className="text-border">/</span>
+          <span className="font-mono text-[12px] text-muted uppercase">
+            {isPlaying ? 'ENGINE ACTIVE' : 'STANDBY'}
           </span>
         </div>
 
-        {/* VIEW MODE & SMPTE TIMECODE */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center border border-[#1F1F24] bg-[#0E0E12] p-0.5">
+          <div className="flex items-center border border-border bg-surface p-0.5">
             <button
-              onClick={() => {
-                playClick();
-                setViewMode('analyser');
-              }}
+              onClick={() => { playClick(); setViewMode('analyser'); }}
               onMouseEnter={() => playHoverTick()}
               className={cn(
-                'px-3 py-0.5 font-mono text-[9px] font-bold tracking-[0.15em] uppercase transition-colors',
-                viewMode === 'analyser'
-                  ? 'bg-[#18181B] text-[#FFFFFF] border border-[#27272A]'
-                  : 'text-[#A1A1AA] hover:text-[#FFFFFF]'
+                'px-3 py-0.5 font-mono text-[12px] font-bold uppercase transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent',
+                viewMode === 'analyser' ? 'bg-surface-elevated text-primary border border-border' : 'text-muted hover:text-primary'
               )}
             >
               Waveform
             </button>
             <button
-              onClick={() => {
-                playClick();
-                setViewMode('spectrogram');
-              }}
+              onClick={() => { playClick(); setViewMode('spectrogram'); }}
               onMouseEnter={() => playHoverTick()}
               className={cn(
-                'px-3 py-0.5 font-mono text-[9px] font-bold tracking-[0.15em] uppercase transition-colors',
-                viewMode === 'spectrogram'
-                  ? 'bg-[#18181B] text-[#FFFFFF] border border-[#27272A]'
-                  : 'text-[#A1A1AA] hover:text-[#FFFFFF]'
+                'px-3 py-0.5 font-mono text-[12px] font-bold uppercase transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent',
+                viewMode === 'spectrogram' ? 'bg-surface-elevated text-primary border border-border' : 'text-muted hover:text-primary'
               )}
             >
               Spectrogram
             </button>
           </div>
 
-          <div className="font-mono text-xs text-[#FFFFFF] bg-[#060608] px-3 py-1 border border-[#1F1F24] tabular-nums font-bold tracking-[0.15em]">
+          <div className="font-mono text-[12px] text-primary bg-background px-3 py-1 border border-border tabular-nums font-bold">
             {timecode}
           </div>
         </div>
       </div>
 
-      {/* DUAL DISPLAY & TRANSPORT TRIGGER AREA */}
-      <div className="flex items-stretch gap-4">
-        {/* HARDWARE PLAY / PAUSE TOGGLE BUTTON */}
+      <div className="flex flex-col sm:flex-row items-stretch gap-4">
         <button
           onClick={togglePlay}
           onMouseEnter={() => playHoverTick()}
           aria-label={isPlaying ? 'Pause preview audio' : 'Play preview audio'}
           className={cn(
-            'shrink-0 w-16 min-h-[96px] border bg-[#141418] flex flex-col items-center justify-center gap-2 cursor-pointer select-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
-            isPlaying
-              ? 'border-[#FF4400] text-[#FF4400] shadow-[0_0_16px_rgba(255,68,0,0.3)]'
-              : 'border-[#27272A] text-[#FFFFFF] hover:border-[#FFFFFF]'
+            'shrink-0 w-full sm:w-16 min-h-[96px] border bg-surface flex sm:flex-col items-center justify-center gap-2 cursor-pointer select-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent py-4 sm:py-0',
+            isPlaying ? 'border-accent text-accent shadow-[0_0_16px_var(--color-accent)]' : 'border-border text-primary hover:border-primary'
           )}
         >
-          <span className={cn('w-2 h-2 rounded-full', isPlaying ? 'bg-[#FF4400] animate-pulse' : 'bg-[#FFFFFF]')} />
-          {isPlaying ? (
-            <Pause size={18} className="fill-current" />
-          ) : (
-            <Play size={18} className="fill-current translate-x-0.5" />
-          )}
-          <span className="font-mono text-[8px] font-black tracking-widest uppercase">
-            {isPlaying ? 'ACTIVE' : 'AUDITION'}
+          <span className={cn('w-2 h-2 rounded-full', isPlaying ? 'bg-accent animate-pulse' : 'bg-primary')} />
+          {isPlaying ? <Pause size={18} className="fill-current" /> : <Play size={18} className="fill-current translate-x-0.5" />}
+          <span className="font-mono text-[12px] font-black uppercase">
+            {isPlaying ? 'ACTIVE' : 'PLAY'}
           </span>
         </button>
 
-        {/* SCRUBBABLE INTERACTIVE WAVEFORM & ANALYSER SCREEN */}
         <div
           ref={containerRef}
           role="slider"
@@ -386,69 +340,33 @@ export function WaveformPlayer({
             setProgress(Math.max(0, Math.min(100, newProgress)));
             playClick();
           }}
-          className="relative flex-1 min-h-[96px] bg-[#050507] border border-[#1F1F24] overflow-hidden cursor-crosshair group select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+          className="relative flex-1 min-h-[96px] bg-background border border-border overflow-hidden cursor-crosshair group select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
         >
           {viewMode === 'spectrogram' ? (
-            /* SPECTROGRAM HEAT MAP WITH SCANLINE */
             <div className="absolute inset-0 flex flex-col justify-between py-1.5 px-2 overflow-hidden">
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#FFFFFF_1px,transparent_1px)] [background-size:6px_6px]" />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(90deg, rgba(16,16,24,0.85) 0%, rgba(255,68,0,0.3) 50%, rgba(255,255,255,0.2) 100%)',
-                }}
-              />
-              <div className="absolute inset-y-0 w-28 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-scanline pointer-events-none" />
-              
-              <div className="relative z-10 flex justify-between font-mono text-[7px] text-[#A1A1AA] uppercase tracking-wider">
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(var(--color-text-primary)_1px,transparent_1px)] [background-size:6px_6px]" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(16,16,24,0.85) 0%, rgba(255,74,28,0.3) 50%, rgba(255,255,255,0.2) 100%)' }} />
+              <div className={cn("absolute inset-y-0 w-28 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none", !prefersReduced && 'animate-scanline')} />
+              <div className="relative z-10 flex justify-between font-mono text-[12px] text-muted uppercase">
                 <span>SUB 20Hz - 60Hz</span>
                 <span>MID 1.2kHz</span>
                 <span>HIGH AIR 18kHz</span>
               </div>
-              <div className="relative z-10 flex justify-between font-mono text-[7px] text-[#71717A] uppercase">
-                <span>HEAT DENSITY: -14.2 LUFS</span>
-                <span>HARMONIC RESONANCE: 98.4%</span>
-              </div>
             </div>
           ) : (
-            /* WAVEFORM / REAL-TIME ANALYSER VIEW */
             <div className="absolute inset-0 flex items-center justify-center">
               <AnimatePresence mode="wait">
                 {isPlaying ? (
-                  <motion.div
-                    key="live-canvas"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 w-full h-full flex items-center justify-center"
-                  >
+                  <motion.div key="live-canvas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 w-full h-full flex items-center justify-center">
                     <canvas ref={canvasRef} className="w-full h-full" />
                   </motion.div>
                 ) : (
-                  <motion.div
-                    key="static-waveform"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 px-3 flex items-center justify-between gap-[2px]"
-                  >
+                  <motion.div key="static-waveform" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 px-3 flex items-center justify-between gap-[2px]">
                     {Array.from({ length: 54 }).map((_, i) => {
-                      const waveH = Math.round(
-                        22 + Math.sin(i * 0.35) * 44 + Math.cos(i * 0.8) * 24
-                      );
+                      const waveH = Math.round(22 + Math.sin(i * 0.35) * 44 + Math.cos(i * 0.8) * 24);
                       const isPassed = (i / 54) * 100 <= progress;
                       return (
-                        <div
-                          key={i}
-                          className={cn(
-                            'flex-1 transition-colors duration-100',
-                            isPassed
-                              ? 'bg-[#FF4400] shadow-[0_0_4px_rgba(255,68,0,0.4)]'
-                              : 'bg-[#1C1C22]'
-                          )}
-                          style={{ height: `${Math.min(94, Math.max(12, waveH))}%` }}
-                        />
+                        <div key={i} className={cn('flex-1 transition-colors duration-100', isPassed ? 'bg-accent shadow-[0_0_4px_var(--color-accent)]' : 'bg-surface-elevated')} style={{ height: `${Math.min(94, Math.max(12, waveH))}%` }} />
                       );
                     })}
                   </motion.div>
@@ -457,22 +375,14 @@ export function WaveformPlayer({
             </div>
           )}
 
-          {/* ACTIVE PLAYHEAD */}
-          <div
-            className="absolute top-0 bottom-0 w-[2px] bg-[#FF4400] pointer-events-none transition-all duration-75 shadow-[0_0_8px_#FF4400] z-20"
-            style={{ left: `${progress}%` }}
-          >
-            <div className="absolute top-0 -left-1 w-2.5 h-2.5 bg-[#FF4400]" />
-            <div className="absolute bottom-0 -left-1 w-2.5 h-2.5 bg-[#FF4400]" />
+          <div className="absolute top-0 bottom-0 w-[2px] bg-accent pointer-events-none transition-all duration-75 shadow-[0_0_8px_var(--color-accent)] z-20" style={{ left: `${progress}%` }}>
+            <div className="absolute top-0 -left-1 w-2.5 h-2.5 bg-accent" />
+            <div className="absolute bottom-0 -left-1 w-2.5 h-2.5 bg-accent" />
           </div>
 
-          {/* HOVER SCRUB POSITION HEAD */}
           {hoverPos !== null && (
-            <div
-              className="absolute top-0 bottom-0 w-[1.5px] bg-[#FFFFFF]/70 pointer-events-none shadow-[0_0_6px_#FFFFFF] z-20"
-              style={{ left: `${hoverPos}%` }}
-            >
-              <div className="absolute -top-1 -translate-x-1/2 font-mono text-[7px] text-[#FFFFFF] bg-[#0A0A0C] px-1 border border-[#FFFFFF]">
+            <div className="absolute top-0 bottom-0 w-[1.5px] bg-primary/70 pointer-events-none shadow-[0_0_6px_var(--color-text-primary)] z-20" style={{ left: `${hoverPos}%` }}>
+              <div className="absolute -top-1 -translate-x-1/2 font-mono text-[12px] text-primary bg-background px-1 border border-primary">
                 {Math.round(hoverPos)}%
               </div>
             </div>
@@ -480,16 +390,11 @@ export function WaveformPlayer({
         </div>
       </div>
 
-      {/* HARDWARE READOUT TELEMETRY BADGES */}
-      <div className="pt-2 border-t border-[#1F1F24] flex flex-wrap items-center justify-between gap-2 text-[8px] font-mono text-[#A1A1AA]">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-[#FFFFFF] tracking-wider">
-            48KHZ · 24-BIT PCM · STEREO · MIT LICENSE
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#141417] border border-[#27272A] text-[#FF4400] font-bold">
-          <span className="w-1.5 h-1.5 bg-[#FF4400] animate-pulse" />
-          <span>⚡ EDITX SFX ENGINE #01</span>
+      <div className="pt-2 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-[12px] font-mono text-muted">
+        <span className="font-bold text-primary">48KHZ · 24-BIT PCM · MIT LICENSE</span>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-surface border border-border text-accent font-bold">
+          <span className="w-1.5 h-1.5 bg-accent animate-pulse" />
+          <span>⚡ SFX ENGINE #01</span>
         </div>
       </div>
     </div>

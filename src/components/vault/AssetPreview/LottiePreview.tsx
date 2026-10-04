@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useLottie } from 'lottie-react';
-import { Code, Eye, Layers } from 'lucide-react';
+import { Code, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { playClick, playHoverTick } from '@/lib/audio/soundFx';
+import { useReducedMotion } from 'framer-motion';
 
 const PRESETS = [
   { id: 'lower-third', label: 'LOWER THIRD', path: '/lottie/lower-third.json' },
@@ -14,79 +15,60 @@ const PRESETS = [
 interface LottiePreviewProps {
   animationUrl?: string;
   className?: string;
-  width?: number;
-  height?: number;
 }
 
 export function LottiePreview({
   animationUrl = '/lottie/minimal-loader.json',
   className,
-  width = 240,
-  height = 200,
 }: LottiePreviewProps) {
   const [activeTab, setActiveTab] = useState(PRESETS[0].id);
   const [animData, setAnimData] = useState<any>(null);
   const [showCode, setShowCode] = useState(false);
+  const prefersReduced = useReducedMotion();
 
   const currentPath = PRESETS.find((p) => p.id === activeTab)?.path || animationUrl;
 
   useEffect(() => {
+    setAnimData(null);
     const controller = new AbortController();
     fetch(currentPath, { signal: controller.signal })
       .then((res) => res.json())
-      .then((data) => {
-        setAnimData(data);
-      })
+      .then((data) => setAnimData(data))
       .catch((err) => {
-        if (err.name !== 'AbortError') {
-          console.warn('Lottie load failed:', err);
-        }
+        if (err.name !== 'AbortError') console.warn('Lottie load failed:', err);
       });
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [currentPath]);
 
   const { View } = useLottie(
     {
       animationData: animData,
-      loop: true,
-      autoplay: true,
+      loop: !prefersReduced,
+      autoplay: !prefersReduced,
     },
     { width: '100%', height: '100%' }
   );
 
   return (
-    <div
-      className={cn(
-        'metal-chassis overflow-hidden border border-[#2A2A2C] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_rgba(0,0,0,0.85)]',
-        className
-      )}
-    >
-      {/* TABS BAR (STAMPED METAL BADGE STYLING) */}
-      <div className="stamped-metal-badge p-2 flex flex-wrap items-center justify-between gap-2 border-b border-[#2A2A2C]">
+    <div className={cn('metal-chassis overflow-hidden border border-border', className)}>
+      <div className="p-2 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-elevated">
         <div className="flex items-center gap-1.5">
-          <span className="rivet" />
-          <span className="font-mono text-[9px] font-extrabold text-[#F5F5F5] uppercase tracking-[0.16em]">
+          <span className="font-mono text-[12px] font-extrabold text-primary uppercase tracking-widest">
             LOTTIE KINETICS // ENGINE-04
           </span>
         </div>
 
-        {/* PRESET SWITCHER TABS */}
-        <div className="flex items-center gap-1 bg-[#0A0A0C] p-0.5 border border-[#2A2A2C]">
+        <div className="flex items-center gap-1 bg-background p-0.5 border border-border">
           {PRESETS.map((preset) => (
             <button
               key={preset.id}
-              onClick={() => {
-                playClick();
-                setActiveTab(preset.id);
-              }}
+              onClick={() => { playClick(); setActiveTab(preset.id); }}
               onMouseEnter={() => playHoverTick()}
               className={cn(
-                'px-2.5 py-1 font-mono text-[8px] font-bold uppercase tracking-wider transition-all',
+                'px-2.5 py-1 font-mono text-[12px] font-bold uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent',
                 activeTab === preset.id
-                  ? 'bg-[#222228] text-[#FF9E1B] border border-[#FF9E1B]/50 shadow-sm'
-                  : 'text-[#8A8A8E] hover:text-[#F5F5F5]'
+                  ? 'bg-accent/10 text-accent border border-accent shadow-sm'
+                  : 'text-muted hover:text-primary'
               )}
             >
               {preset.label}
@@ -94,52 +76,48 @@ export function LottiePreview({
           ))}
         </div>
 
-        {/* CODE / PREVIEW TOGGLE */}
         <button
-          onClick={() => {
-            playClick();
-            setShowCode(!showCode);
-          }}
+          onClick={() => { playClick(); setShowCode(!showCode); }}
           onMouseEnter={() => playHoverTick()}
-          className="flex items-center gap-1 px-2 py-1 bg-[#141418] border border-[#2A2A2C] font-mono text-[8px] text-[#8A8A8E] hover:text-[#F5F5F5] uppercase"
+          className="flex items-center gap-1 px-2 py-1 bg-background border border-border font-mono text-[12px] text-muted hover:text-primary uppercase focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
         >
-          {showCode ? <Eye size={10} /> : <Code size={10} />}
+          {showCode ? <Eye size={12} /> : <Code size={12} />}
           <span>{showCode ? 'VIEW RENDER' : 'RAW JSON'}</span>
         </button>
       </div>
 
-      {/* DISPLAY SCREEN WITH LED SEGMENT STYLING */}
-      <div className="relative min-h-[200px] bg-[#060608] led-segment-display flex items-center justify-center p-6 overflow-hidden">
-        {/* DOT MATRIX BACKGROUND */}
+      <div className="relative min-h-[200px] bg-background flex items-center justify-center p-6 overflow-hidden">
         <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
 
         {showCode ? (
-          /* RAW JSON CODE PREVIEW MONOSPACE BLOCK */
-          <div className="w-full h-48 overflow-auto font-mono text-[9px] text-[#FF9E1B] bg-[#030304] p-3 border border-[#1E1E22] leading-relaxed selection:bg-[#FF9E1B]/20">
+          <div className="w-full h-48 overflow-auto font-mono text-[12px] text-accent bg-[#030304] p-3 border border-border leading-relaxed">
             <pre className="whitespace-pre-wrap">
               {animData ? JSON.stringify(animData, null, 2).slice(0, 1200) + '\n... [TRUNCATED RAW LOTTIE NODES]' : 'Loading Lottie payload...'}
             </pre>
           </div>
         ) : (
-          /* LIVE LOTTIE RENDER VIEW */
           <div className="w-48 h-48 flex items-center justify-center relative z-10">
-            {animData ? View : <span className="font-mono text-[9px] text-[#8A8A8E]">LOADING VECTORS...</span>}
+            {animData ? (
+              View
+            ) : (
+              <div className="w-full h-full border-2 border-dashed border-border rounded-full animate-spin [animation-duration:3s] flex items-center justify-center">
+                <div className="w-1/2 h-1/2 bg-muted/20 rounded-full animate-pulse" />
+              </div>
+            )}
           </div>
         )}
 
-        {/* SCANLINE / FRAME TICKS */}
-        <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t border-r border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r border-[#8A8A8E]/60 pointer-events-none" />
+        <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l border-muted/60 pointer-events-none" />
+        <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t border-r border-muted/60 pointer-events-none" />
+        <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l border-muted/60 pointer-events-none" />
+        <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r border-muted/60 pointer-events-none" />
       </div>
 
-      {/* ATTRIBUTION FOOTER BADGE */}
-      <div className="px-3 py-2 bg-[#0D0D11] border-t border-[#2A2A2C] flex items-center justify-between text-[8px] font-mono text-[#8A8A8E]">
+      <div className="px-3 py-2 bg-surface-elevated border-t border-border flex flex-col md:flex-row md:items-center justify-between text-[12px] font-mono text-muted gap-2">
         <span>60 FPS VECTOR KINETICS · ZERO RASTER PIXELS</span>
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#141418] border border-[#2A2A2C] text-[#FF9E1B] font-bold uppercase">
-          <span className="led-amber animate-pulse" />
-          <span>⚡ POWERED BY EDITX LOTTIE KINETICS PACK</span>
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-background border border-border text-accent font-bold uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          <span>⚡ LOTTIE KINETICS PACK</span>
         </div>
       </div>
     </div>

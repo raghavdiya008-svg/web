@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Save, RefreshCw, Plus, Trash2, Shield, Bell, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils/cn';
+import { getCategoryIndicatorClass } from '@/lib/utils/categoryColor';
 
 export function SettingsForm() {
   const [loading, setLoading] = useState(false);
@@ -219,7 +221,7 @@ export function SettingsForm() {
               className="flex items-center justify-between p-3 bg-[#0A0A0A] border border-[#1A1A1A] rounded-[2px]"
             >
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }} />
+                <span className={cn('w-2 h-2 rounded-full', getCategoryIndicatorClass(c.slug || c.name || c.color))} />
                 <span className="font-mono text-xs text-white">{c.name}</span>
               </div>
               <button

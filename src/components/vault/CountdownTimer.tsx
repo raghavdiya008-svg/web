@@ -66,8 +66,10 @@ export function CountdownTimer({ targetDate, className, size = 'md' }: Countdown
     <div className={cn('flex items-center gap-4', className)}>
       {/* CIRCULAR STOPWATCH DIAL (PHASE 4) */}
       <div
-        className="relative shrink-0 flex items-center justify-center bg-[#060608] border border-[#222226] shadow-[inset_0_2px_6px_rgba(0,0,0,0.95)]"
-        style={{ width: dialSize, height: dialSize }}
+        className={cn(
+          'relative shrink-0 flex items-center justify-center bg-[#060608] border border-[#222226] shadow-[inset_0_2px_6px_rgba(0,0,0,0.95)]',
+          size === 'sm' ? 'w-[68px] h-[68px]' : size === 'lg' ? 'w-[110px] h-[110px]' : 'w-[84px] h-[84px]'
+        )}
       >
         <svg
           width={dialSize}

@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { cn } from '@/lib/utils/cn';
 
 export const metadata: Metadata = {
   title: 'Asset License Reference — EditX Vault',
@@ -117,19 +118,39 @@ export default function LicensesPage() {
             className="bg-[#111111] border border-[#1A1A1A] p-6 rounded-[2px] space-y-6 relative overflow-hidden"
           >
             <div
-              className="absolute top-0 left-0 right-0 h-[1px]"
-              style={{ backgroundColor: lic.color }}
+              className={cn(
+                'absolute top-0 left-0 right-0 h-[1px]',
+                lic.id === 'MIT'
+                  ? 'bg-cyan-500'
+                  : lic.id === 'Apache-2.0'
+                  ? 'bg-violet-400'
+                  : lic.id === 'CC0'
+                  ? 'bg-emerald-400'
+                  : lic.id === 'CC-BY-4.0'
+                  ? 'bg-amber-400'
+                  : lic.id === 'OFL'
+                  ? 'bg-pink-400'
+                  : 'bg-rose-500'
+              )}
             />
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#1A1A1A]">
               <div className="flex items-center gap-3">
                 <span
-                  className="font-mono text-xs px-2 py-0.5 border rounded-[2px] uppercase"
-                  style={{
-                    borderColor: `${lic.color}40`,
-                    color: lic.color,
-                    backgroundColor: `${lic.color}10`,
-                  }}
+                  className={cn(
+                    'font-mono text-xs px-2 py-0.5 border rounded-[2px] uppercase',
+                    lic.id === 'MIT'
+                      ? 'border-cyan-500/40 text-cyan-400 bg-cyan-500/10'
+                      : lic.id === 'Apache-2.0'
+                      ? 'border-violet-500/40 text-violet-400 bg-violet-500/10'
+                      : lic.id === 'CC0'
+                      ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
+                      : lic.id === 'CC-BY-4.0'
+                      ? 'border-amber-500/40 text-amber-400 bg-amber-500/10'
+                      : lic.id === 'OFL'
+                      ? 'border-pink-500/40 text-pink-400 bg-pink-500/10'
+                      : 'border-rose-500/40 text-rose-400 bg-rose-500/10'
+                  )}
                 >
                   {lic.id}
                 </span>

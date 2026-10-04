@@ -135,17 +135,17 @@ export function Header() {
           </div>
 
           {/* MOBILE CONTROLS */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex md:hidden items-center gap-1">
             <ThemeToggle />
             <button
               onClick={handleToggleSfx}
               aria-label={muted ? 'Unmute studio SFX' : 'Mute studio SFX'}
-              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors"
+              className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#A1A1AA] hover:text-[#FFFFFF] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white rounded-[2px]"
             >
               {muted ? <VolumeX size={18} /> : <Volume2 size={18} className="text-[#FFFFFF]" />}
             </button>
             <button
-              className="p-2 text-[#8A8A8E] hover:text-[#FFFFFF] transition-colors focus-visible:ring-1 focus-visible:ring-white"
+              className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#A1A1AA] hover:text-[#FFFFFF] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white rounded-[2px]"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle navigation"
               aria-expanded={mobileOpen}

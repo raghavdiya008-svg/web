@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils/cn';
+import { getCategoryBadgeClasses } from '@/lib/utils/categoryColor';
 
 import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
 
@@ -109,12 +111,10 @@ export default function AdminDropsPage() {
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2.5">
                     <span
-                      className="font-mono text-[10px] uppercase px-1.5 py-0.5 rounded-[2px] border"
-                      style={{
-                        borderColor: `${drop.categoryColor}40`,
-                        color: drop.categoryColor,
-                        backgroundColor: `${drop.categoryColor}10`,
-                      }}
+                      className={cn(
+                        'font-mono text-[10px] uppercase px-1.5 py-0.5 rounded-[2px] border',
+                        getCategoryBadgeClasses(drop.category)
+                      )}
                     >
                       {drop.category}
                     </span>

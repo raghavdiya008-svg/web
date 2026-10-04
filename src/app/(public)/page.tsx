@@ -129,18 +129,18 @@ export default async function HomePage() {
       ================================================================ */}
       <section className="max-w-[1280px] mx-auto px-5 lg:px-8 pt-12 pb-10">
         <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-[#1F1F24]">
+          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
             <div>
-              <span className="font-mono text-[9px] tracking-[0.24em] text-[#A1A1AA] uppercase block mb-1">
-                EXHIBIT 01 // ACTIVE DROP
+              <span className="font-mono text-[12px] tracking-widest text-accent uppercase block mb-1 font-bold">
+                Daily Master Release
               </span>
-              <h2 className="font-display font-black text-3xl md:text-4xl text-[#FFFFFF] uppercase tracking-[-0.03em]">
-                TODAY&apos;S DROP
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
+                Today&apos;s Feature Drop
               </h2>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-mono text-[#FFFFFF] uppercase tracking-widest font-bold">
-              <span className="w-1.5 h-1.5 bg-[#00FF41] animate-pulse" />
-              AVAILABLE NOW
+            <div className="flex items-center gap-2 text-[12px] font-mono text-accent uppercase tracking-wider font-bold">
+              <span className="w-1.5 h-1.5 bg-green-500 animate-pulse rounded-full" />
+              Live Download
             </div>
           </div>
         </MotionFade>
@@ -150,8 +150,8 @@ export default async function HomePage() {
             <FeaturedDrop drop={liveDrop} session={session} />
           </MotionFade>
         ) : (
-          <div className="p-12 text-center border border-[#1F1F24] bg-[#0E0E11]">
-            <p className="font-mono text-xs text-[#A1A1AA] uppercase tracking-wider">
+          <div className="p-12 text-center border border-border bg-surface-elevated">
+            <p className="font-mono text-[12px] text-muted uppercase tracking-wider">
               NO ASSET CURRENTLY MOUNTED. STANDBY FOR 14:00 UTC DROP CYCLE.
             </p>
           </div>
@@ -164,17 +164,17 @@ export default async function HomePage() {
       {upcomingDrops.length > 0 && (
         <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
           <MotionFade>
-            <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-[#1F1F24]">
+            <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
               <div>
-                <span className="font-mono text-[9px] tracking-[0.24em] text-[#A1A1AA] uppercase block mb-1">
-                  EXHIBIT 02 // SCHEDULED ARCHIVE
+                <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
+                  Upcoming Pipeline
                 </span>
-                <h2 className="font-display font-black text-3xl md:text-4xl text-[#FFFFFF] uppercase tracking-[-0.03em]">
-                  NEXT IN QUEUE
+                <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
+                  Next in Queue
                 </h2>
               </div>
-              <span className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-wider">
-                14:00 UTC DAILY RELEASE
+              <span className="font-mono text-[12px] text-muted uppercase tracking-wider">
+                14:00 UTC Releases
               </span>
             </div>
           </MotionFade>
@@ -194,18 +194,18 @@ export default async function HomePage() {
       ================================================================ */}
       <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
         <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-[#1F1F24]">
+          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
             <div>
-              <span className="font-mono text-[9px] tracking-[0.24em] text-[#A1A1AA] uppercase block mb-1">
-                EXHIBIT 03 // INTERACTIVE TEST BENCH
+              <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
+                Interactive Studio
               </span>
-              <h2 className="font-display font-black text-3xl md:text-4xl text-[#FFFFFF] uppercase tracking-[-0.03em]">
-                LIVE ASSET ENGINES
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
+                Live Asset Engines
               </h2>
             </div>
-            <div className="hidden sm:flex items-center gap-2 font-mono text-[9px] text-[#A1A1AA] uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
-              <span>INTERACTIVE SANDBOX</span>
+            <div className="hidden sm:flex items-center gap-2 font-mono text-[12px] text-muted uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 bg-primary" />
+              <span>Real-time Sandbox</span>
             </div>
           </div>
         </MotionFade>
@@ -232,31 +232,36 @@ export default async function HomePage() {
       ================================================================ */}
       <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
         <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-[#1F1F24]">
+          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
             <div>
-              <span className="font-mono text-[9px] tracking-[0.24em] text-[#A1A1AA] uppercase block mb-1">
-                EXHIBIT 04 // PERMANENT INDEX
+              <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
+                Permanent Index
               </span>
-              <h2 className="font-display font-black text-3xl md:text-4xl text-[#FFFFFF] uppercase tracking-[-0.03em]">
-                PAST DROPS
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
+                Vault Archive
               </h2>
             </div>
             <Link
               href="/vault"
-              className="text-xs font-mono font-bold text-[#FFFFFF] hover:text-[#A1A1AA] transition-colors tracking-wider uppercase flex items-center gap-1.5"
+              className="text-[12px] font-mono font-bold text-primary hover:text-muted transition-colors tracking-wider uppercase flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
             >
-              FULL ARCHIVE
+              Full Archive
               <ArrowRight size={13} />
             </Link>
           </div>
         </MotionFade>
 
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <StaggerContainer className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5">
           {pastDrops.map((drop) => (
-            <StaggerItem key={drop.id}>
+            <StaggerItem key={drop.id} className="h-full">
               <DropCard drop={drop} session={session} />
             </StaggerItem>
           ))}
+          <StaggerItem className="h-full">
+            <div className="h-full min-h-[300px] border border-dashed border-border flex items-center justify-center p-6 text-center text-muted font-mono text-[12px] uppercase tracking-wider bg-surface/50">
+              More drops coming soon
+            </div>
+          </StaggerItem>
         </StaggerContainer>
       </section>
 

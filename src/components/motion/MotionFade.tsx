@@ -39,7 +39,7 @@ export function MotionFade({
     <motion.div
       initial={{ opacity: 0, x: offset.x, y: offset.y }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: '-20px' }}
+      viewport={{ once: true, amount: 0.02 }}
       transition={{
         duration: prefersReducedMotion ? 0.1 : duration,
         delay: prefersReducedMotion ? 0 : delay,
@@ -67,7 +67,7 @@ export function StaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: '-20px' }}
+      viewport={{ once: true, amount: 0.02 }}
       variants={{
         hidden: {},
         show: {

@@ -179,7 +179,7 @@ export function AnalyticsCharts() {
               {TRAFFIC_SOURCES.map((src) => (
                 <div key={src.name} className="flex items-center justify-between font-mono text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: src.color }} />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                     <span className="text-[#71717A]">{src.name}</span>
                   </div>
                   <span className="text-white font-medium">{src.value}%</span>

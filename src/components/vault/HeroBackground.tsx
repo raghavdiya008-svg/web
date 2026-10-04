@@ -78,12 +78,12 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
     const boxes: BoundingBox[] = [
       {
-        x: -420,
-        y: 60,
-        z: 460,
-        w: 150,
-        h: 80,
-        d: 120,
+        x: -720,
+        y: 260,
+        z: 520,
+        w: 180,
+        h: 90,
+        d: 140,
         label: 'OBJ_BOUNDS // AUDIO_STEM_RIG',
         rotY: 0.2,
         rotSpeed: 0.002,
@@ -151,7 +151,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         if (pNear.visible && pFar.visible) {
           const distAlpha = Math.max(0, 1 - Math.abs(i) / (numLinesX + 1));
-          ctx.strokeStyle = `rgba(${strokeBase}, ${0.16 * distAlpha})`;
+          ctx.strokeStyle = `rgba(${strokeBase}, ${0.08 * distAlpha})`;
           ctx.beginPath();
           ctx.moveTo(pNear.x, pNear.y);
           ctx.lineTo(pFar.x, pFar.y);
@@ -223,7 +223,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           [0, 4], [1, 5], [2, 6], [3, 7],
         ];
 
-        ctx.strokeStyle = `rgba(${strokeBase}, 0.28)`;
+        ctx.strokeStyle = `rgba(${strokeBase}, 0.12)`;
         ctx.lineWidth = 1;
         edges.forEach(([v1, v2]) => {
           const p1 = projVerts[v1];
@@ -238,8 +238,8 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         projVerts.forEach((pv) => {
           if (pv.visible) {
-            ctx.strokeStyle = `rgba(${strokeBase}, 0.65)`;
-            const bSize = 3;
+            ctx.strokeStyle = `rgba(${strokeBase}, 0.25)`;
+            const bSize = 2;
             ctx.beginPath();
             ctx.moveTo(pv.x - bSize, pv.y);
             ctx.lineTo(pv.x + bSize, pv.y);
@@ -251,10 +251,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
         const topCenter = projVerts[0];
         if (topCenter && topCenter.visible) {
-          ctx.font = '8px var(--font-mono, monospace)';
-          ctx.fillStyle = 'rgba(230, 230, 235, 0.4)';
-          ctx.fillText(box.label, topCenter.x - 30, topCenter.y - 8);
-          ctx.fillText(`DIM: [${box.w}x${box.h}x${box.d}]`, topCenter.x - 30, topCenter.y + 2);
+          // Debug text removed for clarity
         }
       });
 
@@ -346,11 +343,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.font = '8px var(--font-mono, monospace)';
       ctx.fillStyle = 'rgba(255, 68, 0, 0.45)';
 
-      const rawX = mouseX * 180;
-      const rawY = mouseY * -120;
-      ctx.fillText(`X: ${rawX > 0 ? '+' : ''}${rawX.toFixed(2)}`, vpX + 8, vpY - 8);
-      ctx.fillText(`Y: ${rawY > 0 ? '+' : ''}${rawY.toFixed(2)}`, vpX + 8, vpY + 16);
-      ctx.fillText('Z: 0.00', vpX + 8, vpY + 28);
+      // Coordinate text removed for clarity
 
       ctx.restore();
     };
@@ -367,8 +360,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
 
   return (
     <div
-      className={`absolute inset-0 pointer-events-none select-none overflow-hidden z-0 ${className}`}
-      style={{ opacity: 0.7 }}
+      className={`absolute inset-0 pointer-events-none select-none overflow-hidden z-0 opacity-70 ${className}`}
       aria-hidden="true"
     >
       <canvas

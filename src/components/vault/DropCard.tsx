@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Download, SlidersHorizontal, FileText, Activity, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { formatBytes } from '@/lib/utils/format';
-import { playCardHover, playSubThump, isSfxMuted } from '@/lib/audio/soundFx';
+import { playCardHover, playSubThump } from '@/lib/audio/soundFx';
 
 interface DropCardProps {
   drop: {
@@ -24,7 +24,6 @@ interface DropCardProps {
   session?: unknown;
 }
 
-// 1. LUT Category: Drag-to-Compare Before/After Split Slider with Kodak Grade
 function LutComparisonPreview() {
   const [sliderPos, setSliderPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,10 +47,7 @@ function LutComparisonPreview() {
     }
   };
 
-  const handlePointerUp = () => {
-    setIsDragging(false);
-  };
-
+  const handlePointerUp = () => setIsDragging(false);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
       e.preventDefault();
@@ -76,161 +72,115 @@ function LutComparisonPreview() {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className="relative h-32 bg-[#060608] border-b border-[#2A2A2C] overflow-hidden cursor-ew-resize select-none group/lut focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+      className="relative h-32 bg-[#060608] border-b border-border overflow-hidden cursor-ew-resize select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
     >
-      {/* BEFORE LAYER: FLAT RAW LOG */}
-      <div className="absolute inset-0 bg-[#141418] flex items-end p-2.5">
+      <div className="absolute inset-0 bg-surface flex items-end p-2.5">
         <div className="w-full h-full bg-gradient-to-r from-[#1C1C20] via-[#222226] to-[#18181C] flex flex-col justify-end">
-          <span className="font-mono text-[7px] font-bold text-[#8A8A8E] bg-[#0A0A0C]/90 px-1 py-0.5 border border-[#2A2A2C] uppercase tracking-wider self-start">
-            RAW LOG [ARRI]
+          <span className="font-mono text-[12px] font-bold text-muted bg-[#0A0A0C]/90 px-1 py-0.5 border border-border uppercase tracking-wider self-start">
+            RAW LOG
           </span>
         </div>
       </div>
 
-      {/* AFTER LAYER: KODAK 500T COLOR EMULATION (CLIPPED) */}
-      <div
-        className="absolute inset-0 overflow-hidden"
-        style={{ width: `${sliderPos}%` }}
-      >
+      <div className="absolute inset-0 overflow-hidden" style={{ width: `${sliderPos}%` }}>
         <div className="w-[320px] sm:w-[380px] h-full bg-gradient-to-r from-[#2A1605] via-[#4A2608] to-[#113123] flex flex-col justify-end p-2.5">
-          <span className="font-mono text-[7px] font-extrabold text-[#00FF41] bg-[#0A0A0C]/90 px-1 py-0.5 border border-[#00FF41]/40 uppercase tracking-wider self-start">
-            KODAK 5219 GRADE
+          <span className="font-mono text-[12px] font-extrabold text-accent bg-[#0A0A0C]/90 px-1 py-0.5 border border-accent/40 uppercase tracking-wider self-start">
+            GRADED
           </span>
         </div>
       </div>
 
-      {/* DRAG HANDLE BAR */}
       <div
-        className="absolute top-0 bottom-0 w-[2px] bg-[#F5F5F5] pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+        className="absolute top-0 bottom-0 w-[2px] bg-primary pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.7)]"
         style={{ left: `${sliderPos}%` }}
       >
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-5 bg-[#141418] border border-[#F5F5F5] flex items-center justify-center shadow-md">
-          <SlidersHorizontal size={8} className="text-[#F5F5F5]" />
+        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-6 bg-surface border border-primary flex items-center justify-center shadow-md">
+          <SlidersHorizontal size={12} className="text-primary" />
         </div>
       </div>
 
-      <div className="absolute top-2 right-2 font-mono text-[7px] text-[#8A8A8E] bg-[#0A0A0C]/90 px-1.5 py-0.5 border border-[#2A2A2C] uppercase tracking-widest pointer-events-none">
-        DRAG TO SPLIT
+      <div className="absolute top-2 right-2 font-mono text-[12px] text-muted bg-[#0A0A0C]/90 px-1.5 py-0.5 border border-border uppercase tracking-widest pointer-events-none">
+        SPLIT
       </div>
     </div>
   );
 }
 
-// 2. SFX / Audio Category: Corner Animated Frequency Bars + Waveform Texture
 function AudioCategoryPreview({ isHovered }: { isHovered: boolean }) {
   const [barHeights, setBarHeights] = useState([30, 60, 45, 80, 55, 90, 40]);
 
   useEffect(() => {
     if (!isHovered) return;
     const interval = setInterval(() => {
-      setBarHeights((prev) =>
-        prev.map(() => Math.floor(20 + Math.random() * 75))
-      );
+      setBarHeights((prev) => prev.map(() => Math.floor(20 + Math.random() * 75)));
     }, 120);
     return () => clearInterval(interval);
   }, [isHovered]);
 
   return (
-    <div className="relative h-32 bg-[#060608] border-b border-[#2A2A2C] overflow-hidden flex flex-col justify-between p-3 select-none">
-      {/* BACKGROUND WAVE PATTERN */}
+    <div className="relative h-32 bg-[#060608] border-b border-border overflow-hidden flex flex-col justify-between p-3 select-none">
       <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
-
-      {/* STATIC AUDIO OSCILLATION WAVEFORM BARS */}
       <div className="absolute inset-x-3 inset-y-6 flex items-center justify-between gap-[3px] opacity-40">
         {Array.from({ length: 32 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 bg-[#1E1E24]"
-            style={{
-              height: `${Math.round(20 + Math.sin(i * 0.4) * 35 + Math.cos(i * 0.9) * 20)}%`,
-            }}
-          />
+          <div key={i} className="flex-1 bg-[#1E1E24]" style={{ height: `${Math.round(20 + Math.sin(i * 0.4) * 35 + Math.cos(i * 0.9) * 20)}%` }} />
         ))}
       </div>
-
-      {/* TOP STATUS */}
       <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0A0A0C]/90 border border-[#2A2A2C]">
-          <Activity size={10} className="text-[#00FF41]" />
-          <span className="font-mono text-[8px] text-[#00FF41] font-bold uppercase tracking-wider">
-            {isHovered ? 'AUDITIONING STEM...' : '24-BIT / 48kHz'}
+        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-surface/90 border border-border">
+          <Activity size={12} className="text-accent" />
+          <span className="font-mono text-[12px] text-accent font-bold uppercase tracking-wider">
+            {isHovered ? 'AUDITIONING' : 'READY'}
           </span>
         </div>
-        <span className="font-mono text-[7px] text-[#8A8A8E]">STEREO PCM</span>
       </div>
-
-      {/* CORNER ANIMATED FREQUENCY BARS */}
       <div className="relative z-10 flex items-end justify-between">
-        <div className="flex items-end gap-1 h-8 px-2 py-1 bg-[#0A0A0C]/90 border border-[#2A2A2C]">
+        <div className="flex items-end gap-1 h-8 px-2 py-1 bg-surface/90 border border-border">
           {barHeights.map((h, i) => (
-            <div
-              key={i}
-              className={cn(
-                'w-1 transition-all duration-100',
-                isHovered ? 'bg-[#00FF41] shadow-[0_0_6px_#00FF41]' : 'bg-[#2A2A30]'
-              )}
-              style={{ height: `${isHovered ? h : 25}%` }}
-            />
+            <div key={i} className={cn('w-1 transition-all duration-100', isHovered ? 'bg-accent shadow-[0_0_6px_var(--color-accent)]' : 'bg-[#2A2A30]')} style={{ height: `${isHovered ? h : 25}%` }} />
           ))}
         </div>
-
-        <span className="font-mono text-[7px] text-[#525256] uppercase">
-          {isHovered ? 'PEAK: -0.2 dB' : 'PEAK: IDLE'}
-        </span>
       </div>
     </div>
   );
 }
 
-// 3. Contract / Legal Spec Category: First 3 Lines Monospace Document Preview
 function ContractCategoryPreview() {
   return (
-    <div className="relative h-32 bg-[#070709] border-b border-[#2A2A2C] overflow-hidden p-3 font-mono select-none flex flex-col justify-between">
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 text-[8px] text-[#00FF41] font-bold pb-1 border-b border-[#1A1A1E]">
-          <FileText size={10} />
-          <span>PRODUCTION MASTER SPECIFICATION // MIT LICENSE</span>
+    <div className="relative h-32 bg-[#070709] border-b border-border overflow-hidden p-3 font-mono select-none flex flex-col justify-between">
+      <div className="space-y-2">
+        <div className="flex items-center gap-1.5 text-[12px] text-accent font-bold pb-1 border-b border-[#1A1A1E]">
+          <FileText size={12} />
+          <span>DOCUMENTATION</span>
         </div>
-        <div className="text-[7.5px] text-[#8A8A8E] leading-relaxed pt-1 space-y-0.5">
-          <p className="text-[#00FF41]/90">01 // EDITX MASTER COMMERCIAL RETAINER & NDA</p>
-          <p>02 // SEC. 4.1: WORLDWIDE IRREVOCABLE COMMERCIAL GRANT</p>
-          <p className="text-[#525256]">03 // SEC. 4.2: UNRESTRICTED DERIVATIVES & BROADCAST RIGHTS...</p>
+        <div className="text-[12px] text-muted leading-relaxed pt-1 space-y-1">
+          <p className="text-accent/90">SEC. 4.1: COMMERCIAL GRANT</p>
+          <p>SEC. 4.2: UNRESTRICTED RIGHTS...</p>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between text-[7px] text-[#525256] border-t border-[#18181C] pt-1">
-        <span>STATUS: LEGAL SIGN-OFF VERIFIED</span>
-        <span className="text-[#00FF41]">DOCX / PDF</span>
       </div>
     </div>
   );
 }
 
-// 4. Lottie / Kinetic Overlays Category: Miniature Kinetic Radar Loop
 function KineticCategoryPreview({ isHovered }: { isHovered: boolean }) {
-  return (
-    <div className="relative h-32 bg-[#060608] border-b border-[#2A2A2C] overflow-hidden flex items-center justify-center p-3 select-none">
-      <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => { setIsLoaded(true); }, []);
 
-      {/* RADAR SWEEP CIRCLES */}
+  if (!isLoaded) {
+    return <div className="h-32 bg-surface animate-pulse border-b border-border" />;
+  }
+
+  return (
+    <div className="relative h-32 bg-[#060608] border-b border-border overflow-hidden flex items-center justify-center p-3 select-none">
+      <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
       <div className="relative w-20 h-20 flex items-center justify-center">
-        <div
-          className={cn(
-            'absolute inset-0 rounded-full border border-[#00FF41]/30 transition-all duration-500',
-            isHovered && 'scale-110 border-[#00FF41]/60 shadow-[0_0_12px_rgba(255,68,0,0.3)]'
-          )}
-        />
-        <div className="absolute w-12 h-12 rounded-full border border-dashed border-[#8A8A8E]/40 animate-spin" style={{ animationDuration: '8s' }} />
-        <div className="w-4 h-4 bg-[#00FF41]/20 border border-[#00FF41] flex items-center justify-center">
-          <span className="w-1.5 h-1.5 bg-[#00FF41] animate-pulse" />
+        <div className={cn('absolute inset-0 rounded-full border border-accent/30 transition-all duration-500', isHovered && 'scale-110 border-accent/60 shadow-[0_0_12px_var(--color-accent)]')} />
+        <div className="absolute w-12 h-12 rounded-full border border-dashed border-muted/40 animate-spin [animation-duration:8s]" />
+        <div className="w-4 h-4 bg-accent/20 border border-accent flex items-center justify-center">
+          <span className="w-1.5 h-1.5 bg-accent animate-pulse" />
         </div>
       </div>
-
-      <div className="absolute bottom-2 left-3 font-mono text-[7px] text-[#8A8A8E] uppercase tracking-wider">
-        60 FPS KINETIC VECTOR
-      </div>
-      <div className="absolute bottom-2 right-3 font-mono text-[7px] text-[#00FF41] uppercase tracking-wider">
-        {isHovered ? 'ACTIVE LOOP' : 'READY'}
+      <div className="absolute bottom-2 right-3 font-mono text-[12px] text-accent uppercase tracking-wider">
+        {isHovered ? 'ACTIVE' : 'READY'}
       </div>
     </div>
   );
@@ -253,59 +203,21 @@ export function DropCard({ drop }: DropCardProps) {
   const isSfx = categorySlug === 'sfx' || drop.file_format?.toLowerCase() === 'wav';
   const isContract = categorySlug === 'contracts' || drop.file_format?.toLowerCase() === 'docx';
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    playCardHover();
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
+  const handleMouseEnter = () => { setIsHovered(true); playCardHover(); };
+  const handleMouseLeave = () => { setIsHovered(false); };
 
   const handleToggleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     playSubThump();
     setDownloadState('extracting');
 
     try {
       const downloadUrl = `/api/download?dropId=${drop.id}`;
       const res = await fetch(downloadUrl);
-      if (!res.ok) {
-        let msg = `Server returned ${res.status}`;
-        try {
-          const errData = await res.json();
-          if (errData?.error) msg = errData.error;
-        } catch {}
-        throw new Error(msg);
-      }
-
-      const contentType = res.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        const data = await res.json();
-        if (data.url) {
-          const a = document.createElement('a');
-          a.href = data.url;
-          a.download = data.filename || `${drop.title}.${drop.file_format || 'zip'}`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setDownloadState('complete');
-          return;
-        }
-        throw new Error(data.error || 'Download URL missing');
-      }
-
-      // Direct binary file stream from server (ZIP/WAV/CUBE/PDF)
+      if (!res.ok) throw new Error('Download failed');
       const blob = await res.blob();
-      const disposition = res.headers.get('content-disposition') || '';
-      let filename = `${drop.title}.${drop.file_format || 'zip'}`;
-      const filenameMatch = disposition.match(/filename="?([^"]+)"?/);
-      if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1];
-      }
-
+      const filename = `${drop.title}.${drop.file_format || 'zip'}`;
       const blobUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = blobUrl;
@@ -314,21 +226,14 @@ export function DropCard({ drop }: DropCardProps) {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(blobUrl);
-
       setDownloadState('complete');
     } catch (err) {
-      console.error('Download error:', err);
       setDownloadState('error');
     } finally {
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-      resetTimerRef.current = setTimeout(() => {
-        setDownloadState('idle');
-      }, 4000);
+      resetTimerRef.current = setTimeout(() => setDownloadState('idle'), 4000);
     }
   };
-
-  // Signal meters scaled properly
-  const signalHeights = ['h-[4px]', 'h-[6px]', 'h-[8px]', 'h-[10px]', 'h-[12px]'];
 
   return (
     <div
@@ -336,27 +241,18 @@ export function DropCard({ drop }: DropCardProps) {
       onMouseLeave={handleMouseLeave}
       className={cn(
         'group relative metal-chassis flex flex-col justify-between overflow-hidden transition-all duration-200 h-full border rounded-[2px]',
-        isHovered
-          ? 'border-[#52525B] light:border-[#111113] shadow-lg'
-          : 'border-[#1F1F24] light:border-[#E2E2E6] hover:border-[#3F3F46] light:hover:border-[#A1A1AA]'
+        isHovered ? 'border-muted shadow-lg' : 'border-border hover:border-border-hover'
       )}
     >
-      {/* CARD HEADER: EDITORIAL INDEX HEADER */}
-      <div className="px-4 py-2.5 bg-[#141417] light:bg-[#F4F4F6] flex items-center justify-between border-b border-[#1F1F24] light:border-[#E2E2E6]">
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 bg-[#FFFFFF] light:bg-[#111113]" />
-          <span className="font-mono text-[9px] font-bold text-[#FFFFFF] light:text-[#111113] tracking-[0.2em] uppercase">
-            REF-{drop.id.slice(-4).toUpperCase()}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[8px] text-[#A1A1AA] light:text-[#71717A] uppercase tracking-widest font-semibold">
-            EDITION 01
-          </span>
-        </div>
+      <div className="px-4 py-3 bg-surface flex items-center justify-between border-b border-border">
+        <span className="font-mono text-[12px] text-primary tracking-widest uppercase">
+          REF-{drop.id.slice(-4).toUpperCase()}
+        </span>
+        <span className="font-mono text-[12px] font-bold text-muted uppercase tracking-widest px-2 py-0.5 border border-border bg-surface-elevated">
+          {categoryName}
+        </span>
       </div>
 
-      {/* CATEGORY-SPECIFIC LIVE DEMO */}
       {isLut ? (
         <LutComparisonPreview />
       ) : isSfx ? (
@@ -367,88 +263,44 @@ export function DropCard({ drop }: DropCardProps) {
         <KineticCategoryPreview isHovered={isHovered} />
       )}
 
-      {/* CARD BODY */}
-      <div className="p-4 space-y-4 flex-1 flex flex-col justify-between bg-[#0C0C0F] light:bg-[#FFFFFF]">
-        {/* CATEGORY & FORMAT ROW */}
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[8px] font-bold text-[#FFFFFF] light:text-[#111113] uppercase tracking-[0.16em] px-1.5 py-0.5 border border-[#27272A] light:border-[#E2E2E6] bg-[#16161A] light:bg-[#F4F4F6]">
-            {categoryName}
-          </span>
-          <span className="font-mono text-[9px] font-semibold text-[#A1A1AA] light:text-[#71717A] uppercase tracking-[0.12em]">
-            {drop.file_format || 'ZIP'}
-            {drop.file_size ? ` · ${formatBytes(drop.file_size)}` : ''}
-          </span>
-        </div>
-
-        {/* TITLE */}
-        <div>
-          <h3 className="font-display font-extrabold text-base text-[#FFFFFF] light:text-[#111113] uppercase tracking-[-0.02em] leading-snug line-clamp-2">
+      <div className="p-4 space-y-4 flex-1 flex flex-col justify-between bg-surface">
+        <div className="space-y-1">
+          <h3 
+            title={drop.title} 
+            className="font-display font-bold text-base text-primary tracking-tight leading-snug line-clamp-2 text-balance"
+          >
             {drop.title}
           </h3>
-          <p className="font-mono text-[8px] text-[#71717A] uppercase tracking-[0.14em] mt-1.5">
-            LICENSE: {drop.license || 'MIT'} · VERIFIED MASTER
+          <p className="text-[14px] text-secondary">
+            {drop.file_format || 'ZIP'} {drop.file_size ? `· ${formatBytes(drop.file_size)}` : ''} · {drop.license || 'MIT'}
           </p>
         </div>
 
-        {/* ACTION ROW */}
-        <div className="pt-3 border-t border-[#1F1F24] space-y-2.5">
-          <div className="flex items-center justify-between gap-3">
-            {/* SIGNAL STRENGTH FILL BAR WITH REAL INCREMENTAL HEIGHT */}
-            <div className="flex items-center gap-1.5">
-              <span className="font-mono text-[7px] text-[#71717A] uppercase tracking-wider">
-                SIG
-              </span>
-              <div className="flex items-end gap-0.5 h-3">
-                {signalHeights.map((hClass, idx) => (
-                  <span
-                    key={idx}
-                    className={cn(
-                      'w-1 transition-all duration-150',
-                      hClass,
-                      isHovered ? 'bg-[#FFFFFF]' : 'bg-[#27272A]'
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* ACTION BUTTON */}
-            <button
-              onClick={handleToggleClick}
-              disabled={downloadState === 'extracting'}
-              aria-label={`Download ${drop.title}`}
-              className={cn(
-                'px-3.5 py-1.5 font-mono text-[9px] font-bold tracking-[0.16em] uppercase flex items-center gap-1.5 border rounded-[2px] cursor-pointer select-none transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
-                downloadState === 'idle' &&
-                  'bg-[#FFFFFF] dark:bg-[#FFFFFF] light:bg-[#111113] text-[#000000] dark:text-[#000000] light:text-[#FFFFFF] border-transparent hover:opacity-90 active:scale-95 shadow-sm',
-                downloadState === 'extracting' &&
-                  'bg-[#A1A1AA] text-[#000000] border-transparent',
-                downloadState === 'complete' &&
-                  'bg-[#00FF41] text-[#000000] border-transparent',
-                downloadState === 'error' &&
-                  'bg-[#EF4444] text-[#FFFFFF] border-transparent'
-              )}
-            >
-              {downloadState === 'extracting' ? (
-                <span className="animate-pulse">EXTRACTING...</span>
-              ) : downloadState === 'complete' ? (
-                <>
-                  <span className="w-1.5 h-1.5 bg-[#000000]" />
-                  SAVED
-                </>
-              ) : downloadState === 'error' ? (
-                <>
-                  <AlertCircle size={11} className="stroke-[2.5]" />
-                  FAILED
-                </>
-              ) : (
-                <>
-                  <Download size={11} className="stroke-[2.5]" />
-                  GET DROP
-                </>
-              )}
-            </button>
-          </div>
+        <div className="pt-3 border-t border-border">
+          <button
+            onClick={handleToggleClick}
+            disabled={downloadState === 'extracting'}
+            aria-label={`Download ${drop.title}`}
+            className={cn(
+              'w-full py-2.5 font-mono text-[12px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 border rounded-[2px] cursor-pointer select-none transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent',
+              downloadState === 'idle' && 'bg-primary text-black border-transparent hover:opacity-90 active:scale-95 shadow-sm',
+              downloadState === 'extracting' && 'bg-muted text-black border-transparent',
+              downloadState === 'complete' && 'bg-accent text-black border-transparent',
+              downloadState === 'error' && 'bg-red-500 text-white border-transparent'
+            )}
+          >
+            {downloadState === 'extracting' ? (
+              <span className="animate-pulse">EXTRACTING...</span>
+            ) : downloadState === 'complete' ? (
+              <>SAVED</>
+            ) : downloadState === 'error' ? (
+              <>FAILED</>
+            ) : (
+              <>
+                <Download size={14} className="stroke-[2]" /> GET DROP
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

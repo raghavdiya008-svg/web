@@ -48,27 +48,23 @@ export function LutSlider({
   return (
     <div
       className={cn(
-        'metal-chassis overflow-hidden select-none border border-[#2A2A2C] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_rgba(0,0,0,0.85)]',
+        'metal-chassis overflow-hidden select-none border border-border shadow-md',
         className
       )}
     >
-      {/* CHASSIS HEADER */}
-      <div className="stamped-metal-badge px-3 py-2 flex items-center justify-between border-b border-[#2A2A2C]">
+      <div className="px-3 py-2 flex items-center justify-between border-b border-border bg-surface-elevated">
         <div className="flex items-center gap-2">
-          <span className="rivet" />
-          <span className="font-mono text-[9px] font-black text-[#F5F5F5] tracking-[0.18em] uppercase">
+          <span className="font-mono text-[12px] font-black text-primary tracking-widest uppercase">
             LUT COLOR ENGINE // CANISTER #03
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-[8px] text-[#FF9E1B] uppercase tracking-wider font-bold">
+        <div className="hidden sm:flex items-center gap-2">
+          <span className="font-mono text-[12px] text-accent uppercase tracking-wider font-bold">
             33x33x33 3D CUBE
           </span>
-          <span className="rivet" />
         </div>
       </div>
 
-      {/* INTERACTIVE COMPARISON SCREEN */}
       <div
         ref={containerRef}
         role="slider"
@@ -92,9 +88,8 @@ export function LutSlider({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        className="relative aspect-video w-full bg-[#050507] overflow-hidden cursor-ew-resize group/lut focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+        className="relative aspect-video w-full bg-background overflow-hidden cursor-ew-resize group/lut focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
       >
-        {/* BASE LAYER: FLAT UNGRADED LOG STILL (S-LOG3 / ARRI RAW) */}
         <div className="absolute inset-0 w-full h-full">
           {beforeUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -105,12 +100,10 @@ export function LutSlider({
               style={{ filter: 'saturate(0.35) contrast(0.65) brightness(1.15)' }}
             />
           ) : (
-            /* HIGH RESOLUTION PROCEDURAL CINEMATIC SCENE STILL */
             <div
               className="w-full h-full flex flex-col justify-between p-6 pointer-events-none"
               style={{
-                background:
-                  'radial-gradient(ellipse at 70% 30%, #4A4A52 0%, #2A2A30 40%, #141418 80%, #0A0A0C 100%)',
+                background: 'radial-gradient(ellipse at 70% 30%, #4A4A52 0%, #2A2A30 40%, #141418 80%, #0A0A0C 100%)',
                 filter: 'saturate(0.35) contrast(0.68) brightness(1.1)',
               }}
             >
@@ -119,7 +112,6 @@ export function LutSlider({
           )}
         </div>
 
-        {/* TOP LAYER: GRADED STILL WITH CSS CLIP-PATH */}
         <div
           className="absolute inset-0 w-full h-full pointer-events-none"
           style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
@@ -135,8 +127,7 @@ export function LutSlider({
             <div
               className="w-full h-full flex flex-col justify-between p-6 lut-graded pointer-events-none"
               style={{
-                background:
-                  'radial-gradient(ellipse at 70% 30%, #D4883B 0%, #87411E 40%, #1B352E 80%, #080D0B 100%)',
+                background: 'radial-gradient(ellipse at 70% 30%, #D4883B 0%, #87411E 40%, #1B352E 80%, #080D0B 100%)',
               }}
             >
               <div className="w-48 h-32 rounded bg-gradient-to-tr from-[#5E2B0C] to-[#C97828] opacity-80 border border-amber-500/20" />
@@ -144,48 +135,45 @@ export function LutSlider({
           )}
         </div>
 
-        {/* RETICLE OVERLAY & FILM SPROCKET TICKS */}
         <div className="absolute inset-0 bg-dot-matrix-fine opacity-20 pointer-events-none" />
-        <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#8A8A8E]/60 pointer-events-none" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#8A8A8E]/60 pointer-events-none" />
+        <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-muted/60 pointer-events-none" />
+        <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-muted/60 pointer-events-none" />
+        <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-muted/60 pointer-events-none" />
+        <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-muted/60 pointer-events-none" />
 
-        {/* DYNAMIC TOP BADGE (FLIPPING OR HIGHLIGHTING MIDPOINT) */}
         <div className="absolute top-3 left-3 z-10 pointer-events-none">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#0A0A0C]/90 border border-[#2A2A2C] font-mono text-[8px] tracking-[0.14em] uppercase backdrop-blur-sm shadow-sm">
-            <span className={cn('font-bold', position > 50 ? 'text-[#8A8A8E]' : 'text-[#F5F5F5]')}>
-              FLAT LOG / S-LOG3
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-background/90 border border-border font-mono text-[12px] tracking-wider uppercase backdrop-blur-sm shadow-sm">
+            <span className={cn('font-bold', position > 50 ? 'text-muted' : 'text-primary')}>
+              LOG
             </span>
-            <span className="text-[#3E3E44]">|</span>
-            <span className={cn('font-bold', position <= 50 ? 'text-[#8A8A8E]' : 'text-[#FFB000]')}>
-              KODAK 5219 GRADE ▶
+            <span className="text-border">|</span>
+            <span className={cn('font-bold', position <= 50 ? 'text-muted' : 'text-accent')}>
+              5219 ▶
             </span>
           </div>
         </div>
 
-        {/* DRAG DIVIDER LINE & RIVET HANDLE */}
         <div
-          className="absolute top-0 bottom-0 w-[2px] bg-[#F5F5F5] pointer-events-none shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20"
+          className="absolute top-0 bottom-0 w-[2px] bg-primary pointer-events-none shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20"
           style={{ left: `${position}%` }}
         >
-          {/* HARDWARE HANDLE WITH RIVET HEAD */}
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-9 bg-[#18181D] border border-[#F5F5F5] flex flex-col items-center justify-center gap-1 shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-            <span className="rivet" />
-            <SlidersHorizontal size={10} className="text-[#F5F5F5]" />
-            <span className="rivet" />
+          <div className="absolute top-2 -translate-x-1/2 left-1/2 px-1.5 py-0.5 bg-background border border-primary font-mono text-[12px] font-bold text-primary tracking-wider whitespace-nowrap shadow-md">
+            {position}%
+          </div>
+
+          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-10 bg-surface-elevated border border-primary flex flex-col items-center justify-center gap-1 shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+            <SlidersHorizontal size={14} className="text-primary" />
           </div>
         </div>
       </div>
 
-      {/* CHASSIS FOOTER WITH HARDWARE ATTRIBUTION BADGE */}
-      <div className="px-3.5 py-2.5 bg-[#0D0D11] border-t border-[#2A2A2C] flex flex-wrap items-center justify-between gap-2">
-        <div className="font-mono text-[8px] text-[#8A8A8E] uppercase tracking-wider">
-          SPLIT: {position}% | 14-STOP DYNAMIC RANGE PRESERVED
+      <div className="px-3.5 py-2.5 bg-surface border-t border-border flex flex-col md:flex-row items-center justify-between gap-2">
+        <div className="font-mono text-[12px] text-muted uppercase tracking-wider">
+          SPLIT: {position}% | 14-STOP DYNAMIC RANGE
         </div>
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#141418] border border-[#2A2A2C] font-mono text-[8px] text-[#FFB000] font-bold uppercase tracking-wider">
-          <span className="led-amber" />
-          <span>⚡ GRADED WITH EDITX LUT CANISTER #03 — KODAK 5219 500T EMULATION</span>
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-background border border-border font-mono text-[12px] text-accent font-bold uppercase tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          <span>⚡ GRADED WITH EDITX KODAK 5219</span>
         </div>
       </div>
     </div>

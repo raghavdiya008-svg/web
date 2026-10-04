@@ -40,10 +40,10 @@ export function CategoryFilter({ activeCategory = 'all' }: { activeCategory?: st
             onClick={() => handleSelect(cat.slug)}
             aria-pressed={isActive}
             className={cn(
-              'px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] whitespace-nowrap transition-all duration-150 border cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00FF41] active:translate-y-0.5',
+              'px-3 py-1.5 font-mono text-[12px] uppercase tracking-normal whitespace-nowrap transition-all duration-150 border cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent active:translate-y-0.5',
               isActive
-                ? 'bg-[#00FF41] border-[#00FF41] text-[#0A0A0C] font-extrabold shadow-[0_0_10px_rgba(0,255,65,0.3)]'
-                : 'bg-[#111114] border-[#2A2A2C] text-[#8A8A8E] hover:text-[#F5F5F5] hover:border-[#3E3E44] hover:bg-[#18181D]'
+                ? 'bg-accent border-accent text-[#0A0A0C] font-extrabold shadow-[0_0_10px_rgba(255,74,28,0.3)]'
+                : 'bg-surface border-border text-muted hover:text-primary hover:border-border-hover hover:bg-surface-elevated'
             )}
           >
             {cat.label}

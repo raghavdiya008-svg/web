@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { Play, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils/cn';
 import { HeroBackground } from './HeroBackground';
 
 interface HeroSectionProps {
@@ -19,7 +20,6 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
     50, 68, 82, 60, 92, 75, 96, 65, 52, 80, 86, 62, 70, 88, 95, 58
   ]);
 
-  // Real-time audio spectrum movement with hardware Peak-Hold markers synchronized via RAF
   useEffect(() => {
     if (prefersReduced) return;
 
@@ -35,12 +35,11 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             return Math.max(12, Math.min(98, Math.round(val + delta)));
           });
 
-          // Compute peak holds with decay
           setPeakLevels((prevPeaks) =>
             prevPeaks.map((peak, idx) => {
               const current = next[idx];
               if (current >= peak) return current;
-              return Math.max(12, Math.round(peak - 1.8)); // Slow gravity drop
+              return Math.max(12, Math.round(peak - 1.8));
             })
           );
 
@@ -54,7 +53,6 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
     return () => cancelAnimationFrame(animId);
   }, [prefersReduced]);
 
-  // Dynamic Year.Month edition string (hydration safe)
   const [editionString, setEditionString] = useState('2026.10');
   useEffect(() => {
     const d = new Date();
@@ -63,219 +61,151 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
   }, []);
 
   return (
-    <section className="relative flex flex-col justify-between border-b border-[#1F1F24] light:border-[#E4E4E7] overflow-hidden bg-[#070708] light:bg-[#FAFAFA] transition-colors duration-200">
-      {/* CAD BLUEPRINT & TELEMETRY VIEWPORT */}
+    <section className="relative flex flex-col justify-between border-b border-border overflow-hidden bg-background transition-colors duration-200">
       <HeroBackground />
 
-      {/* AMBIENT LIGHT FIELD */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-white/[0.015] light:bg-black/[0.015] blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-white/[0.015] blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-8 pt-8 pb-10 sm:pt-12 sm:pb-12 flex-1 flex flex-col justify-center z-10">
         
-        {/* TOP STATUS BAR */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-[#0E0E11] light:bg-[#FFFFFF] border border-[#1F1F24] light:border-[#E4E4E7] shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#FFFFFF] light:bg-[#000000] animate-pulse" />
-            <span className="font-mono text-[9px] tracking-[0.2em] text-[#A1A1AA] light:text-[#71717A] uppercase font-semibold">
+          <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-surface border border-border shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="font-mono text-[12px] tracking-[0.2em] text-muted uppercase font-semibold">
               INDEX // DAILY PRODUCTION ASSETS
             </span>
-            <span className="text-[#27272A] light:text-[#D4D4D8]">/</span>
-            <span className="font-mono text-[9px] text-[#FFFFFF] light:text-[#09090B] tracking-[0.16em] uppercase font-bold">
+            <span className="text-border">/</span>
+            <span className="font-mono text-[12px] text-primary tracking-[0.16em] uppercase font-bold">
               EDITION {editionString}
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-
-          {/* LEFT 7 COLS — SWISS BRUTALIST HEADLINE & MANIFESTO */}
           <div className="lg:col-span-7 space-y-6">
-            
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#FF4400]" />
-                <span className="font-mono text-[10px] tracking-[0.3em] text-[#A1A1AA] light:text-[#71717A] uppercase font-bold">
-                  CURATED REPOSITORY FOR EDITORS & 3D ARTISTS
+                <span className="w-2 h-2 bg-accent" />
+                <span className="font-mono text-[12px] tracking-[0.25em] text-muted uppercase font-bold">
+                  PRECISION REPOSITORY // ZERO PAYWALLS
                 </span>
               </div>
-              <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-[#FFFFFF] light:text-[#09090B] uppercase tracking-[-0.045em] leading-[0.88] text-balance">
+              <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary tracking-tight leading-[0.92] text-balance">
                 PRECISION<br />
                 TOOLS FOR<br />
-                <span className="text-[#A1A1AA] light:text-[#71717A]">CREATORS.</span>
+                <span className="text-muted">CREATORS.</span>
               </h1>
             </div>
 
-            <p className="text-base sm:text-lg text-[#A1A1AA] light:text-[#52525B] max-w-xl leading-relaxed text-pretty font-body font-normal">
-              Tactile audio stems, 35mm film grains, color-science LUTs, and motion geometry packs.
-              Zero friction, zero paywalls. Published daily at 14:00 UTC.
+            <p className="text-base sm:text-lg text-muted max-w-xl leading-relaxed text-pretty font-body font-normal">
+              Curated analog audio stems, 35mm film grains, color-science LUTs, and motion geometry packs.
+              Open-source licenses for editors, animators, and sound designers.
             </p>
 
-            {/* ACTION TRIGGERS */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 href="/today"
-                className="px-8 py-4 bg-[#FFFFFF] dark:bg-[#FFFFFF] light:bg-[#111113] text-[#000000] dark:text-[#000000] light:text-[#FFFFFF] font-mono text-xs font-black uppercase tracking-[0.18em] border border-transparent light:border-[#111113] hover:opacity-90 active:scale-95 transition-all inline-flex items-center gap-2.5 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
+                className="px-8 py-4 bg-primary text-black font-mono text-[13px] font-black uppercase tracking-[0.18em] border border-transparent hover:opacity-90 active:scale-95 transition-all inline-flex items-center gap-2.5 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
               >
-                <Play size={12} className="fill-current" />
+                <Play size={14} className="fill-current" />
                 ACCESS TODAY&apos;S DROP
               </Link>
 
               <Link
                 href="/vault"
-                className="px-8 py-4 bg-[#0E0E11] dark:bg-[#0E0E11] light:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#FFFFFF] light:text-[#111113] font-mono text-xs font-bold uppercase tracking-[0.18em] border border-[#27272A] light:border-[#E2E2E6] hover:border-[#FFFFFF] light:hover:border-[#111113] hover:bg-[#18181B] light:hover:bg-[#F0F0F2] transition-all inline-flex items-center gap-2 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
+                className="px-8 py-4 bg-surface text-primary font-mono text-[13px] font-bold uppercase tracking-[0.18em] border border-border hover:border-primary hover:bg-surface-elevated transition-all inline-flex items-center gap-2 shadow-sm focus-visible:ring-1 focus-visible:ring-current"
               >
                 ARCHIVE REEL
-                <ArrowRight size={13} />
+                <ArrowRight size={14} />
               </Link>
             </div>
-
           </div>
 
-          {/* RIGHT 5 COLS — CLEAN SLEEK SIGNAL MONITOR */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          <div className="lg:col-span-5 flex flex-col justify-between hidden sm:flex">
             <div className="metal-chassis p-6 space-y-5 h-full flex flex-col justify-between">
-              
-              {/* UNIT HEADER */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#1F1F24] light:border-[#E2E2E6]">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[#FFFFFF] light:bg-[#111113]" />
-                  <span className="font-mono text-[9px] font-bold text-[#FFFFFF] light:text-[#111113] tracking-[0.2em] uppercase">
-                    AUDIO TELEMETRY // REALTIME
+                  <span className="w-1.5 h-1.5 bg-primary" />
+                  <span className="font-mono text-[12px] font-bold text-primary tracking-[0.2em] uppercase">
+                    AUDIO TELEMETRY
                   </span>
                 </div>
-                <span className="font-mono text-[8px] text-[#A1A1AA] light:text-[#71717A] uppercase tracking-[0.16em]">
+                <span className="font-mono text-[12px] text-muted uppercase tracking-[0.16em]">
                   48kHz / 24-BIT
                 </span>
               </div>
 
-              {/* REAL-TIME SPECTRUM */}
-              <div className="p-4 bg-[#070708] light:bg-[#F4F4F6] border border-[#1F1F24] light:border-[#E2E2E6] space-y-3 flex-1 flex flex-col justify-between min-h-[140px] rounded-[2px]">
-                <div className="flex items-center justify-between text-[8px] font-mono text-[#52525B] light:text-[#71717A] uppercase tracking-[0.18em]">
+              <div className="p-4 bg-background border border-border space-y-3 flex-1 flex flex-col justify-between min-h-[140px] rounded-[2px]">
+                <div className="flex items-center justify-between text-[12px] font-mono text-muted uppercase tracking-[0.18em]">
                   <span>SPECTRUM [20Hz - 22kHz]</span>
-                  <span className="text-[#00FF41] font-bold">LIVE SIGNAL</span>
+                  <span className="text-accent font-bold">LIVE SIGNAL</span>
                 </div>
 
-                <div className="h-28 flex items-end gap-1.5 px-1 bg-[#050506] light:bg-[#FFFFFF] border border-[#16161A] light:border-[#E2E2E6] p-2 relative rounded-[1px]">
+                <div className="h-28 flex items-end gap-1.5 px-1 bg-surface border border-border p-2 relative rounded-[1px]">
                   {vuLevels.map((lvl, idx) => {
                     const peak = peakLevels[idx] || lvl;
                     const isPeak = lvl > 85;
                     const isMid = lvl > 60;
                     return (
                       <div key={idx} className="flex-1 flex flex-col justify-end h-full relative">
-                        {/* Peak marker */}
                         <div
-                          className="absolute w-full h-[1.5px] bg-[#FFFFFF] light:bg-[#111113] transition-all duration-100 z-10"
-                          style={{
-                            bottom: `${peak}%`,
-                          }}
+                          className="absolute w-full h-[1.5px] bg-primary transition-all duration-100 z-10"
+                          style={{ bottom: `${peak}%` }}
                         />
-
-                        {/* VU Bar */}
                         <div
-                          className="w-full transition-all duration-100 ease-out"
-                          style={{
-                            height: `${lvl}%`,
-                            backgroundColor: isPeak ? '#FF4400' : isMid ? '#FFFFFF' : '#3F3F46',
-                          }}
+                          className={cn(
+                            'w-full transition-all duration-100 ease-out',
+                            isPeak ? 'bg-accent' : isMid ? 'bg-primary' : 'bg-border'
+                          )}
+                          style={{ height: `${lvl}%` }}
                         />
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="flex justify-between font-mono text-[7px] text-[#52525B] light:text-[#71717A] uppercase tracking-wider">
+                <div className="flex justify-between font-mono text-[10px] text-muted uppercase tracking-wider">
                   <span>-48dB</span>
                   <span>-24dB</span>
                   <span>-12dB</span>
-                  <span>-6dB</span>
-                  <span className="text-[#FFFFFF] light:text-[#111113] font-bold">0dB</span>
-                  <span className="text-[#FF4400] font-bold">+3dB</span>
+                  <span className="text-primary font-bold">0dB</span>
+                  <span className="text-accent font-bold">+3dB</span>
                 </div>
               </div>
 
-              {/* FOOTER */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#1F1F24] light:border-[#E2E2E6] text-[8px] font-mono text-[#A1A1AA] light:text-[#71717A]">
+              <div className="flex items-center justify-between pt-2 border-t border-border text-[12px] font-mono text-muted">
                 <span className="tracking-[0.16em] uppercase">SMPTE TIMECODE SYNCED</span>
-                <span className="tracking-[0.16em] uppercase text-[#00FF41] font-bold">ACTIVE BUS</span>
+                <span className="tracking-[0.16em] uppercase text-accent font-bold">ACTIVE BUS</span>
               </div>
-
             </div>
           </div>
-
         </div>
 
-        {/* ============================================================
-            HIGH-CONTRAST STATS GRID WITH DYNAMIC OBSERVER COUNTER
-            ============================================================ */}
-        <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#1F1F24] divide-y md:divide-y-0 md:divide-x divide-[#1F1F24] bg-[#0E0E11]">
-          
-          {/* STAT 1: STORED ASSETS */}
-          <div className="p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[9px] tracking-[0.22em] text-[#A1A1AA] uppercase font-bold">
-                01 // ARCHIVED PACKS
-              </span>
-              <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
-            </div>
-            <div className="py-1 flex items-baseline gap-2">
-              <span className="font-mono text-5xl sm:text-6xl lg:text-7xl font-black text-[#FFFFFF] tracking-tight tabular-nums">
-                {totalDrops > 0 ? totalDrops : 48}
-              </span>
-              <span className="font-mono text-3xl font-extrabold text-[#71717A]">
-                +
+        <div className="pt-8 border-t border-border flex flex-wrap items-center justify-between gap-6 font-mono text-[12px]">
+          <div className="flex items-center gap-6 text-muted">
+            <div className="flex items-center gap-2">
+              <span className="text-primary font-bold uppercase tracking-wider">
+                {totalDrops > 0 ? totalDrops : 3} PACKS · 100% FREE
               </span>
             </div>
-            <div className="pt-3 border-t border-[#1F1F24] flex items-center justify-between font-mono text-[8px] text-[#71717A] uppercase tracking-[0.16em]">
-              <span>STATUS: UNLOCKED</span>
-              <span className="text-[#FFFFFF]">100% FREE</span>
+            <span className="text-border">/</span>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-primary font-bold uppercase tracking-wider">
+                14:00 UTC DAILY DROP
+              </span>
             </div>
           </div>
 
-          {/* STAT 2: ACTIVE OPERATORS */}
-          <div className="p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[9px] tracking-[0.22em] text-[#A1A1AA] uppercase font-bold">
-                02 // COMMUNITY MEMBERS
-              </span>
-              <span className="w-1.5 h-1.5 bg-[#FFFFFF] animate-pulse" />
-            </div>
-            <div className="py-1 flex items-baseline gap-1">
-              <span className="font-mono text-5xl sm:text-6xl lg:text-7xl font-black text-[#FFFFFF] tracking-tight tabular-nums">
-                {totalUsers.toLocaleString()}
-              </span>
-            </div>
-            <div className="pt-3 border-t border-[#1F1F24] flex items-center justify-between font-mono text-[8px] text-[#71717A] uppercase tracking-[0.16em]">
-              <span>REGISTERED OPERATORS</span>
-              <span className="text-[#FFFFFF]">TELEMETRY LIVE</span>
-            </div>
+          <div className="flex items-center gap-2 text-[12px] text-muted tracking-widest uppercase">
+            <span>STUDIO HARDWARE PIPELINE</span>
+            <span className="text-green-500">● ONLINE</span>
           </div>
-
-          {/* STAT 3: DROP CLOCK */}
-          <div className="p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[9px] tracking-[0.22em] text-[#A1A1AA] uppercase font-bold">
-                03 // DAILY CADENCE
-              </span>
-              <span className="w-1.5 h-1.5 bg-[#FF4400]" />
-            </div>
-            <div className="py-1 flex items-baseline gap-1">
-              <span className="font-mono text-5xl sm:text-6xl lg:text-7xl font-black text-[#FFFFFF] tracking-tight tabular-nums">
-                14:00
-              </span>
-            </div>
-            <div className="pt-3 border-t border-[#1F1F24] flex items-center justify-between font-mono text-[8px] text-[#71717A] uppercase tracking-[0.16em]">
-              <span>SYNCHRONIZED RELEASE</span>
-              <span className="text-[#FF4400]">UTC DAILY</span>
-            </div>
-          </div>
-
         </div>
-
       </div>
 
-      {/* ASSET SYSTEM WATERMARK BADGE */}
-      <div className="absolute bottom-3 right-4 z-20 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1 bg-[#0E0E11] border border-[#1F1F24] font-mono text-[9px] text-[#A1A1AA] uppercase tracking-wider">
-        <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
+      <div className="absolute bottom-3 right-4 z-20 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1 bg-surface border border-border font-mono text-[12px] text-muted uppercase tracking-wider">
+        <span className="w-1.5 h-1.5 bg-primary" />
         <span>SYSTEM VERSION {editionString}</span>
       </div>
     </section>
