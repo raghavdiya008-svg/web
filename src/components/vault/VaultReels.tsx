@@ -163,7 +163,7 @@ export function VaultReels({ initialAssets }: VaultReelsProps) {
                           24-Bit / 48kHz Master Waveform
                         </span>
                         <button
-                          onClick={() => handleAudioToggle(asset.id, '/media/EditX_Trailer_Braam_Low_Impact.wav')}
+                          onClick={() => handleAudioToggle(asset.id, asset.preview_audio || '/media/EditX_Trailer_Braam_Low_Impact.wav')}
                           className="flex items-center gap-2 px-3 py-1 rounded bg-macbeth-cyan/20 text-macbeth-cyan border border-macbeth-cyan/30 text-xs font-semibold hover:bg-macbeth-cyan/30 transition-colors"
                         >
                           {playingAudioId === asset.id ? (
@@ -202,20 +202,20 @@ export function VaultReels({ initialAssets }: VaultReelsProps) {
 
                       <div className="flex items-center justify-between text-[11px] text-paper-muted">
                         <span>Frequency Range: 20Hz – 22kHz</span>
-                        <span>0:04.2 / Stereo WAV</span>
+                        <span>48kHz Master / 16-Bit WAV</span>
                       </div>
                     </div>
                   ) : isGrain ? (
                     /* GRAIN & MATTE REEL */
                     <div className="h-36 w-full relative flex items-center justify-center bg-zinc-900 rounded overflow-hidden">
                       <img
-                        src="/media/EditX_4K_Matte_2.39_Anamorphic_Scope.png"
-                        alt="Cinema scope matte"
+                        src={asset.preview_image || '/media/EditX_4K_Matte_2.39_Anamorphic_Scope.png'}
+                        alt={asset.title}
                         className="w-full h-full object-cover opacity-80"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span className="text-xs font-medium text-paper px-3 py-1 bg-black/70 rounded">
-                          4K UHD Alpha Matte (2.39:1 Scope)
+                          {asset.title}
                         </span>
                       </div>
                     </div>

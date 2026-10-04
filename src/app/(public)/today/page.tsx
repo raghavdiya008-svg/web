@@ -10,8 +10,14 @@ export const metadata: Metadata = {
     'Download the Kodak Vision3 5219 33-point 3D LUT suite. Tested and calibrated for DaVinci Resolve and Adobe Premiere Pro.',
 };
 
-export default function TodayDropPage() {
-  const asset = EDITX_VAULT_CATALOG[0];
+export default function TodayDropPage({
+  searchParams,
+}: {
+  searchParams?: { id?: string };
+}) {
+  const asset =
+    (searchParams?.id && EDITX_VAULT_CATALOG.find((a) => a.id === searchParams.id)) ||
+    EDITX_VAULT_CATALOG[0];
 
   return (
     <div className="w-full min-h-screen bg-suite text-paper pt-24 pb-28">
@@ -81,20 +87,20 @@ export default function TodayDropPage() {
               </div>
               <div className="flex justify-between">
                 <span>Download Size:</span>
-                <span className="text-paper font-medium">366.2 KB</span>
+                <span className="text-paper font-medium">{(asset.file_size / 1024).toFixed(1)} KB</span>
               </div>
               <div className="flex justify-between">
                 <span>License:</span>
-                <span className="text-paper font-medium">CC0 1.0 Universal</span>
+                <span className="text-paper font-medium">{asset.license}</span>
               </div>
             </div>
 
             <a
-              href="/api/download?dropId=v-02"
+              href={`/api/download?dropId=${asset.id}`}
               className="w-full py-3.5 bg-paper text-monitor text-center font-bold text-sm rounded hover:bg-white transition-colors flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
-              Download LUT Suite (.zip)
+              Download {asset.title}
             </a>
             <span className="text-[11px] text-paper-muted text-center">
               Verified package with SHA-256 integrity check.

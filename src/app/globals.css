@@ -58,9 +58,16 @@ html.lenis, html.lenis body {
 
 body {
   background-color: var(--suite);
+  /* Calibrated Optical Bias Lighting (Warm 6500K smooth diffuse vignette falloff) */
+  background-image: 
+    radial-gradient(ellipse 90% 60% at 50% 20%, #68686C 0%, rgba(90, 90, 92, 0) 75%),
+    radial-gradient(ellipse 100% 70% at 50% 100%, #404042 0%, rgba(90, 90, 92, 0) 70%),
+    linear-gradient(180deg, #5A5A5C 0%, #48484A 100%);
+  background-attachment: fixed;
   color: var(--paper);
   font-family: var(--font-archivo), system-ui, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  min-height: 100vh;
 }
 
 /* Tabular figures for timecode, byte sizes, and precision readouts */

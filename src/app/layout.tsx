@@ -100,7 +100,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="bg-suite text-paper antialiased selection:bg-tally/30 selection:text-paper min-h-screen flex flex-col relative"
+        className="text-paper antialiased selection:bg-tally/30 selection:text-paper min-h-screen flex flex-col relative"
       >
         <Providers>
           {children}

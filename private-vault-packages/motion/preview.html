@@ -2,24 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>EditX Kinetic Rig Preview</title>
+<title>EditX Kinetic Rigs Preview</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
 <style>
-  body { background: #0A0A0C; color: #FFF; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-  #lottie-box { width: 700px; height: 400px; border: 1px solid #1F1F24; background: #000; }
-  h2 { letter-spacing: 0.1em; color: #00FF41; text-transform: uppercase; font-size: 14px; margin-bottom: 20px; }
+  body { background: #0A0A0C; color: #FFF; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+  .box { width: 640px; height: 360px; border: 1px solid #1F1F24; background: #000; margin-bottom: 20px; }
+  h2 { letter-spacing: 0.1em; color: #00E5FF; text-transform: uppercase; font-size: 13px; }
 </style>
 </head>
 <body>
 <h2>// EDITX KINETIC LOWER THIRD RIG //</h2>
-<div id="lottie-box"></div>
-<p style="color: #888; font-size: 11px; margin-top: 15px;">Compatible with After Effects (Bodymovin), Premiere Pro MOGRT, and Web Lottie.</p>
+<div id="lottie1" class="box"></div>
+<h2>// EDITX SOCIAL CREATOR CALLOUT RIG //</h2>
+<div id="lottie2" class="box"></div>
 <script>
-  fetch('EditX_Kinetic_Lower_Third_Rig.json')
-    .then(r => r.json())
-    .then(data => {
-      lottie.loadAnimation({ container: document.getElementById('lottie-box'), renderer: 'svg', loop: true, autoplay: true, animationData: data });
-    });
+  lottie.loadAnimation({ container: document.getElementById('lottie1'), renderer: 'svg', loop: true, autoplay: true, path: 'EditX_Kinetic_Lower_Third_Rig.json' });
+  lottie.loadAnimation({ container: document.getElementById('lottie2'), renderer: 'svg', loop: true, autoplay: true, path: 'EditX_Social_Creator_Callout_Rig.json' });
 </script>
 </body>
 </html>

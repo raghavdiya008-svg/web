@@ -1,18 +1,14 @@
-# NON-DISCLOSURE & CONFIDENTIALITY AGREEMENT (NDA)
-
+# MUTUAL NON-DISCLOSURE & RAW FOOTAGE CONFIDENTIALITY AGREEMENT
 **DISCLOSING PARTY:** [CLIENT / CREATOR NAME]  
 **RECEIVING PARTY:** [EDITOR NAME]  
-**DATE:** [DATE]  
+**EFFECTIVE DATE:** [DATE]  
 
 ### 1. CONFIDENTIAL INFORMATION
-Confidential Information encompasses all unreleased video footage, unlisted YouTube links, product prototypes, sponsorship details, monetization metrics, and project concepts shared between parties.
-
+Encompasses all raw camera footage, unlisted video links, monetization data, product prototypes, and scripts shared between parties.
 ### 2. OBLIGATIONS
-The Receiving Party agrees to maintain strict confidentiality, prevent unauthorized disclosure, and store all footage on encrypted, password-protected drives.
-
+Receiving Party agrees to prevent unauthorized disclosure, refrain from public streaming of raw rushes, and store footage on encrypted drives.
 ### 3. TERM
-This Agreement shall remain in effect for a period of **two (2) years** from the date of execution or until the content is officially released publicly by Disclosing Party.
+Remains in effect for **two (2) years** or until content is publicly broadcasted by Disclosing Party.
 
-**SIGNED:**  
-Client: _______________________ Date: _________  
-Editor: _______________________ Date: _________  
+**CLIENT SIGNED:** ___________________________ **DATE:** _________  
+**EDITOR SIGNED:** ___________________________ **DATE:** _________  

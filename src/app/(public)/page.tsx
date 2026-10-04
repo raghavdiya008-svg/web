@@ -17,7 +17,7 @@ export default function HomePage() {
   const catalogAssets = EDITX_VAULT_CATALOG;
 
   return (
-    <div className="w-full min-h-screen bg-suite text-paper pb-24 selection:bg-tally/30 selection:text-paper">
+    <div className="w-full min-h-screen bg-transparent text-paper pb-24 selection:bg-tally/30 selection:text-paper">
       {/* ============================================================
           SECTION 1: HERO (Intro & Live Footage Monitor)
           ============================================================ */}
