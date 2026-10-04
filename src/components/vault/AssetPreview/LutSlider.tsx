@@ -52,15 +52,15 @@ export function LutSlider({
         className
       )}
     >
-      <div className="px-3 py-2 flex items-center justify-between border-b border-border bg-surface-elevated">
+      <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-border bg-surface-elevated">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[12px] font-black text-primary tracking-widest uppercase">
-            LUT COLOR ENGINE // CANISTER #03
+          <span className="font-mono text-[12px] font-bold text-primary tracking-wider uppercase">
+            COLOR SCIENCE · BEFORE / AFTER PREVIEW
           </span>
         </div>
         <div className="hidden sm:flex items-center gap-2">
           <span className="font-mono text-[12px] text-accent uppercase tracking-wider font-bold">
-            33x33x33 3D CUBE
+            33×33×33 3D .CUBE
           </span>
         </div>
       </div>

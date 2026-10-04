@@ -71,16 +71,17 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
         <div className="flex items-center gap-3">
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[12px] font-black text-primary uppercase">
-              TRANSMISSION // LIVE DROP
+            <span className="font-mono text-[12px] font-bold text-primary uppercase">
+              LIVE DAILY DROP
             </span>
           </div>
-          <span className="hidden md:inline text-border">/</span>
-          <span className="hidden md:inline font-mono text-[12px] text-muted uppercase">
-            30 FPS SMPTE LOCK
+          <span className="hidden md:inline text-border">·</span>
+          <span className="hidden md:inline font-mono text-[12px] text-muted">
+            Uncompressed Master Audio
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline font-mono text-[11px] text-muted uppercase">TIMECODE:</span>
           <div className="font-mono text-[12px] text-primary bg-background px-3 py-1 border border-border tabular-nums font-bold">
             {timecode}
           </div>
@@ -92,12 +93,12 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-border">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-[12px] font-bold text-primary uppercase px-2 py-0.5 border border-primary bg-primary/10">
+              <span className="font-mono text-[12px] font-bold text-accent uppercase px-2 py-0.5 border border-accent/40 bg-accent/10">
                 {categoryName}
               </span>
-              <span className="text-border">/</span>
+              <span className="text-border">·</span>
               <span className="font-mono text-[12px] text-muted uppercase">
-                INDEX REF: ARCHIVE-DROP-{drop.id.slice(-4).toUpperCase()}
+                TODAY&apos;S FEATURED PACK
               </span>
             </div>
             <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight leading-tight text-balance">
@@ -105,15 +106,11 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
             </h2>
           </div>
 
-          <div className="px-4 py-2 border border-border bg-surface-elevated flex items-center gap-3 self-start md:self-center">
-            <div className="flex flex-col">
-              <span className="font-mono text-[12px] font-black text-primary uppercase">
-                DIRECTOR CUT
-              </span>
-              <span className="font-mono text-[12px] text-muted uppercase">
-                VERIFIED MASTER ARCHIVE
-              </span>
-            </div>
+          <div className="px-3.5 py-1.5 border border-border bg-surface-elevated flex items-center gap-2 self-start md:self-center">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="font-mono text-[12px] font-bold text-primary uppercase">
+              100% FREE FOR COMMERCIAL USE
+            </span>
           </div>
         </div>
 
@@ -123,11 +120,11 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
           
           <div className="lg:col-span-8 p-6 bg-background border border-border space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-border">
-              <span className="font-mono text-[12px] font-black text-primary uppercase">
-                SPECIFICATION DATA SHEET
+              <span className="font-mono text-[12px] font-bold text-primary uppercase">
+                ASSET SPECIFICATIONS & FORMAT
               </span>
               <span className="font-mono text-[12px] text-muted uppercase font-bold">
-                AUDITED SPEC
+                VERIFIED AUDIO STEMS
               </span>
             </div>
 
@@ -161,16 +158,16 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
 
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 font-mono text-[12px] text-muted uppercase">
-                  <Layers size={14} className="text-muted" /> HOST NLE
+                  <Layers size={14} className="text-muted" /> COMPATIBILITY
                 </div>
                 <div className="font-mono text-[13px] font-bold text-primary uppercase">
-                  UNIVERSAL
+                  UNIVERSAL DAW & NLE
                 </div>
               </div>
             </div>
 
             <div className="pt-3 border-t border-border">
-              <p className="text-[14px] text-muted font-body leading-relaxed text-pretty">
+              <p className="text-[14px] text-secondary font-body leading-relaxed text-pretty">
                 {drop.description ||
                   'Precision-engineered creative stems for trailer scoring and VFX sound design. Hand-tuned analog oscillators and organic brass resonances for high-tension cinematic storytelling.'}
               </p>
@@ -179,12 +176,12 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
 
           <div className="lg:col-span-4 p-6 bg-background border border-border flex flex-col justify-between space-y-5">
             <div>
-              <div className="font-mono text-[12px] font-black text-primary uppercase mb-1">
-                EXTRACTION BAY
+              <div className="font-mono text-[12px] font-bold text-primary uppercase mb-1">
+                DIRECT DOWNLOAD
               </div>
-              <div className="font-mono text-[12px] text-muted uppercase flex items-center gap-1.5 font-semibold">
+              <div className="font-mono text-[12px] text-muted flex items-center gap-1.5 font-medium">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                DIRECT ACCESS ACTIVE
+                No login required · Instant download
               </div>
             </div>
 
@@ -203,15 +200,15 @@ export function FeaturedDrop({ drop, session }: FeaturedDropProps) {
               )}
             >
               {downloading ? (
-                <span className="animate-pulse">EXTRACTING...</span>
+                <span className="animate-pulse">PREPARING DOWNLOAD...</span>
               ) : downloaded ? (
-                <>SAVED</>
+                <>DOWNLOAD COMPLETE</>
               ) : downloadError ? (
                 <>DOWNLOAD FAILED</>
               ) : (
                 <>
                   <Download size={16} className="stroke-[2.5]" />
-                  DOWNLOAD MASTER ASSET
+                  DOWNLOAD FREE PACK
                 </>
               )}
             </button>

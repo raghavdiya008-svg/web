@@ -30,17 +30,17 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       type="button"
       aria-label={isDark ? 'Switch to Day Mode' : 'Switch to Dark Mode'}
-      title={isDark ? 'Switch to Day Mode (Clean White Paper)' : 'Switch to Dark Mode (Technical Terminal)'}
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-mono font-bold tracking-[0.14em] uppercase border border-[#27272A] dark:border-[#27272A] light:border-[#D4D4D8] bg-[#0E0E11] dark:bg-[#0E0E11] light:bg-[#F4F4F5] hover:border-[#FFFFFF] dark:hover:border-[#FFFFFF] text-[#FFFFFF] dark:text-[#FFFFFF] light:text-[#18181B] transition-all select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-current"
+      title={isDark ? 'Switch to Day Mode' : 'Switch to Dark Mode'}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono font-bold tracking-wider uppercase border border-border bg-surface-elevated hover:border-primary text-primary transition-all select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
     >
       {isDark ? (
         <>
-          <Sun size={11} className="text-[#FBBF24]" />
+          <Sun size={13} className="text-[#FBBF24]" />
           <span className="hidden sm:inline">DAY</span>
         </>
       ) : (
         <>
-          <Moon size={11} className="text-[#6366F1]" />
+          <Moon size={13} className="text-[#6366F1]" />
           <span className="hidden sm:inline">NIGHT</span>
         </>
       )}

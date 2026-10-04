@@ -71,12 +71,12 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
         <div className="mb-8">
           <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-surface border border-border shadow-sm">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="font-mono text-[12px] tracking-[0.2em] text-muted uppercase font-semibold">
-              INDEX // DAILY PRODUCTION ASSETS
+            <span className="font-mono text-[12px] tracking-wider text-muted uppercase font-semibold">
+              FREE ASSET VAULT FOR CREATORS
             </span>
             <span className="text-border">/</span>
-            <span className="font-mono text-[12px] text-primary tracking-[0.16em] uppercase font-bold">
-              EDITION {editionString}
+            <span className="font-mono text-[12px] text-primary tracking-wider uppercase font-bold">
+              100% ROYALTY FREE
             </span>
           </div>
         </div>
@@ -86,8 +86,8 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-accent" />
-                <span className="font-mono text-[12px] tracking-[0.25em] text-muted uppercase font-bold">
-                  PRECISION REPOSITORY // ZERO PAYWALLS
+                <span className="font-mono text-[12px] tracking-wider text-muted uppercase font-bold">
+                  SOUND EFFECTS · LUTS · FILM GRAIN · MOTION
                 </span>
               </div>
               <h1 className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary tracking-tight leading-[0.92] text-balance">
@@ -125,20 +125,20 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
             <div className="metal-chassis p-6 space-y-5 h-full flex flex-col justify-between">
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-primary" />
-                  <span className="font-mono text-[12px] font-bold text-primary tracking-[0.2em] uppercase">
-                    AUDIO TELEMETRY
+                  <span className="w-1.5 h-1.5 bg-accent" />
+                  <span className="font-mono text-[12px] font-bold text-primary tracking-widest uppercase">
+                    FEATURED SPECIMEN
                   </span>
                 </div>
-                <span className="font-mono text-[12px] text-muted uppercase tracking-[0.16em]">
-                  48kHz / 24-BIT
+                <span className="font-mono text-[12px] text-muted">
+                  ANALOG TAPE & BRAAM
                 </span>
               </div>
 
               <div className="p-4 bg-background border border-border space-y-3 flex-1 flex flex-col justify-between min-h-[140px] rounded-[2px]">
-                <div className="flex items-center justify-between text-[12px] font-mono text-muted uppercase tracking-[0.18em]">
-                  <span>SPECTRUM [20Hz - 22kHz]</span>
-                  <span className="text-accent font-bold">LIVE SIGNAL</span>
+                <div className="flex items-center justify-between text-[12px] font-mono text-muted uppercase">
+                  <span>AUDIO STEMS · 24-BIT PCM WAV</span>
+                  <span className="text-accent font-bold">100% ROYALTY FREE</span>
                 </div>
 
                 <div className="h-28 flex items-end gap-1.5 px-1 bg-surface border border-border p-2 relative rounded-[1px]">
@@ -164,18 +164,17 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
                   })}
                 </div>
 
-                <div className="flex justify-between font-mono text-[10px] text-muted uppercase tracking-wider">
-                  <span>-48dB</span>
-                  <span>-24dB</span>
-                  <span>-12dB</span>
-                  <span className="text-primary font-bold">0dB</span>
-                  <span className="text-accent font-bold">+3dB</span>
+                <div className="flex justify-between font-mono text-[11px] text-muted">
+                  <span>Premiere Pro</span>
+                  <span>DaVinci Resolve</span>
+                  <span>After Effects</span>
+                  <span className="text-primary font-bold">Final Cut</span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-border text-[12px] font-mono text-muted">
-                <span className="tracking-[0.16em] uppercase">SMPTE TIMECODE SYNCED</span>
-                <span className="tracking-[0.16em] uppercase text-accent font-bold">ACTIVE BUS</span>
+                <span>COMMERCIAL & PERSONAL USE</span>
+                <span className="text-accent font-bold uppercase">NO ATTRIBUTION REQ</span>
               </div>
             </div>
           </div>
@@ -185,28 +184,22 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
           <div className="flex items-center gap-6 text-muted">
             <div className="flex items-center gap-2">
               <span className="text-primary font-bold uppercase tracking-wider">
-                {totalDrops > 0 ? totalDrops : 3} PACKS · 100% FREE
+                {totalDrops > 0 ? totalDrops : 3} CURATED PACKS · 100% FREE
               </span>
             </div>
             <span className="text-border">/</span>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-primary font-bold uppercase tracking-wider">
-                14:00 UTC DAILY DROP
+                NEW DROP EVERY DAY AT 14:00 UTC
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[12px] text-muted tracking-widest uppercase">
-            <span>STUDIO HARDWARE PIPELINE</span>
-            <span className="text-green-500">● ONLINE</span>
+          <div className="flex items-center gap-2 text-[12px] text-muted tracking-wider uppercase">
+            <span>OPEN CREATIVE COMMONS & MIT</span>
           </div>
         </div>
-      </div>
-
-      <div className="absolute bottom-3 right-4 z-20 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1 bg-surface border border-border font-mono text-[12px] text-muted uppercase tracking-wider">
-        <span className="w-1.5 h-1.5 bg-primary" />
-        <span>SYSTEM VERSION {editionString}</span>
       </div>
     </section>
   );

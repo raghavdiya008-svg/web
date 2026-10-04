@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="neonSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#12131c"/>
+      <stop offset="100%" stop-color="#26202e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#neonSky)"/>
+  <rect x="100" y="260" width="140" height="540" fill="#171922"/>
+  <rect x="280" y="180" width="210" height="620" fill="#1d202c"/>
+  <rect x="530" y="320" width="160" height="480" fill="#14161f"/>
+  <rect x="740" y="210" width="240" height="590" fill="#202230"/>
+  <circle cx="400" cy="360" r="80" fill="#ff4a1c" opacity="0.35"/>
+  <circle cx="850" cy="310" r="100" fill="#0885a1" opacity="0.35"/>
+  <text x="50" y="60" fill="#8A8A8E" font-family="sans-serif" font-size="18" letter-spacing="2">SONY S-LOG3 // TEST SCENE: NIGHT EXTERIOR &amp; HIGH DYNAMIC RANGE</text>
+</svg>

@@ -1,271 +1,196 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { auth } from '@/lib/auth/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { Marquee } from '@/components/layout/Marquee';
-import { FeaturedDrop } from '@/components/vault/FeaturedDrop';
-import { LockedTeaser } from '@/components/vault/LockedTeaser';
-import { DropCard } from '@/components/vault/DropCard';
-import { HeroSection } from '@/components/vault/HeroSection';
-import { LutSlider } from '@/components/vault/AssetPreview/LutSlider';
-import { LottiePreview } from '@/components/vault/AssetPreview/LottiePreview';
-import { MotionFade, StaggerContainer, StaggerItem } from '@/components/motion/MotionFade';
-import { ArrowRight, Sliders, Sparkles } from 'lucide-react';
+import { WebglLutViewer } from '@/components/vault/WebglLutViewer';
+import { VaultReels } from '@/components/vault/VaultReels';
+import { TimelineBar } from '@/components/layout/TimelineBar';
 import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
+import { Download, ArrowDown } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'EditX Vault — Precision Creative Asset Repository',
+  title: 'EditX Vault — Open Creative Assets for Video Editors & Animators',
   description:
-    'Curated 35mm film grains, color-science LUTs, typography suites, and motion geometry packs — 100% free for video editors and animators. New drops daily at 14:00 UTC.',
-  openGraph: {
-    title: 'EditX Vault — Precision Creative Asset Repository',
-    description:
-      'Curated 35mm film grains, color-science LUTs, typography suites, and motion geometry packs — free for video editors and animators.',
-    type: 'website',
-    siteName: 'EditX Vault',
-  },
+    'Free production LUTs, analog sound stems, 4K film mattes, and motion assets. Calibrated 18% neutral grading suite environment. Zero paywalls.',
 };
 
-const MARQUEE_CATEGORIES = [
-  '35MM FILM GRAIN',
-  'COLOR-SCIENCE LUTS',
-  'LOTTIE KINETICS',
-  'MOTION OVERLAYS',
-  '4K PRORES ASSETS',
-  'TYPOGRAPHY PACKS',
-  'VECTOR SVG SETS',
-  'BLENDER 3D SHADERS',
-  'ANAMORPHIC MATTES',
-  'PRODUCTION CONTRACTS',
-];
-
-
-
-export default async function HomePage() {
-  const session = await auth();
-
-  const supabase = createSupabaseServerClient();
-  const isConfigured =
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
-
-  let liveDrop: any = null;
-  let upcomingDrops: any[] = [];
-  let pastDrops: any[] = [];
-  let totalDrops = 0;
-  let totalUsers = 0;
-
-  if (isConfigured) {
-    try {
-      const [liveRes, upcomingRes, pastRes, dropsCountRes, usersCountRes] = await Promise.all([
-        supabase
-          .from('drops')
-          .select('*, categories(slug, name, color)')
-          .eq('is_live', true)
-          .lte('scheduled_for', new Date().toISOString())
-          .order('scheduled_for', { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from('drops')
-          .select('id, title, category_id, scheduled_for, categories(slug, name, color)')
-          .eq('is_live', false)
-          .gt('scheduled_for', new Date().toISOString())
-          .order('scheduled_for', { ascending: true })
-          .limit(3),
-        supabase
-          .from('drops')
-          .select(
-            'id, title, category_id, scheduled_for, download_count, file_format, file_size, license, categories(slug, name, color)'
-          )
-          .eq('is_live', true)
-          .lt('scheduled_for', new Date().toISOString())
-          .order('scheduled_for', { ascending: false })
-          .limit(12),
-        supabase.from('drops').select('*', { count: 'exact', head: true }).eq('is_live', true),
-        supabase.from('users').select('*', { count: 'exact', head: true }),
-      ]);
-
-      liveDrop = liveRes.data;
-      upcomingDrops = upcomingRes.data || [];
-      pastDrops = pastRes.data || [];
-      totalDrops = dropsCountRes.count ?? 0;
-      totalUsers = usersCountRes.count ?? 0;
-    } catch (err) {
-      console.warn('Supabase unavailable — using fallback mock data', err);
-    }
-  }
-
-  // Use verified local catalog if DB fails
-  if (!liveDrop) {
-    liveDrop = EDITX_VAULT_CATALOG.find(d => d.is_live && new Date(d.scheduled_for) <= new Date()) || EDITX_VAULT_CATALOG[0];
-    
-    upcomingDrops = EDITX_VAULT_CATALOG
-      .filter(d => !d.is_live && new Date(d.scheduled_for) > new Date())
-      .sort((a, b) => new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime())
-      .slice(0, 3);
-      
-    pastDrops = EDITX_VAULT_CATALOG
-      .filter(d => d.is_live && d.id !== liveDrop.id)
-      .sort((a, b) => new Date(b.scheduled_for).getTime() - new Date(a.scheduled_for).getTime())
-      .slice(0, 12);
-      
-    totalDrops = EDITX_VAULT_CATALOG.length;
-    totalUsers = 0; // Removing fake user counts
-  }
+export default function HomePage() {
+  const liveDrop = EDITX_VAULT_CATALOG[0]; // Kodak Vision3 5219
+  const catalogAssets = EDITX_VAULT_CATALOG;
 
   return (
-    <div className="w-full bg-background text-text-primary transition-colors duration-200">
-      {/* ================================================================
-          HERO: THE COMMAND CENTER
-      ================================================================ */}
-      <HeroSection totalUsers={totalUsers} totalDrops={totalDrops} />
-
-      {/* MARQUEE: 35MM FILM SPROCKET RUNNER */}
-      <Marquee content={MARQUEE_CATEGORIES} speed={28} />
-
-      {/* ================================================================
-          TODAY'S DROP: ASSET DETAIL & MASTER TRANSPORT
-      ================================================================ */}
-      <section className="max-w-[1280px] mx-auto px-5 lg:px-8 pt-12 pb-10">
-        <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
-            <div>
-              <span className="font-mono text-[12px] tracking-widest text-accent uppercase block mb-1 font-bold">
-                Daily Master Release
-              </span>
-              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
-                Today&apos;s Feature Drop
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 text-[12px] font-mono text-accent uppercase tracking-wider font-bold">
-              <span className="w-1.5 h-1.5 bg-green-500 animate-pulse rounded-full" />
-              Live Download
-            </div>
-          </div>
-        </MotionFade>
-
-        {liveDrop ? (
-          <MotionFade delay={0.1}>
-            <FeaturedDrop drop={liveDrop} session={session} />
-          </MotionFade>
-        ) : (
-          <div className="p-12 text-center border border-border bg-surface-elevated">
-            <p className="font-mono text-[12px] text-muted uppercase tracking-wider">
-              NO ASSET CURRENTLY MOUNTED. STANDBY FOR 14:00 UTC DROP CYCLE.
+    <div className="w-full min-h-screen bg-suite text-paper pb-24 selection:bg-tally/30 selection:text-paper">
+      {/* ============================================================
+          SECTION 1: HERO (Intro & Live Footage Monitor)
+          ============================================================ */}
+      <section
+        id="hero"
+        className="max-w-[1440px] mx-auto px-6 lg:px-10 pt-28 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+      >
+        {/* LEFT COLUMN: HERO HEADLINE & MANIFESTO */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-paper">
+              Free footage tools for people who cut.
+            </h1>
+            <p className="text-lg text-paper-dim leading-relaxed max-w-lg">
+              Color-science LUTs, analog audio stems, 4K film mattes, and motion suites. A new curated pack released every day at 14:00 UTC. 100% free under CC0 and MIT licenses.
             </p>
           </div>
-        )}
+
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <a
+              href="#today"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-paper text-monitor font-semibold rounded hover:bg-white transition-colors"
+            >
+              Get today&apos;s pack
+              <ArrowDown className="w-4 h-4" />
+            </a>
+            <a
+              href="#vault"
+              className="px-5 py-3 text-sm font-medium text-paper-dim hover:text-paper transition-colors"
+            >
+              Inspect the vault reels
+            </a>
+          </div>
+
+          {/* COLORCHECKER CALIBRATION STRIP */}
+          <div className="pt-6 border-t border-white/10 flex items-center gap-3 text-xs text-paper-muted">
+            <span>Calibrated against Macbeth target:</span>
+            <div className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded-sm bg-macbeth-orange" title="LUTs" />
+              <span className="w-3 h-3 rounded-sm bg-macbeth-cyan" title="Audio" />
+              <span className="w-3 h-3 rounded-sm bg-macbeth-neutral" title="Grain" />
+              <span className="w-3 h-3 rounded-sm bg-macbeth-blue" title="Motion" />
+              <span className="w-3 h-3 rounded-sm bg-macbeth-yellow" title="Typography" />
+              <span className="w-3 h-3 rounded-sm bg-macbeth-foliage" title="Contracts" />
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: LIVE WEBGL LUT MONITOR */}
+        <div className="lg:col-span-7">
+          <WebglLutViewer
+            cubeUrl="/media/EditX_Kodak_Vision3_5219.cube"
+            title="Kodak Vision3 5219 Emulation"
+            showClipSwitcher={true}
+          />
+        </div>
       </section>
 
-      {/* ================================================================
-          NEXT IN QUEUE: SEALED CANISTERS
-      ================================================================ */}
-      {upcomingDrops.length > 0 && (
-        <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
-          <MotionFade>
-            <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
-              <div>
-                <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
-                  Upcoming Pipeline
-                </span>
-                <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
-                  Next in Queue
-                </h2>
-              </div>
-              <span className="font-mono text-[12px] text-muted uppercase tracking-wider">
-                14:00 UTC Releases
-              </span>
-            </div>
-          </MotionFade>
-
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {upcomingDrops.map((drop) => (
-              <StaggerItem key={drop.id}>
-                <LockedTeaser drop={drop} />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </section>
-      )}
-
-      {/* ================================================================
-          LIVE ASSET INSTRUMENTS: HARDWARE TESTING BENCH (LIVE DEMOS)
-      ================================================================ */}
-      <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
-        <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
+      {/* ============================================================
+          SECTION 2: TODAY'S DROP (Full-bleed live inspect & direct download)
+          ============================================================ */}
+      <section
+        id="today"
+        className="max-w-[1440px] mx-auto px-6 lg:px-10 py-20 border-t border-white/10"
+      >
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
             <div>
-              <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
-                Interactive Studio
-              </span>
-              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
-                Live Asset Engines
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-macbeth-orange" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-macbeth-orange">
+                  Today&apos;s Featured Release
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-paper">
+                {liveDrop.title}
               </h2>
             </div>
-            <div className="hidden sm:flex items-center gap-2 font-mono text-[12px] text-muted uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 bg-primary" />
-              <span>Real-time Sandbox</span>
+            <div className="text-xs text-paper-dim sm:text-right">
+              Next curated release drops in <span className="text-paper font-semibold">14h 22m</span>
             </div>
           </div>
-        </MotionFade>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* LUT COLOR SCIENCE DEMO (7 COLS) */}
-          <div className="lg:col-span-7">
-            <MotionFade delay={0.1}>
-              <LutSlider />
-            </MotionFade>
+          {/* LARGE MONITOR VIEW */}
+          <div className="w-full">
+            <WebglLutViewer
+              cubeUrl="/media/EditX_Kodak_Vision3_5219.cube"
+              defaultClip="/samples/skin_tone.svg"
+              title="Kodak Vision3 5219"
+              showClipSwitcher={false}
+            />
           </div>
 
-          {/* LOTTIE KINETIC VECTOR DEMO (5 COLS) */}
-          <div className="lg:col-span-5">
-            <MotionFade delay={0.2}>
-              <LottiePreview />
-            </MotionFade>
+          {/* SPECS & DIRECT DOWNLOAD */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-4">
+            <div className="md:col-span-8 space-y-2">
+              <p className="text-paper-dim text-base leading-relaxed">
+                {liveDrop.description}
+              </p>
+              <div className="flex flex-wrap items-center gap-6 text-xs text-paper-muted pt-2">
+                <div>Format: <span className="text-paper font-medium">33x33x33 .CUBE</span></div>
+                <div>Size: <span className="text-paper font-medium">366 KB</span></div>
+                <div>License: <span className="text-paper font-medium">CC0 (No attribution needed)</span></div>
+                <div>Compatible: <span className="text-paper font-medium">Resolve, Premiere, FCP, CapCut</span></div>
+              </div>
+            </div>
+
+            <div className="md:col-span-4 flex flex-col gap-3">
+              <a
+                href="/api/download?dropId=v-02"
+                className="w-full py-3.5 bg-paper text-monitor text-center font-bold text-sm rounded hover:bg-white transition-colors flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download Kodak 5219 Suite (.zip)
+              </a>
+              <span className="text-[11px] text-paper-muted text-center">
+                Free for commercial and personal work.
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ================================================================
-          PAST DROPS: THE ARCHIVE GRID
-      ================================================================ */}
-      <section className="max-w-[1280px] mx-auto px-5 lg:px-8 py-10">
-        <MotionFade>
-          <div className="flex items-baseline justify-between mb-8 pb-3 border-b border-border">
-            <div>
-              <span className="font-mono text-[12px] tracking-widest text-muted uppercase block mb-1 font-bold">
-                Permanent Index
-              </span>
-              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-primary tracking-tight">
-                Vault Archive
-              </h2>
-            </div>
-            <Link
-              href="/vault"
-              className="text-[12px] font-mono font-bold text-primary hover:text-muted transition-colors tracking-wider uppercase flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
-            >
-              Full Archive
-              <ArrowRight size={13} />
-            </Link>
+      {/* ============================================================
+          SECTION 3: THE VAULT REELS
+          ============================================================ */}
+      <section
+        id="vault"
+        className="max-w-[1440px] mx-auto px-6 lg:px-10 py-20 border-t border-white/10"
+      >
+        <div className="flex flex-col gap-8">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-paper mb-2">
+              The Vault Archive
+            </h2>
+            <p className="text-paper-dim text-sm max-w-xl">
+              Inspect past releases as full-width asset reels. Real waveforms, uncompressed LUT strips, and 4K mattes.
+            </p>
           </div>
-        </MotionFade>
 
-        <StaggerContainer className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5">
-          {pastDrops.map((drop) => (
-            <StaggerItem key={drop.id} className="h-full">
-              <DropCard drop={drop} session={session} />
-            </StaggerItem>
-          ))}
-          <StaggerItem className="h-full">
-            <div className="h-full min-h-[300px] border border-dashed border-border flex items-center justify-center p-6 text-center text-muted font-mono text-[12px] uppercase tracking-wider bg-surface/50">
-              More drops coming soon
-            </div>
-          </StaggerItem>
-        </StaggerContainer>
+          <VaultReels initialAssets={catalogAssets} />
+        </div>
       </section>
 
+      {/* ============================================================
+          SECTION 4: WHY IT'S FREE
+          ============================================================ */}
+      <section
+        id="why"
+        className="max-w-[1440px] mx-auto px-6 lg:px-10 py-20 border-t border-white/10"
+      >
+        <div className="max-w-2xl space-y-4">
+          <h2 className="text-2xl font-bold text-paper tracking-tight">
+            Why EditX Vault is free
+          </h2>
+          <p className="text-base text-paper-dim leading-relaxed">
+            Most creative asset sites lock basic utilities behind expensive subscription tiers or force you through ads and countdown gates. EditX Vault is operated by an independent post-production studio to share studio-grade building blocks directly with creators. No paywalls, no watermarks, and no rights restrictions.
+          </p>
+          <div className="pt-2">
+            <a
+              href="https://discord.gg/mHAhsUYDtt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold text-paper underline underline-offset-4 hover:text-white"
+            >
+              Join the studio Discord community →
+            </a>
+          </div>
+        </div>
+      </section>
 
+      {/* PINNED TIMELINE PLAYHEAD BAR */}
+      <TimelineBar />
     </div>
   );
 }

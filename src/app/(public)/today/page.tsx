@@ -1,212 +1,109 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { auth } from '@/lib/auth/config';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { CountdownTimer } from '@/components/vault/CountdownTimer';
-import { TodayDownloadSection } from '@/components/vault/TodayDownloadSection';
-import { formatBytes } from '@/lib/utils/cn';
+import { WebglLutViewer } from '@/components/vault/WebglLutViewer';
+import { TimelineBar } from '@/components/layout/TimelineBar';
 import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
+import { Download, CheckCircle2 } from 'lucide-react';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Today's Drop // Studio Feed — EditX Vault",
-    description: "Download today's free creative asset from EditX Vault.",
-    openGraph: {
-      title: "Today's Drop // Studio Feed — EditX Vault",
-      description: "Today's free creative asset from EditX Vault.",
-      type: 'website',
-      siteName: 'EditX Vault',
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: "Today's Drop — Kodak Vision3 5219 Emulation Suite | EditX Vault",
+  description:
+    'Download the Kodak Vision3 5219 33-point 3D LUT suite. Tested and calibrated for DaVinci Resolve and Adobe Premiere Pro.',
+};
 
-export default async function TodayPage() {
-  const session = await auth();
-  const supabase = createSupabaseServerClient();
-
-  let liveDrop: any = null;
-  let nextDrop: any = null;
-  const isConfigured =
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
-
-  if (isConfigured) {
-    try {
-      const { data } = await supabase
-        .from('drops')
-        .select('*, categories(slug, name, color)')
-        .eq('is_live', true)
-        .lte('scheduled_for', new Date().toISOString())
-        .order('scheduled_for', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      liveDrop = data;
-
-      const { data: next } = await supabase
-        .from('drops')
-        .select('id, title, scheduled_for, categories(slug, name, color)')
-        .eq('is_live', false)
-        .gt('scheduled_for', new Date().toISOString())
-        .order('scheduled_for', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      nextDrop = next;
-    } catch (err) {
-      console.warn('Supabase not reachable', err);
-    }
-  }
-
-  if (!liveDrop) {
-    liveDrop = EDITX_VAULT_CATALOG.find(d => d.is_live && new Date(d.scheduled_for) <= new Date()) || EDITX_VAULT_CATALOG[0];
-  }
-
-  if (!nextDrop) {
-    nextDrop = EDITX_VAULT_CATALOG.find(d => !d.is_live && new Date(d.scheduled_for) > new Date()) || EDITX_VAULT_CATALOG[1];
-  }
-
-  const categoryName = liveDrop.categories?.name || 'ASSET';
+export default function TodayDropPage() {
+  const asset = EDITX_VAULT_CATALOG[0];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-5 lg:px-8 py-12 bg-[#0A0A0C]">
-      <div className="flex flex-col lg:flex-row gap-12 items-start">
-        {/* MAIN COLUMN */}
-        <div className="flex-1 space-y-10 w-full">
-          {/* HEADER */}
-          <div className="space-y-4 pb-8 border-b border-[#2A2A2C]">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="font-mono text-[9px] font-bold tracking-[0.14em] uppercase px-2 py-0.5 border border-[#00FF41]/40 text-[#00FF41] bg-[#00FF41]/10">
-                {categoryName}
-              </span>
-              <span className="text-[#333338] font-mono text-[10px]">·</span>
-              <span className="text-[#8A8A8E] font-mono text-[10px] uppercase font-semibold">
-                {liveDrop.file_format?.toUpperCase()} · {formatBytes(liveDrop.file_size)}
-              </span>
-              <span className="text-[#333338] font-mono text-[10px]">·</span>
-              <span className="font-mono text-[10px] text-[#00FF41]">
-                {liveDrop.license} LICENSE
-              </span>
-              <span className="text-[#333338] font-mono text-[10px]">·</span>
-              <span className="font-mono text-[10px] text-[#FFB000]">
-                100% PUBLIC ASSET
-              </span>
-            </div>
-
-            <h1 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#F5F5F5] uppercase tracking-tight leading-[1.05]">
-              {liveDrop.title}
-            </h1>
-
-            <p className="text-sm sm:text-base text-[#8A8A8E] leading-relaxed max-w-2xl font-body">
-              {liveDrop.description}
-            </p>
+    <div className="w-full min-h-screen bg-suite text-paper pt-24 pb-28">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-10 flex flex-col gap-12">
+        {/* VIEWING ROOM HEADER */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-macbeth-orange" />
+            <span className="text-xs font-semibold text-macbeth-orange uppercase tracking-wider">
+              Viewing Room · Today&apos;s Specimen
+            </span>
           </div>
-
-          {/* INTERACTIVE PREVIEW & DOWNLOAD INTERACTIVE CLIENT SECTION */}
-          <TodayDownloadSection drop={liveDrop} />
-
-          {/* DOCUMENTATION & COMPATIBILITY */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-[#2A2A2C]">
-            <div className="space-y-3">
-              <h3 className="font-mono text-[10px] font-bold text-[#8A8A8E] uppercase tracking-[0.16em]">
-                DEPLOYMENT INSTRUCTIONS
-              </h3>
-              <div className="bg-[#0C0C0F] border border-[#2A2A2C] p-5 text-sm text-[#8A8A8E] leading-relaxed whitespace-pre-line font-mono text-xs shadow-hardware-inset">
-                {liveDrop.instructions || 'No specific instructions provided. Refer to the asset documentation.'}
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <h3 className="font-mono text-[10px] font-bold text-[#8A8A8E] uppercase tracking-[0.16em]">
-                  COMPATIBLE HOST NLE / DAW
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {liveDrop.compatible_software?.map((sw: string, idx: number) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-1 bg-[#111114] border border-[#2A2A2C] font-mono text-[10px] text-[#F5F5F5] uppercase font-bold"
-                    >
-                      {sw}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-mono text-[10px] font-bold text-[#8A8A8E] uppercase tracking-[0.16em]">
-                  LEGAL SPEC & LICENSE
-                </h3>
-                <div className="bg-[#0C0C0F] border border-[#2A2A2C] p-4 space-y-1.5 shadow-hardware-inset">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-[#00FF41] font-bold uppercase">
-                      {liveDrop.license} LICENSE
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#8A8A8E] leading-relaxed font-body">
-                    {getLicenseSummary(liveDrop.license)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-paper">
+            {asset.title}
+          </h1>
+          <p className="text-base text-paper-dim max-w-2xl leading-relaxed">
+            {asset.description}
+          </p>
         </div>
 
-        {/* SIDEBAR */}
-        <aside className="w-full lg:w-80 shrink-0 space-y-6">
-          {/* NEXT DROP CARD */}
-          {nextDrop && (
-            <div className="metal-chassis p-5 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-[#2A2A2C]">
-                <span className="font-mono text-[9px] font-bold text-[#8A8A8E] uppercase tracking-[0.16em]">
-                  NEXT IN QUEUE
-                </span>
-                <span className="led-amber animate-pulse" />
-              </div>
-              <div>
-                <CountdownTimer targetDate={nextDrop.scheduled_for} size="sm" className="mb-4" />
-                <div className="text-[#F5F5F5] font-display font-bold text-sm uppercase leading-snug">
-                  {nextDrop.title}
-                </div>
-                <div className="font-mono text-[9px] text-[#8A8A8E] uppercase tracking-wider mt-2">
-                  UNLOCKS{' '}
-                  {new Date(nextDrop.scheduled_for).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}{' '}
-                  @ 14:00 UTC
-                </div>
-              </div>
-            </div>
-          )}
+        {/* 75VH MONITOR (WebGL Interactive LUT test bench) */}
+        <div className="w-full">
+          <WebglLutViewer
+            cubeUrl="/media/EditX_Kodak_Vision3_5219.cube"
+            title="Kodak Vision3 5219"
+            showClipSwitcher={true}
+          />
+        </div>
 
-          {/* QUICK LINKS */}
-          <div className="metal-chassis p-5 space-y-3">
-            <span className="font-mono text-[9px] font-bold text-[#8A8A8E] uppercase tracking-[0.16em] block pb-2 border-b border-[#2A2A2C]">
-              TERMINAL ROUTING
-            </span>
-            <div className="flex flex-col gap-2 font-mono text-xs">
-              <Link href="/vault" className="text-[#8A8A8E] hover:text-[#00FF41] transition-colors uppercase">
-                ← BROWSE FULL VAULT (200+ ASSETS)
-              </Link>
-              <Link href="/submit" className="text-[#8A8A8E] hover:text-[#00FF41] transition-colors uppercase">
-                + SUBMIT PRODUCTION ASSET
-              </Link>
+        {/* SPEC & DOWNLOAD CHASSIS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-4 border-t border-white/10">
+          <div className="lg:col-span-7 space-y-6">
+            <h2 className="text-xl font-bold text-paper">How to apply in your NLE</h2>
+            <div className="space-y-4 text-sm text-paper-dim">
+              <div className="p-4 rounded bg-suite-deep/60 border border-white/5 space-y-1">
+                <div className="font-semibold text-paper flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-macbeth-orange" />
+                  DaVinci Resolve Workflow
+                </div>
+                <p className="text-xs text-paper-dim">
+                  Project Settings &gt; Color Management &gt; Open LUT Folder. Copy the `.cube` file into the folder, click &quot;Update Lists&quot;, and apply on a final grading node.
+                </p>
+              </div>
+
+              <div className="p-4 rounded bg-suite-deep/60 border border-white/5 space-y-1">
+                <div className="font-semibold text-paper flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-macbeth-orange" />
+                  Adobe Premiere Pro Workflow
+                </div>
+                <p className="text-xs text-paper-dim">
+                  In Lumetri Color workspace, select the &quot;Creative&quot; panel &gt; Look dropdown &gt; Browse. Select the `.cube` file and adjust intensity as desired.
+                </p>
+              </div>
             </div>
           </div>
-        </aside>
+
+          <div className="lg:col-span-5 flex flex-col gap-4 bg-suite-deep p-6 rounded-monitor border border-white/10">
+            <div className="text-sm font-semibold text-paper">Asset Specifications</div>
+            <div className="space-y-2 text-xs text-paper-dim border-b border-white/10 pb-4">
+              <div className="flex justify-between">
+                <span>File Format:</span>
+                <span className="text-paper font-medium">33x33x33 .CUBE</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Color Space:</span>
+                <span className="text-paper font-medium">Rec.709 &amp; Arri Log-C</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Download Size:</span>
+                <span className="text-paper font-medium">366.2 KB</span>
+              </div>
+              <div className="flex justify-between">
+                <span>License:</span>
+                <span className="text-paper font-medium">CC0 1.0 Universal</span>
+              </div>
+            </div>
+
+            <a
+              href="/api/download?dropId=v-02"
+              className="w-full py-3.5 bg-paper text-monitor text-center font-bold text-sm rounded hover:bg-white transition-colors flex items-center justify-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Download LUT Suite (.zip)
+            </a>
+            <span className="text-[11px] text-paper-muted text-center">
+              Verified package with SHA-256 integrity check.
+            </span>
+          </div>
+        </div>
       </div>
+
+      <TimelineBar />
     </div>
   );
-}
-
-function getLicenseSummary(license: string): string {
-  const summaries: Record<string, string> = {
-    MIT: 'Permissive open-source license. Commercial use, modification, and distribution permitted.',
-    'Apache-2.0': 'Permissive license with patent grant. Commercial use allowed with attribution.',
-    CC0: 'Public domain dedication. Zero copyright restrictions. Free for any use.',
-    'CC-BY-4.0': 'Attribution required. Commercial and non-commercial adaptation permitted.',
-    OFL: 'SIL Open Font License. Free for print and digital design. Cannot be sold alone.',
-    'EditX-Community': 'Free for all video, audio, and motion projects. Redistribution prohibited.',
-  };
-  return summaries[license] ?? 'Standard open asset license terms apply.';
 }

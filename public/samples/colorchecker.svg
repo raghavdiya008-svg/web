@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#121214"/>
+  <text x="60" y="60" fill="#8A8A8E" font-family="sans-serif" font-size="18" font-weight="600" letter-spacing="2">COLORCHECKER CLASSIC 24-PATCH TARGET // FLAT LOG EXPOSURE</text>
+  <g transform="translate(60, 100)">
+    <rect x="0" y="0" width="160" height="130" fill="#735244"/><rect x="180" y="0" width="160" height="130" fill="#c29682"/>
+    <rect x="360" y="0" width="160" height="130" fill="#627a9d"/><rect x="540" y="0" width="160" height="130" fill="#576c43"/>
+    <rect x="720" y="0" width="160" height="130" fill="#8580b1"/><rect x="900" y="0" width="160" height="130" fill="#67bdaa"/>
+    <rect x="0" y="150" width="160" height="130" fill="#d67e2c"/><rect x="180" y="150" width="160" height="130" fill="#505ba6"/>
+    <rect x="360" y="150" width="160" height="130" fill="#c15a63"/><rect x="540" y="150" width="160" height="130" fill="#5e3c6c"/>
+    <rect x="720" y="150" width="160" height="130" fill="#9dbc40"/><rect x="900" y="150" width="160" height="130" fill="#e0a32e"/>
+    <rect x="0" y="300" width="160" height="130" fill="#383d96"/><rect x="180" y="300" width="160" height="130" fill="#469449"/>
+    <rect x="360" y="300" width="160" height="130" fill="#ae363a"/><rect x="540" y="300" width="160" height="130" fill="#e7c71f"/>
+    <rect x="720" y="300" width="160" height="130" fill="#a03d7c"/><rect x="900" y="300" width="160" height="130" fill="#0885a1"/>
+    <rect x="0" y="450" width="160" height="130" fill="#f2f1ee"/><rect x="180" y="450" width="160" height="130" fill="#c8c7c3"/>
+    <rect x="360" y="450" width="160" height="130" fill="#9f9e9a"/><rect x="540" y="450" width="160" height="130" fill="#6b6a67"/>
+    <rect x="720" y="450" width="160" height="130" fill="#3b3a38"/><rect x="900" y="450" width="160" height="130" fill="#18181a"/>
+  </g>
+</svg>

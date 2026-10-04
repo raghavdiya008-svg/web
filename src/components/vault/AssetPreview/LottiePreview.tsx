@@ -51,10 +51,10 @@ export function LottiePreview({
 
   return (
     <div className={cn('metal-chassis overflow-hidden border border-border', className)}>
-      <div className="p-2 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-elevated">
+      <div className="p-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-elevated">
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[12px] font-extrabold text-primary uppercase tracking-widest">
-            LOTTIE KINETICS // ENGINE-04
+          <span className="font-mono text-[12px] font-bold text-primary uppercase tracking-wider">
+            VECTOR MOTION · LOTTIE PREVIEW
           </span>
         </div>
 

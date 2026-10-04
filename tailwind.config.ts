@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,59 +9,61 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: 'var(--color-background)',
-        surface: 'var(--color-surface)',
-        'surface-elevated': 'var(--color-surface-elevated)',
-        'surface-panel': 'oklch(0.14 0.005 260)',
-        border: 'var(--color-border)',
-        'border-subtle': 'var(--color-border-subtle)',
-        'border-hover': 'oklch(0.32 0.005 260)',
-        'text-primary': 'var(--color-text-primary)',
-        'text-secondary': 'var(--color-text-secondary)',
-        'text-muted': 'var(--color-text-muted)',
-        accent: {
-          DEFAULT: 'var(--color-accent)',
-          glow: 'rgba(255, 255, 255, 0.25)',
+        // The Grading Suite 18% neutral grey room
+        suite: '#5A5A5C',
+        'suite-deep': '#4A4A4C',
+        'suite-light': '#6B6B6E',
+        // Monitor bezel & frame (only around media)
+        monitor: '#0A0A0A',
+        'monitor-bezel': '#161618',
+        // High-contrast clean paper text
+        paper: '#F2F1EE',
+        'paper-dim': '#D0CFCB',
+        'paper-muted': '#A4A39F',
+        // Red playhead & record-arm only
+        tally: '#E5322D',
+
+        // Macbeth ColorChecker category swatches
+        macbeth: {
+          orange: '#D67E2C', // LUTs
+          cyan: '#0885A1',   // Sound
+          neutral: '#A0A0A0',// Grain & overlays
+          blue: '#505BA6',   // Motion / Lottie
+          yellow: '#E7C71F', // Typography
+          foliage: '#576C43',// Contracts
         },
-        orange: {
-          DEFAULT: 'var(--color-orange)',
-          dim: 'oklch(0.55 0.20 38)',
-          glow: 'oklch(0.68 0.22 38 / 0.3)',
-        },
-        amber: {
-          DEFAULT: 'var(--color-amber)',
-          dim: 'oklch(0.55 0.20 38)',
-          glow: 'oklch(0.68 0.22 38 / 0.3)',
-        },
+
+        // Backward compatibility mappings
+        background: '#5A5A5C',
+        surface: '#4A4A4C',
+        'surface-elevated': '#3D3D3F',
+        border: 'rgba(242, 241, 238, 0.12)',
+        'border-subtle': 'rgba(242, 241, 238, 0.06)',
+        'text-primary': '#F2F1EE',
+        'text-secondary': '#D0CFCB',
+        'text-muted': '#A4A39F',
+        accent: '#E5322D',
       },
       fontFamily: {
-        display: ['var(--font-display)', 'Inter Tight', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
-      },
-      fontSize: {
-        'display-xl': ['clamp(3.5rem, 8.5vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.02em', fontWeight: '900' }],
-        'display-lg': ['clamp(2.5rem, 5.5vw, 4.5rem)', { lineHeight: '0.96', letterSpacing: '-0.02em', fontWeight: '800' }],
-        'display-md': ['clamp(1.75rem, 3.5vw, 2.75rem)', { lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '800' }],
-        'display-sm': ['clamp(1.25rem, 2vw, 1.85rem)', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }],
-        'body-lg': ['1.125rem', { lineHeight: '1.6', fontWeight: '400' }],
-        body: ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
-        'body-sm': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],
-        caption: ['0.75rem', { lineHeight: '1.4', fontWeight: '500' }],
+        sans: ['var(--font-archivo)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-archivo)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-archivo)', 'monospace'], // tabular figures with Archivo
       },
       borderRadius: {
         none: '0',
-        DEFAULT: '0px',
-        sm: '0px',
-        md: '0px',
-        lg: '1px',
+        sm: '2px',
+        DEFAULT: '4px',
+        md: '6px',
+        lg: '10px',
+        monitor: '10px',
+        clip: '3px',
       },
       boxShadow: {
-        'hardware-bevel': 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6)',
-        'hardware-inset': 'inset 0 2px 4px rgba(0,0,0,0.8), inset 0 0 2px rgba(0,0,0,0.6)',
-        'led-green': '0 0 10px #00FF41, 0 0 20px rgba(0,255,65,0.4)',
-        'led-amber': '0 0 10px #FFB000, 0 0 20px rgba(255,176,0,0.4)',
-        'led-red': '0 0 10px #FF3333, 0 0 20px rgba(255,51,51,0.4)',
+        monitor: '0 20px 50px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)',
+        bezel: 'inset 0 1px 1px rgba(255,255,255,0.08), inset 0 -1px 2px rgba(0,0,0,0.8)',
+      },
+      transitionTimingFunction: {
+        studio: 'cubic-bezier(0.2, 0, 0, 1)',
       },
     },
   },

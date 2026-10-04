@@ -72,7 +72,7 @@ function LutComparisonPreview() {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
-      className="relative h-32 bg-[#060608] border-b border-border overflow-hidden cursor-ew-resize select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+      className="relative h-40 bg-[#060608] border-b border-border overflow-hidden cursor-ew-resize select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
     >
       <div className="absolute inset-0 bg-surface flex items-end p-2.5">
         <div className="w-full h-full bg-gradient-to-r from-[#1C1C20] via-[#222226] to-[#18181C] flex flex-col justify-end">
@@ -118,27 +118,33 @@ function AudioCategoryPreview({ isHovered }: { isHovered: boolean }) {
   }, [isHovered]);
 
   return (
-    <div className="relative h-32 bg-[#060608] border-b border-border overflow-hidden flex flex-col justify-between p-3 select-none">
+    <div className="relative h-40 bg-[#060608] border-b border-border overflow-hidden flex flex-col justify-between p-3 select-none">
       <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
-      <div className="absolute inset-x-3 inset-y-6 flex items-center justify-between gap-[3px] opacity-40">
-        {Array.from({ length: 32 }).map((_, i) => (
-          <div key={i} className="flex-1 bg-[#1E1E24]" style={{ height: `${Math.round(20 + Math.sin(i * 0.4) * 35 + Math.cos(i * 0.9) * 20)}%` }} />
+      <div className="absolute inset-x-3 inset-y-8 flex items-center justify-between gap-[3px] opacity-40">
+        {Array.from({ length: 36 }).map((_, i) => (
+          <div key={i} className="flex-1 bg-border" style={{ height: `${Math.round(25 + Math.sin(i * 0.4) * 35 + Math.cos(i * 0.9) * 20)}%` }} />
         ))}
       </div>
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-surface/90 border border-border">
           <Activity size={12} className="text-accent" />
           <span className="font-mono text-[12px] text-accent font-bold uppercase tracking-wider">
-            {isHovered ? 'AUDITIONING' : 'READY'}
+            {isHovered ? 'PREVIEWING' : 'AUDIO PREVIEW'}
           </span>
         </div>
+        <span className="font-mono text-[11px] text-muted bg-surface/90 px-1.5 py-0.5 border border-border">
+          24-BIT WAV
+        </span>
       </div>
       <div className="relative z-10 flex items-end justify-between">
-        <div className="flex items-end gap-1 h-8 px-2 py-1 bg-surface/90 border border-border">
+        <div className="flex items-end gap-1.5 h-10 px-2 py-1 bg-surface/90 border border-border">
           {barHeights.map((h, i) => (
-            <div key={i} className={cn('w-1 transition-all duration-100', isHovered ? 'bg-accent shadow-[0_0_6px_var(--color-accent)]' : 'bg-[#2A2A30]')} style={{ height: `${isHovered ? h : 25}%` }} />
+            <div key={i} className={cn('w-1.5 transition-all duration-100', isHovered ? 'bg-accent shadow-[0_0_6px_var(--color-accent)]' : 'bg-muted')} style={{ height: `${isHovered ? h : 30}%` }} />
           ))}
         </div>
+        <span className="font-mono text-[11px] text-primary font-bold bg-surface/90 px-1.5 py-0.5 border border-border">
+          ROYALTY FREE
+        </span>
       </div>
     </div>
   );
@@ -146,16 +152,20 @@ function AudioCategoryPreview({ isHovered }: { isHovered: boolean }) {
 
 function ContractCategoryPreview() {
   return (
-    <div className="relative h-32 bg-[#070709] border-b border-border overflow-hidden p-3 font-mono select-none flex flex-col justify-between">
+    <div className="relative h-40 bg-[#070709] border-b border-border overflow-hidden p-4 font-mono select-none flex flex-col justify-between">
       <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-[12px] text-accent font-bold pb-1 border-b border-[#1A1A1E]">
-          <FileText size={12} />
-          <span>DOCUMENTATION</span>
+        <div className="flex items-center gap-2 text-[12px] text-accent font-bold pb-2 border-b border-border">
+          <FileText size={14} />
+          <span>LEGAL CONTRACT SPECIMEN</span>
         </div>
-        <div className="text-[12px] text-muted leading-relaxed pt-1 space-y-1">
-          <p className="text-accent/90">SEC. 4.1: COMMERCIAL GRANT</p>
-          <p>SEC. 4.2: UNRESTRICTED RIGHTS...</p>
+        <div className="text-[12px] leading-relaxed pt-1 space-y-1 text-secondary">
+          <p className="text-primary font-semibold">SECTION 4.1: FULL COMMERCIAL CLEARANCE</p>
+          <p className="text-muted">CLIENT BUYOUT · ZERO RESIDUAL ROYALTIES</p>
         </div>
+      </div>
+      <div className="flex items-center justify-between text-[11px] text-muted pt-2 border-t border-border">
+        <span>EDITABLE DOCX / PDF</span>
+        <span className="text-primary font-bold">PRODUCTION READY</span>
       </div>
     </div>
   );
@@ -170,17 +180,17 @@ function KineticCategoryPreview({ isHovered }: { isHovered: boolean }) {
   }
 
   return (
-    <div className="relative h-32 bg-[#060608] border-b border-border overflow-hidden flex items-center justify-center p-3 select-none">
+    <div className="relative h-40 bg-[#060608] border-b border-border overflow-hidden flex items-center justify-center p-3 select-none">
       <div className="absolute inset-0 bg-dot-matrix-fine opacity-25 pointer-events-none" />
-      <div className="relative w-20 h-20 flex items-center justify-center">
-        <div className={cn('absolute inset-0 rounded-full border border-accent/30 transition-all duration-500', isHovered && 'scale-110 border-accent/60 shadow-[0_0_12px_var(--color-accent)]')} />
-        <div className="absolute w-12 h-12 rounded-full border border-dashed border-muted/40 animate-spin [animation-duration:8s]" />
-        <div className="w-4 h-4 bg-accent/20 border border-accent flex items-center justify-center">
-          <span className="w-1.5 h-1.5 bg-accent animate-pulse" />
+      <div className="relative w-24 h-24 flex items-center justify-center">
+        <div className={cn('absolute inset-0 rounded-full border border-accent/30 transition-all duration-500', isHovered && 'scale-110 border-accent/60 shadow-[0_0_16px_var(--color-accent)]')} />
+        <div className="absolute w-16 h-16 rounded-full border border-dashed border-muted/50 animate-spin [animation-duration:8s]" />
+        <div className="w-5 h-5 bg-accent/20 border border-accent flex items-center justify-center">
+          <span className="w-2 h-2 bg-accent animate-pulse" />
         </div>
       </div>
-      <div className="absolute bottom-2 right-3 font-mono text-[12px] text-accent uppercase tracking-wider">
-        {isHovered ? 'ACTIVE' : 'READY'}
+      <div className="absolute bottom-2.5 right-3 font-mono text-[12px] text-muted uppercase tracking-wider">
+        3D KINETIC RIG
       </div>
     </div>
   );
@@ -244,12 +254,12 @@ export function DropCard({ drop }: DropCardProps) {
         isHovered ? 'border-muted shadow-lg' : 'border-border hover:border-border-hover'
       )}
     >
-      <div className="px-4 py-3 bg-surface flex items-center justify-between border-b border-border">
-        <span className="font-mono text-[12px] text-primary tracking-widest uppercase">
-          REF-{drop.id.slice(-4).toUpperCase()}
-        </span>
-        <span className="font-mono text-[12px] font-bold text-muted uppercase tracking-widest px-2 py-0.5 border border-border bg-surface-elevated">
+      <div className="px-4 py-3 bg-surface-elevated flex items-center justify-between border-b border-border">
+        <span className="font-mono text-[12px] font-bold text-accent tracking-wider uppercase">
           {categoryName}
+        </span>
+        <span className="font-mono text-[12px] text-muted uppercase tracking-wider px-2 py-0.5 border border-border bg-surface">
+          {drop.file_format || 'PACK'} · FREE
         </span>
       </div>
 
@@ -297,7 +307,7 @@ export function DropCard({ drop }: DropCardProps) {
               <>FAILED</>
             ) : (
               <>
-                <Download size={14} className="stroke-[2]" /> GET DROP
+                <Download size={14} className="stroke-[2.5]" /> DOWNLOAD FREE ASSET
               </>
             )}
           </button>
