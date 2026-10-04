@@ -15,6 +15,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 
+import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
+
 interface DropQueueItem {
   id: string;
   title: string;
@@ -26,53 +28,17 @@ interface DropQueueItem {
 }
 
 export default function AdminDropsPage() {
-  const [drops, setDrops] = useState<DropQueueItem[]>([
-    {
-      id: 'd-1',
-      title: 'Cinematic Sub Bass & Impact Suite 01',
-      category: 'SFX PACK',
-      categoryColor: '#06B6D4',
-      scheduled_for: new Date().toISOString(),
-      file_format: 'WAV',
-      status: 'live',
-    },
-    {
-      id: 'd-2',
-      title: 'Kodak 5219 500T Emulation LUT',
-      category: 'LUT',
-      categoryColor: '#A78BFA',
-      scheduled_for: new Date(Date.now() + 86400000).toISOString(),
-      file_format: 'CUBE',
-      status: 'scheduled',
-    },
-    {
-      id: 'd-3',
-      title: 'Kinetic Typography Presets v2',
-      category: 'ANIMATION',
-      categoryColor: '#10B981',
-      scheduled_for: new Date(Date.now() + 86400000 * 2).toISOString(),
-      file_format: 'JSX',
-      status: 'scheduled',
-    },
-    {
-      id: 'd-4',
-      title: 'Freelance Production Retainer Agreement',
-      category: 'CONTRACT',
-      categoryColor: '#F59E0B',
-      scheduled_for: new Date(Date.now() + 86400000 * 3).toISOString(),
-      file_format: 'DOCX',
-      status: 'scheduled',
-    },
-    {
-      id: 'd-5',
-      title: '16mm Grain Overlays 4K ProRes',
-      category: 'OVERLAYS',
-      categoryColor: '#EF4444',
-      scheduled_for: new Date(Date.now() + 86400000 * 4).toISOString(),
-      file_format: 'MOV',
-      status: 'scheduled',
-    },
-  ]);
+  const [drops, setDrops] = useState<DropQueueItem[]>(() => {
+    return EDITX_VAULT_CATALOG.map((item) => ({
+      id: item.id,
+      title: item.title,
+      category: item.categories.name,
+      categoryColor: item.categories.color,
+      scheduled_for: item.scheduled_for,
+      file_format: item.file_format.toUpperCase(),
+      status: item.is_live ? 'live' : 'scheduled',
+    }));
+  });
 
   const handleEmergencyLive = (id: string, title: string) => {
     setDrops((prev) =>

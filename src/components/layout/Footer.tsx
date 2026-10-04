@@ -36,8 +36,8 @@ export function Footer() {
               <span className="text-[#FFFFFF] font-bold">99.98%</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[#52525B]">USERS:</span>
-              <span className="text-[#FFFFFF] font-bold">2,480 ONLINE</span>
+              <span className="text-[#52525B]">ACCESS:</span>
+              <span className="text-[#FFFFFF] font-bold">100% OPEN</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[#52525B]">RELEASE:</span>

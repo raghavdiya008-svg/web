@@ -335,22 +335,22 @@ export function DropCard({ drop }: DropCardProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'group relative metal-chassis flex flex-col justify-between overflow-hidden transition-all duration-200 h-full border',
+        'group relative metal-chassis flex flex-col justify-between overflow-hidden transition-all duration-200 h-full border rounded-[2px]',
         isHovered
-          ? 'border-[#FFFFFF] shadow-[0_0_24px_rgba(255,255,255,0.1)]'
-          : 'border-[#1F1F24] hover:border-[#3F3F46]'
+          ? 'border-[#52525B] light:border-[#111113] shadow-lg'
+          : 'border-[#1F1F24] light:border-[#E2E2E6] hover:border-[#3F3F46] light:hover:border-[#A1A1AA]'
       )}
     >
       {/* CARD HEADER: EDITORIAL INDEX HEADER */}
-      <div className="px-4 py-2.5 bg-[#141417] flex items-center justify-between border-b border-[#1F1F24]">
+      <div className="px-4 py-2.5 bg-[#141417] light:bg-[#F4F4F6] flex items-center justify-between border-b border-[#1F1F24] light:border-[#E2E2E6]">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
-          <span className="font-mono text-[9px] font-black text-[#FFFFFF] tracking-[0.2em] uppercase">
+          <span className="w-1.5 h-1.5 bg-[#FFFFFF] light:bg-[#111113]" />
+          <span className="font-mono text-[9px] font-bold text-[#FFFFFF] light:text-[#111113] tracking-[0.2em] uppercase">
             REF-{drop.id.slice(-4).toUpperCase()}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[8px] text-[#A1A1AA] uppercase tracking-widest font-semibold">
+          <span className="font-mono text-[8px] text-[#A1A1AA] light:text-[#71717A] uppercase tracking-widest font-semibold">
             EDITION 01
           </span>
         </div>
@@ -368,13 +368,13 @@ export function DropCard({ drop }: DropCardProps) {
       )}
 
       {/* CARD BODY */}
-      <div className="p-4 space-y-4 flex-1 flex flex-col justify-between bg-[#0C0C0F]">
+      <div className="p-4 space-y-4 flex-1 flex flex-col justify-between bg-[#0C0C0F] light:bg-[#FFFFFF]">
         {/* CATEGORY & FORMAT ROW */}
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[8px] font-black text-[#FFFFFF] uppercase tracking-[0.16em] px-1.5 py-0.5 border border-[#27272A] bg-[#16161A]">
+          <span className="font-mono text-[8px] font-bold text-[#FFFFFF] light:text-[#111113] uppercase tracking-[0.16em] px-1.5 py-0.5 border border-[#27272A] light:border-[#E2E2E6] bg-[#16161A] light:bg-[#F4F4F6]">
             {categoryName}
           </span>
-          <span className="font-mono text-[9px] font-semibold text-[#A1A1AA] uppercase tracking-[0.12em]">
+          <span className="font-mono text-[9px] font-semibold text-[#A1A1AA] light:text-[#71717A] uppercase tracking-[0.12em]">
             {drop.file_format || 'ZIP'}
             {drop.file_size ? ` · ${formatBytes(drop.file_size)}` : ''}
           </span>
@@ -382,11 +382,11 @@ export function DropCard({ drop }: DropCardProps) {
 
         {/* TITLE */}
         <div>
-          <h3 className="font-display font-black text-base text-[#FFFFFF] uppercase tracking-[-0.02em] leading-snug line-clamp-2">
+          <h3 className="font-display font-extrabold text-base text-[#FFFFFF] light:text-[#111113] uppercase tracking-[-0.02em] leading-snug line-clamp-2">
             {drop.title}
           </h3>
           <p className="font-mono text-[8px] text-[#71717A] uppercase tracking-[0.14em] mt-1.5">
-            LICENSE: {drop.license || 'MIT'} · {drop.download_count || 480} EXTRACTED
+            LICENSE: {drop.license || 'MIT'} · VERIFIED MASTER
           </p>
         </div>
 
@@ -412,21 +412,21 @@ export function DropCard({ drop }: DropCardProps) {
               </div>
             </div>
 
-            {/* MECHANICAL TOGGLE BUTTON */}
+            {/* ACTION BUTTON */}
             <button
               onClick={handleToggleClick}
               disabled={downloadState === 'extracting'}
-              aria-label={`Toggle hardware switch to extract ${drop.title}`}
+              aria-label={`Download ${drop.title}`}
               className={cn(
-                'px-3.5 py-1.5 font-mono text-[9px] font-black tracking-[0.16em] uppercase flex items-center gap-1.5 border cursor-pointer select-none transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
+                'px-3.5 py-1.5 font-mono text-[9px] font-bold tracking-[0.16em] uppercase flex items-center gap-1.5 border rounded-[2px] cursor-pointer select-none transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
                 downloadState === 'idle' &&
-                  'bg-[#FFFFFF] hover:bg-[#E4E4E7] text-[#000000] border-[#FFFFFF]',
+                  'bg-[#FFFFFF] dark:bg-[#FFFFFF] light:bg-[#111113] text-[#000000] dark:text-[#000000] light:text-[#FFFFFF] border-transparent hover:opacity-90 active:scale-95 shadow-sm',
                 downloadState === 'extracting' &&
-                  'bg-[#A1A1AA] text-[#000000] border-[#A1A1AA]',
+                  'bg-[#A1A1AA] text-[#000000] border-transparent',
                 downloadState === 'complete' &&
-                  'bg-[#FFFFFF] text-[#000000] border-[#FFFFFF]',
+                  'bg-[#00FF41] text-[#000000] border-transparent',
                 downloadState === 'error' &&
-                  'bg-[#FF3333] text-[#FFFFFF] border-[#FF3333]'
+                  'bg-[#EF4444] text-[#FFFFFF] border-transparent'
               )}
             >
               {downloadState === 'extracting' ? (

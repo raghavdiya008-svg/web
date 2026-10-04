@@ -53,7 +53,7 @@ export default async function HomePage() {
   let upcomingDrops: any[] = [];
   let pastDrops: any[] = [];
   let totalDrops = 0;
-  let totalUsers = 2480;
+  let totalUsers = 0;
 
   if (isConfigured) {
     try {
@@ -90,7 +90,7 @@ export default async function HomePage() {
       upcomingDrops = upcomingRes.data || [];
       pastDrops = pastRes.data || [];
       totalDrops = dropsCountRes.count ?? 0;
-      totalUsers = usersCountRes.count ?? 2480;
+      totalUsers = usersCountRes.count ?? 0;
     } catch (err) {
       console.warn('Supabase unavailable — using fallback mock data', err);
     }

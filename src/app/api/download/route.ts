@@ -25,6 +25,11 @@ export async function GET(request: NextRequest) {
   const dropId = request.nextUrl.searchParams.get('dropId');
   if (!dropId) return NextResponse.json({ error: 'dropId parameter required' }, { status: 400 });
 
+  // Sanitize dropId to prevent PostgREST syntax injection
+  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(dropId)) {
+    return NextResponse.json({ error: 'Invalid dropId format' }, { status: 400 });
+  }
+
   const resolvedId = LEGACY_ID_MAP[dropId] || dropId;
   const isSupabaseConfigured =
     process.env.NEXT_PUBLIC_SUPABASE_URL &&

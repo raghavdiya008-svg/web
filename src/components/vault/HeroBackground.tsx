@@ -352,36 +352,6 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
       ctx.fillText(`Y: ${rawY > 0 ? '+' : ''}${rawY.toFixed(2)}`, vpX + 8, vpY + 16);
       ctx.fillText('Z: 0.00', vpX + 8, vpY + 28);
 
-      // 5. SCATTERED TELEMETRY DATA READOUTS
-      if (time - lastSmpteUpdate > 33) {
-        smpteFrames = (smpteFrames + 1) % 30;
-        lastSmpteUpdate = time;
-      }
-      const smpteStr = `00:00:14:${String(smpteFrames).padStart(2, '0')}`;
-      const blink = Math.floor(time / 500) % 2 === 0;
-
-      ctx.font = '8px var(--font-mono, monospace)';
-      ctx.fillStyle = 'rgba(230, 230, 235, 0.35)';
-
-      ctx.fillText('VIEW: CAD_PERSP // CAM_01', 28, 48);
-      ctx.fillText('PROJ: 35MM EQUIV · FL: 380MM', 28, 62);
-      ctx.fillText(`SYNC: ${blink ? '● ONLINE' : '○ ONLINE'}`, 28, 76);
-
-      const trX = width - 180;
-      ctx.fillText(`SMPTE: ${smpteStr}`, trX, 48);
-      ctx.fillText('TIMEBASE: 29.97 NDF', trX, 62);
-      ctx.fillText('CALIBRATION: MATRIX_01', trX, 76);
-
-      const blY = height - 48;
-      ctx.fillText('VRAM: 12.4 GB / 24.0 GB', 28, blY);
-      ctx.fillText('BUFFER: 24-BIT DUAL-CH', 28, blY + 14);
-      ctx.fillText('RENDER: 60.0 FPS [LOCKED]', 28, blY + 28);
-
-      const brX = width - 200;
-      ctx.fillText('GRID: 100.0 MM [ORTHO-Z]', brX, blY);
-      ctx.fillText('NODE: 01/A · STACK: 04', brX, blY + 14);
-      ctx.fillText('AES ENCLAVE: ARMED', brX, blY + 28);
-
       ctx.restore();
     };
 

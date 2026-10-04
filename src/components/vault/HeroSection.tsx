@@ -131,58 +131,40 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
 
           </div>
 
-          {/* RIGHT 5 COLS — SPECTRUM & AUDIO TELEMETRY UNIT */}
+          {/* RIGHT 5 COLS — CLEAN SLEEK SIGNAL MONITOR */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div className="metal-chassis p-6 space-y-5 h-full flex flex-col justify-between">
               
               {/* UNIT HEADER */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#1F1F24]">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1F1F24] light:border-[#E2E2E6]">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[#FFFFFF]" />
-                  <span className="font-mono text-[9px] font-extrabold text-[#FFFFFF] tracking-[0.22em] uppercase">
-                    CHANNEL MONITOR // NO. 01
+                  <span className="w-1.5 h-1.5 bg-[#FFFFFF] light:bg-[#111113]" />
+                  <span className="font-mono text-[9px] font-bold text-[#FFFFFF] light:text-[#111113] tracking-[0.2em] uppercase">
+                    AUDIO TELEMETRY // REALTIME
                   </span>
                 </div>
-                <span className="font-mono text-[8px] text-[#A1A1AA] uppercase tracking-[0.16em]">
+                <span className="font-mono text-[8px] text-[#A1A1AA] light:text-[#71717A] uppercase tracking-[0.16em]">
                   48kHz / 24-BIT
                 </span>
               </div>
 
-              {/* LIVE TAPE STATUS */}
-              <div className="p-3.5 bg-[#070708] border border-[#1F1F24] flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#FF4400] animate-pulse" />
-                  <div className="flex flex-col">
-                    <span className="font-mono text-[9px] font-black text-[#FFFFFF] tracking-[0.18em] uppercase">
-                      SIGNAL BUS: CALIBRATED
-                    </span>
-                    <span className="font-mono text-[8px] text-[#A1A1AA] tracking-[0.14em] uppercase">
-                      STUDIO REFERENCE DECK · 30 IPS
-                    </span>
-                  </div>
-                </div>
-                <div className="font-mono text-[10px] text-[#FFFFFF] bg-[#141417] px-2.5 py-1 border border-[#27272A] font-bold">
-                  +0.0 dB
-                </div>
-              </div>
-
-              {/* REAL-TIME VU SPECTRUM WITH HARDWARE PEAK-HOLD TICS */}
-              <div className="p-4 bg-[#070708] border border-[#1F1F24] space-y-2 flex-1 flex flex-col justify-between min-h-[140px]">
-                <div className="flex items-center justify-between text-[8px] font-mono text-[#52525B] uppercase tracking-[0.18em] pb-1">
-                  <span>SPECTRUM ANALYZER [20Hz - 22kHz]</span>
-                  <span className="text-[#FFFFFF] font-bold">PEAK HOLD ACTIVE</span>
+              {/* REAL-TIME SPECTRUM */}
+              <div className="p-4 bg-[#070708] light:bg-[#F4F4F6] border border-[#1F1F24] light:border-[#E2E2E6] space-y-3 flex-1 flex flex-col justify-between min-h-[140px] rounded-[2px]">
+                <div className="flex items-center justify-between text-[8px] font-mono text-[#52525B] light:text-[#71717A] uppercase tracking-[0.18em]">
+                  <span>SPECTRUM [20Hz - 22kHz]</span>
+                  <span className="text-[#00FF41] font-bold">LIVE SIGNAL</span>
                 </div>
 
-                <div className="h-28 flex items-end gap-1.5 px-1 bg-[#050506] border border-[#16161A] p-2 relative">
+                <div className="h-28 flex items-end gap-1.5 px-1 bg-[#050506] light:bg-[#FFFFFF] border border-[#16161A] light:border-[#E2E2E6] p-2 relative rounded-[1px]">
                   {vuLevels.map((lvl, idx) => {
                     const peak = peakLevels[idx] || lvl;
                     const isPeak = lvl > 85;
                     const isMid = lvl > 60;
                     return (
                       <div key={idx} className="flex-1 flex flex-col justify-end h-full relative">
-                        {/* Peak hold marker */}
+                        {/* Peak marker */}
                         <div
-                          className="absolute w-full h-[2px] bg-[#FFFFFF] transition-all duration-100 shadow-[0_0_4px_#FFFFFF] z-10"
+                          className="absolute w-full h-[1.5px] bg-[#FFFFFF] light:bg-[#111113] transition-all duration-100 z-10"
                           style={{
                             bottom: `${peak}%`,
                           }}
@@ -193,7 +175,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
                           className="w-full transition-all duration-100 ease-out"
                           style={{
                             height: `${lvl}%`,
-                            backgroundColor: isPeak ? '#FF4400' : isMid ? '#FFFFFF' : '#52525B',
+                            backgroundColor: isPeak ? '#FF4400' : isMid ? '#FFFFFF' : '#3F3F46',
                           }}
                         />
                       </div>
@@ -201,20 +183,20 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
                   })}
                 </div>
 
-                <div className="flex justify-between font-mono text-[7px] text-[#52525B] uppercase tracking-wider pt-1">
+                <div className="flex justify-between font-mono text-[7px] text-[#52525B] light:text-[#71717A] uppercase tracking-wider">
                   <span>-48dB</span>
                   <span>-24dB</span>
                   <span>-12dB</span>
                   <span>-6dB</span>
-                  <span className="text-[#FFFFFF]">0dB</span>
-                  <span className="text-[#FF4400]">+3dB</span>
+                  <span className="text-[#FFFFFF] light:text-[#111113] font-bold">0dB</span>
+                  <span className="text-[#FF4400] font-bold">+3dB</span>
                 </div>
               </div>
 
-              {/* RACK UNIT FOOTER */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#1F1F24] text-[8px] font-mono text-[#A1A1AA]">
+              {/* FOOTER */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#1F1F24] light:border-[#E2E2E6] text-[8px] font-mono text-[#A1A1AA] light:text-[#71717A]">
                 <span className="tracking-[0.16em] uppercase">SMPTE TIMECODE SYNCED</span>
-                <span className="tracking-[0.16em] uppercase text-[#FFFFFF] font-bold">ACTIVE BUS</span>
+                <span className="tracking-[0.16em] uppercase text-[#00FF41] font-bold">ACTIVE BUS</span>
               </div>
 
             </div>
@@ -253,7 +235,7 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
           <div className="p-6 sm:p-8 space-y-4">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[9px] tracking-[0.22em] text-[#A1A1AA] uppercase font-bold">
-                02 // CREATORS ACTIVE
+                02 // COMMUNITY MEMBERS
               </span>
               <span className="w-1.5 h-1.5 bg-[#FFFFFF] animate-pulse" />
             </div>
@@ -263,8 +245,8 @@ export function HeroSection({ totalUsers, totalDrops }: HeroSectionProps) {
               </span>
             </div>
             <div className="pt-3 border-t border-[#1F1F24] flex items-center justify-between font-mono text-[8px] text-[#71717A] uppercase tracking-[0.16em]">
-              <span>COMMUNITY OPERATORS</span>
-              <span className="text-[#FFFFFF]">ONLINE</span>
+              <span>REGISTERED OPERATORS</span>
+              <span className="text-[#FFFFFF]">TELEMETRY LIVE</span>
             </div>
           </div>
 

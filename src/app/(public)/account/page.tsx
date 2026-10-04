@@ -81,6 +81,7 @@ export default async function AccountPage() {
       <div className="bg-[#111111] border border-[#1A1A1A] p-6 rounded-[2px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           {avatar ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={avatar}
               alt={username}

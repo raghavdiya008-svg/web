@@ -13,61 +13,62 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { Activity, BarChart2 } from 'lucide-react';
 
 const DOWNLOADS_BY_CATEGORY = [
-  { category: 'SFX Packs', count: 18400, color: '#06B6D4' },
-  { category: 'LUTs', count: 14200, color: '#A78BFA' },
-  { category: 'Contracts', count: 9800, color: '#F59E0B' },
-  { category: 'Animations', count: 8600, color: '#10B981' },
-  { category: 'Overlays', count: 16500, color: '#EF4444' },
-  { category: 'Hooks', count: 7200, color: '#EC4899' },
-  { category: 'Typography', count: 5400, color: '#8B5CF6' },
-  { category: 'Icons', count: 4300, color: '#6366F1' },
+  { category: 'SFX Packs', count: 0, color: '#06B6D4' },
+  { category: 'Color LUTs', count: 0, color: '#A78BFA' },
+  { category: 'Contracts', count: 0, color: '#F59E0B' },
+  { category: '3D Kinetics', count: 0, color: '#10B981' },
+  { category: 'Film Overlays', count: 0, color: '#EF4444' },
+  { category: 'Typography', count: 0, color: '#8B5CF6' },
 ];
 
 const REGISTRATIONS_DATA = [
-  { date: 'Sep 1', users: 45 },
-  { date: 'Sep 5', users: 82 },
-  { date: 'Sep 10', users: 110 },
-  { date: 'Sep 15', users: 95 },
-  { date: 'Sep 20', users: 160 },
-  { date: 'Sep 25', users: 210 },
-  { date: 'Sep 30', users: 285 },
+  { date: 'Initial', users: 0 },
 ];
 
 const TRAFFIC_SOURCES = [
-  { name: 'Discord Communities', value: 48, color: '#5865F2' },
-  { name: 'Direct / Bookmarks', value: 24, color: '#06B6D4' },
-  { name: 'Twitter / X', value: 18, color: '#A78BFA' },
-  { name: 'Organic Search', value: 10, color: '#10B981' },
+  { name: 'Vercel Analytics Stream', value: 100, color: '#00FF41' },
 ];
 
 const TOP_SEARCH_QUERIES = [
-  { query: '16mm grain 4k', searches: 1420, growth: '+34%' },
-  { query: 'kodak 500t lut', searches: 1180, growth: '+18%' },
-  { query: 'trailer sub impact', searches: 980, growth: '+22%' },
-  { query: 'mogrt lower third', searches: 870, growth: '+12%' },
-  { query: 'freelance invoice', searches: 640, growth: '+5%' },
-  { query: 'kinetic typography', searches: 590, growth: '+27%' },
+  { query: 'kodak 500t lut', searches: 0, growth: 'Awaiting telemetries' },
+  { query: 'trailer sub impact', searches: 0, growth: 'Awaiting telemetries' },
+  { query: 'kinetic typography', searches: 0, growth: 'Awaiting telemetries' },
+  { query: 'freelance invoice', searches: 0, growth: 'Awaiting telemetries' },
 ];
 
 export function AnalyticsCharts() {
   return (
     <div className="space-y-8">
+      {/* VERCEL TELEMETRY NOTICE */}
+      <div className="bg-[#111111] border border-[#1A1A1A] p-4 rounded-[2px] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-[#00FF41] animate-pulse" />
+          <span className="font-mono text-xs text-[#E4E4E7]">
+            Vercel Analytics & Speed Insights tracking engine active.
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-[#71717A] uppercase">
+          Real telemetry stream
+        </span>
+      </div>
+
       {/* OVERVIEW STATS ROW */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: '30-Day Total Grabs', value: '84,400', delta: '+18.4% vs last mo' },
-          { label: 'Registered Creators', value: '2,480', delta: '+340 this week' },
-          { label: 'Public Conversion', value: '71.2%', delta: 'Visitor to download' },
-          { label: 'Top Category', value: 'SFX Packs', delta: '21.8% of all grabs' },
+          { label: '30-Day Total Grabs', value: '0', delta: 'Real-time telemetry' },
+          { label: 'Registered Creators', value: '0', delta: 'Awaiting signups' },
+          { label: 'Vercel Tracking', value: '100% OK', delta: 'Insights stream live' },
+          { label: 'Active Vault Catalog', value: '5 Assets', delta: 'Verified packages' },
         ].map((item) => (
           <div key={item.label} className="bg-[#111111] border border-[#1A1A1A] p-5 rounded-[2px] space-y-1">
             <span className="font-mono text-[10px] text-[#3F3F46] uppercase tracking-wider block">
               {item.label}
             </span>
             <div className="font-display text-2xl lg:text-3xl text-white font-medium">{item.value}</div>
-            <p className="font-mono text-[11px] text-accent">{item.delta}</p>
+            <p className="font-mono text-[11px] text-[#00FF41]">{item.delta}</p>
           </div>
         ))}
       </div>

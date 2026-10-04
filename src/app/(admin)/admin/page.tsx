@@ -16,36 +16,106 @@ import {
 } from 'lucide-react';
 import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
 
+import { EDITX_VAULT_CATALOG } from '@/data/vault_catalog';
+
 export const metadata: Metadata = {
   title: 'Admin Overview — EditX Vault',
 };
 
 export default async function AdminOverviewPage() {
   const session = await auth();
+  const supabase = createSupabaseServerClient();
+  const isConfigured =
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
 
-  // In production Supabase counts, or mock fallbacks
+  let registeredUsersCount = 0;
+  let totalDownloadsCount = 0;
+  let pendingSubmissionsCount = 0;
+  let liveDropData: any = null;
+
+  if (isConfigured) {
+    try {
+      const [usersRes, downloadsRes, submissionsRes, liveRes] = await Promise.all([
+        supabase.from('users').select('*', { count: 'exact', head: true }),
+        supabase.from('downloads').select('*', { count: 'exact', head: true }),
+        supabase.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase
+          .from('drops')
+          .select('id, title, download_count, scheduled_for, categories(name)')
+          .eq('is_live', true)
+          .lte('scheduled_for', new Date().toISOString())
+          .order('scheduled_for', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      registeredUsersCount = usersRes.count ?? 0;
+      totalDownloadsCount = downloadsRes.count ?? 0;
+      pendingSubmissionsCount = submissionsRes.count ?? 0;
+      if (liveRes.data) {
+        liveDropData = {
+          id: liveRes.data.id,
+          title: liveRes.data.title,
+          category: (liveRes.data as any).categories?.name || 'LIVE DROP',
+          downloads: liveRes.data.download_count ?? 0,
+          scheduled_for: 'Live Today',
+        };
+      }
+    } catch (err) {
+      console.warn('Supabase query failed in admin overview', err);
+    }
+  }
+
+  // Authentic catalog fallback when DB is cold or initial
+  if (!liveDropData) {
+    const defaultCatalogLive =
+      EDITX_VAULT_CATALOG.find((d) => d.is_live && new Date(d.scheduled_for) <= new Date()) ||
+      EDITX_VAULT_CATALOG[0];
+    liveDropData = {
+      id: defaultCatalogLive.id,
+      title: defaultCatalogLive.title,
+      category: defaultCatalogLive.categories.name,
+      downloads: totalDownloadsCount, // Real downloads count
+      scheduled_for: 'Live Today',
+    };
+  }
+
   const stats = [
-    { label: 'Registered Creators', value: '2,480', icon: Users, change: '+18% this month' },
-    { label: 'Total Asset Downloads', value: '84,400', icon: Download, change: '+2,140 today' },
-    { label: 'Pending Submissions', value: '3', icon: Inbox, change: 'Requires review' },
-    { label: 'Vault Health', value: '99.9%', icon: Sparkles, change: 'Cron operational' },
+    {
+      label: 'Registered Creators',
+      value: registeredUsersCount.toLocaleString(),
+      icon: Users,
+      change: registeredUsersCount > 0 ? 'Verified members' : 'Awaiting signups',
+    },
+    {
+      label: 'Total Asset Downloads',
+      value: totalDownloadsCount.toLocaleString(),
+      icon: Download,
+      change: totalDownloadsCount > 0 ? 'Recorded telemetries' : '0 recorded grabs',
+    },
+    {
+      label: 'Pending Submissions',
+      value: pendingSubmissionsCount.toString(),
+      icon: Inbox,
+      change: pendingSubmissionsCount > 0 ? 'Requires review' : 'Queue clear',
+    },
+    {
+      label: 'Vault Catalog Items',
+      value: EDITX_VAULT_CATALOG.length.toString(),
+      icon: Sparkles,
+      change: '100% operational',
+    },
   ];
 
-  const todayLiveDrop = {
-    id: 'mock-1',
-    title: 'Cinematic Sub Bass & Impact Suite 01',
-    category: 'SFX PACK',
-    downloads: 842,
-    scheduled_for: 'Live Today',
-  };
+  const todayLiveDrop = liveDropData;
 
-  const topDrops = [
-    { id: '1', title: 'Teal & Orange LUT Grading Pack', category: 'LUTs', grabs: 3340 },
-    { id: '2', title: 'High-Retention TikTok Hook Formulas', category: 'Hooks', grabs: 2210 },
-    { id: '3', title: 'Freelance Invoice Template 2025', category: 'Contracts', grabs: 2100 },
-    { id: '4', title: 'Vintage Anamorphic Lens Flare Mattes', category: 'Overlays', grabs: 1830 },
-    { id: '5', title: '16mm Grain Overlays 4K ProRes', category: 'Overlays', grabs: 1540 },
-  ];
+  const topDrops = EDITX_VAULT_CATALOG.slice(0, 5).map((d) => ({
+    id: d.id,
+    title: d.title,
+    category: d.categories.name,
+    grabs: 0, // Genuine initial download counter
+  }));
 
   return (
     <div className="space-y-10">

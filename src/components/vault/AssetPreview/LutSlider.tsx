@@ -97,6 +97,7 @@ export function LutSlider({
         {/* BASE LAYER: FLAT UNGRADED LOG STILL (S-LOG3 / ARRI RAW) */}
         <div className="absolute inset-0 w-full h-full">
           {beforeUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={beforeUrl}
               alt="Flat Log Preview"
@@ -124,6 +125,7 @@ export function LutSlider({
           style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
         >
           {afterUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={afterUrl}
               alt="Graded LUT Preview"
