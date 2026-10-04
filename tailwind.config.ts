@@ -41,14 +41,14 @@ const config: Config = {
         mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'display-xl': ['clamp(3.5rem, 8.5vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.045em', fontWeight: '900' }],
-        'display-lg': ['clamp(2.5rem, 5.5vw, 4.5rem)', { lineHeight: '0.96', letterSpacing: '-0.035em', fontWeight: '800' }],
-        'display-md': ['clamp(1.75rem, 3.5vw, 2.75rem)', { lineHeight: '1.05', letterSpacing: '-0.025em', fontWeight: '800' }],
+        'display-xl': ['clamp(3.5rem, 8.5vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.02em', fontWeight: '900' }],
+        'display-lg': ['clamp(2.5rem, 5.5vw, 4.5rem)', { lineHeight: '0.96', letterSpacing: '-0.02em', fontWeight: '800' }],
+        'display-md': ['clamp(1.75rem, 3.5vw, 2.75rem)', { lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '800' }],
         'display-sm': ['clamp(1.25rem, 2vw, 1.85rem)', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }],
         'body-lg': ['1.125rem', { lineHeight: '1.6', fontWeight: '400' }],
         body: ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
         'body-sm': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],
-        caption: ['0.75rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.12em' }],
+        caption: ['0.75rem', { lineHeight: '1.4', fontWeight: '500' }],
       },
       borderRadius: {
         none: '0',

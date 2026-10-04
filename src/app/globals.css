@@ -35,14 +35,14 @@ html.lenis, html.lenis body {
   --color-border-subtle: oklch(0.18 0.005 260 / 0.6);
   
   /* Text & Contrast */
-  --color-text-primary: oklch(0.98 0 0);
-  --color-text-secondary: oklch(0.78 0.005 260);
-  --color-text-muted: oklch(0.60 0.005 260);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B3B3BA;
+  --color-text-muted: #8A8A93;
 
   /* Primary Action & Hardware Accent */
-  --color-accent: #FFFFFF;
-  --color-orange: oklch(0.68 0.22 38);
-  --color-amber: oklch(0.68 0.22 38);
+  --color-accent: #FF4A1C;
+  --color-orange: #FF4A1C;
+  --color-amber: #FF4A1C;
 }
 
 /* DAY MODE (ARCHIVAL EDITORIAL STUDIO — WARM PORCELAIN & GRAPHITE INK) */
@@ -94,8 +94,10 @@ html.lenis, html.lenis body {
 .light .bg-\[\#0C0C0F\],
 .light .bg-\[\#050506\],
 .light .bg-\[\#060608\],
+.light .bg-\[\#111114\],
 .light .bg-\[\#141417\],
-.light .bg-\[\#16161A\] {
+.light .bg-\[\#16161A\],
+.light .bg-\[\#18181D\] {
   background-color: #FFFFFF !important;
 }
 
@@ -268,6 +270,12 @@ html.lenis, html.lenis body {
     background-size: 10px 10px;
   }
 
+  /* 35mm Analog Film Grain Texture Overlay */
+  .bg-grain {
+    background-image: url(/grain.svg);
+    background-repeat: repeat;
+  }
+
   /* Polished Industrial Modern Panel / Surface */
   .metal-chassis {
     background: #0E0E11;
@@ -429,6 +437,16 @@ html.lenis, html.lenis body {
 
   .glitch-badge {
     animation: glitch-live 4s ease-in-out infinite;
+  }
+
+  /* 35mm Sprocket Continuous Linear Marquee */
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    animation: marquee 28s linear infinite;
   }
 
   /* Moving Scanline Animation for Spectrogram (Phase 3) */
