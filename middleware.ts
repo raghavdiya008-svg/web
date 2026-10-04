@@ -8,11 +8,6 @@ export async function middleware(req: NextRequest) {
 
   // Only role-gate the /admin dashboard
   if (pathname.startsWith('/admin')) {
-    // Always allow the admin login page
-    if (pathname === '/admin/login') {
-      return NextResponse.next();
-    }
-
     // In local development, allow direct access so you can test admin pages
     if (process.env.NODE_ENV === 'development') {
       return NextResponse.next();
@@ -26,7 +21,7 @@ export async function middleware(req: NextRequest) {
     }
 
     if (!token || token.role !== 'admin') {
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      return NextResponse.redirect(new URL('/admin-login', req.url));
     }
   }
 
