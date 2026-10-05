@@ -16,6 +16,7 @@ export interface VaultAsset {
   package_path: string;
   preview_audio?: string;
   preview_image?: string;
+  waveform_peaks?: number[];
   stems_count?: number;
   is_live: boolean;
 }
@@ -63,6 +64,7 @@ export const EDITX_VAULT_CATALOG: VaultAsset[] = [
     compatible_software: ['Premiere Pro', 'DaVinci Resolve', 'Final Cut Pro', 'CapCut Desktop', 'Ableton'],
     package_path: 'private-vault-packages/sfx/editx-sfx-sub-bass-suite-01.zip',
     preview_audio: '/media/EditX_SubDrop_75Hz_to_28Hz_Cinematic.wav',
+    waveform_peaks: [79, 77, 74, 71, 68, 65, 62, 60, 56, 54, 51, 48, 45, 43, 41, 39, 37, 34, 32, 31, 29, 27, 25, 24, 22, 21, 20, 19, 18, 16, 15, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14],
     is_live: true,
   },
   {
@@ -79,6 +81,7 @@ export const EDITX_VAULT_CATALOG: VaultAsset[] = [
     compatible_software: ['Premiere Pro', 'DaVinci Resolve', 'Final Cut Pro', 'CapCut Desktop'],
     package_path: 'private-vault-packages/sfx/editx-sfx-foley-clicks-ui.zip',
     preview_audio: '/media/EditX_Foley_Mechanical_Key_Click.wav',
+    waveform_peaks: [61, 40, 31, 19, 14, 14, 64, 64, 50, 36, 28, 19, 15, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14],
     is_live: true,
   },
   {
@@ -95,6 +98,7 @@ export const EDITX_VAULT_CATALOG: VaultAsset[] = [
     compatible_software: ['Premiere Pro', 'DaVinci Resolve', 'Final Cut Pro', 'CapCut Desktop'],
     package_path: 'private-vault-packages/sfx/editx-sfx-whoosh-risers.zip',
     preview_audio: '/media/EditX_Whoosh_Speed_Ramp_Air_Pass.wav',
+    waveform_peaks: [14, 14, 14, 14, 14, 14, 14, 14, 14, 18, 23, 30, 36, 42, 50, 55, 61, 67, 68, 73, 74, 76, 76, 75, 74, 72, 69, 65, 58, 54, 46, 39, 33, 26, 21, 16, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14],
     is_live: true,
   },
 

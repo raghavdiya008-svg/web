@@ -56,6 +56,11 @@ html.lenis, html.lenis body {
   --color-accent: var(--tally);
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: var(--suite);
   /* Calibrated Optical Bias Lighting (Warm 6500K smooth diffuse vignette falloff) */
@@ -70,15 +75,34 @@ body {
   min-height: 100vh;
 }
 
+/* Typographic Balance per make-interfaces-feel-better & ui-ux-pro-max */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+p, caption {
+  text-wrap: pretty;
+}
+
 /* Tabular figures for timecode, byte sizes, and precision readouts */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Focus visibility rule */
+/* Accessible focus ring with optical offset */
 :focus-visible {
   outline: 2px solid var(--paper);
   outline-offset: 2px;
+}
+
+/* Respect OS Reduced Motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Custom scrollbars */

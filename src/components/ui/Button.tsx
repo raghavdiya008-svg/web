@@ -25,17 +25,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const base =
-      'inline-flex items-center justify-center font-mono uppercase tracking-wider rounded-[2px] transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00FF41] focus-visible:ring-offset-1 focus-visible:ring-offset-[#0A0A0C] disabled:opacity-40 disabled:cursor-not-allowed active:translate-y-0.5 cursor-pointer shadow-hardware-bevel';
+      'inline-flex items-center justify-center font-mono uppercase tracking-wider rounded-[2px] transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-paper focus-visible:ring-offset-1 focus-visible:ring-offset-monitor disabled:opacity-40 disabled:cursor-not-allowed active:translate-y-0.5 cursor-pointer';
 
     const variants: Record<string, string> = {
       primary:
-        'bg-[#00FF41] text-[#0A0A0C] hover:bg-[#00FF41]/90 font-bold border border-[#00FF41] shadow-[0_0_12px_rgba(0,255,65,0.25)]',
+        'bg-paper text-monitor hover:bg-paper-dim font-bold border border-paper shadow-[0_2px_8px_rgba(0,0,0,0.3)]',
       outline:
-        'border border-[#2A2A2C] bg-[#111114] text-[#F5F5F5] hover:border-[#3E3E44] hover:bg-[#18181D]',
+        'border border-border bg-suite-deep text-paper hover:bg-suite-light/40 hover:border-paper/40',
       ghost:
-        'text-[#8A8A8E] hover:bg-[#18181D] hover:text-[#F5F5F5] border border-transparent shadow-none',
+        'text-paper-muted hover:bg-suite-deep hover:text-paper border border-transparent shadow-none',
       danger:
-        'border border-[#FF3333]/50 text-[#FF3333] bg-[#1A0A0C] hover:bg-[#FF3333]/20',
+        'border border-tally/60 text-tally bg-tally/10 hover:bg-tally/20',
     };
 
     const sizes: Record<string, string> = {

@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import NextImage from 'next/image';
 import { parseCubeLut } from '@/lib/lut/cubeParser';
-import { Sliders, Maximize2, RotateCcw } from 'lucide-react';
+import { Sliders, Maximize2, RotateCcw, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface WebglLutViewerProps {
   cubeUrl: string;
@@ -18,6 +19,14 @@ const DEFAULT_CLIPS = [
   { id: 'chart', label: 'Macbeth ColorChecker 24', src: '/samples/colorchecker.svg' },
 ];
 
+interface WebglRenderContext {
+  gl: WebGL2RenderingContext;
+  program: WebGLProgram;
+  posBuffer: WebGLBuffer;
+  lutSize: number;
+  canvas: HTMLCanvasElement;
+}
+
 export function WebglLutViewer({
   cubeUrl,
   defaultClip,
@@ -27,17 +36,98 @@ export function WebglLutViewer({
 }: WebglLutViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const renderContextRef = useRef<WebglRenderContext | null>(null);
 
   const [selectedClip, setSelectedClip] = useState(defaultClip || availableClips[0].src);
+  const [customFrameName, setCustomFrameName] = useState<string | null>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [splitPos, setSplitPos] = useState(0.5); // 0.0 to 1.0
   const [strength, setStrength] = useState(1.0); // 0.0 to 1.0
+  const splitPosRef = useRef(splitPos);
+  const strengthRef = useRef(strength);
+  splitPosRef.current = splitPos;
+  strengthRef.current = strength;
+
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
   const [lutData, setLutData] = useState<any | null>(null);
+  const [isLutReady, setIsLutReady] = useState(false);
   const [errorFallback, setErrorFallback] = useState(false);
+
+  // Direct GPU render function (60fps/120fps hardware draw without recompiling shaders or re-uploading textures)
+  const renderScene = useCallback((split: number, str: number) => {
+    const ctx = renderContextRef.current;
+    if (!ctx) return;
+    const { gl, program, posBuffer, lutSize, canvas } = ctx;
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.useProgram(program);
+
+    const aPos = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(aPos);
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    gl.uniform1i(gl.getUniformLocation(program, 'u_image'), 0);
+    gl.uniform1i(gl.getUniformLocation(program, 'u_lut'), 1);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_split'), split);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_strength'), str);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_lut_size'), lutSize);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }, []);
+
+  // Update render when sliders or split change
+  useEffect(() => {
+    renderScene(splitPos, strength);
+  }, [splitPos, strength, renderScene]);
+
+  // Guarded image upload and downscaling (max 1920x1080 to prevent GPU memory spikes)
+  const handleFileUpload = useCallback((file: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (!result) return;
+
+      const img = new Image();
+      img.onload = () => {
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1080;
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        // Downscale proportionally if larger than 1080p
+        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+          const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = width;
+        offscreen.height = height;
+        const ctx = offscreen.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const scaledDataUrl = offscreen.toDataURL('image/jpeg', 0.94);
+          setSelectedClip(scaledDataUrl);
+          setCustomFrameName(file.name);
+        } else {
+          setSelectedClip(result);
+          setCustomFrameName(file.name);
+        }
+      };
+      img.src = result;
+    };
+    reader.readAsDataURL(file);
+  }, []);
 
   // Load and parse .cube file
   useEffect(() => {
     let mounted = true;
+    setIsLutReady(false);
     fetch(cubeUrl)
       .then((res) => {
         if (!res.ok) throw new Error('LUT file fetch failed');
@@ -61,7 +151,7 @@ export function WebglLutViewer({
     };
   }, [cubeUrl]);
 
-  // WebGL 2.0 / 3D Texture rendering
+  // WebGL 2.0 / 3D Texture resource initialization (Runs ONLY when lutData or clip changes)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !lutData) return;
@@ -72,7 +162,7 @@ export function WebglLutViewer({
       return;
     }
 
-    const ext = gl.getExtension('EXT_color_buffer_float');
+    gl.getExtension('EXT_color_buffer_float');
 
     // Compile Vertex Shader
     const vsSource = `#version 300 es
@@ -201,8 +291,6 @@ export function WebglLutViewer({
     image.crossOrigin = 'anonymous';
     image.src = selectedClip;
 
-    let animId = 0;
-
     image.onload = () => {
       canvas.width = image.naturalWidth || 1200;
       canvas.height = image.naturalHeight || 800;
@@ -215,34 +303,27 @@ export function WebglLutViewer({
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-      const render = () => {
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(program);
-
-        const aPos = gl.getAttribLocation(program, 'a_position');
-        gl.enableVertexAttribArray(aPos);
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-        gl.uniform1i(gl.getUniformLocation(program, 'u_image'), 0);
-        gl.uniform1i(gl.getUniformLocation(program, 'u_lut'), 1);
-        gl.uniform1f(gl.getUniformLocation(program, 'u_split'), splitPos);
-        gl.uniform1f(gl.getUniformLocation(program, 'u_strength'), strength);
-        gl.uniform1f(gl.getUniformLocation(program, 'u_lut_size'), size);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      renderContextRef.current = {
+        gl,
+        program,
+        posBuffer,
+        lutSize: size,
+        canvas,
       };
 
-      render();
+      setIsLutReady(true);
+      renderScene(splitPosRef.current, strengthRef.current);
     };
 
     return () => {
-      cancelAnimationFrame(animId);
+      renderContextRef.current = null;
+      setIsLutReady(false);
       gl.deleteProgram(program);
       gl.deleteTexture(lutTexture);
       gl.deleteTexture(imageTexture);
     };
-  }, [lutData, selectedClip, splitPos, strength]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lutData, selectedClip, renderScene]);
 
   // Mouse / Touch handlers for split wipe
   const handlePointerDown = () => setIsDraggingSplit(true);
@@ -254,8 +335,9 @@ export function WebglLutViewer({
       const rect = containerRef.current.getBoundingClientRect();
       const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       setSplitPos(x);
+      renderScene(x, strength); // Direct GPU dispatch for instantaneous 60fps tracking
     },
-    [isDraggingSplit]
+    [isDraggingSplit, strength, renderScene]
   );
 
   return (
@@ -266,23 +348,56 @@ export function WebglLutViewer({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDraggingFile(true);
+        }}
+        onDragLeave={() => setIsDraggingFile(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDraggingFile(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) handleFileUpload(file);
+        }}
         className="relative w-full aspect-video bg-monitor rounded-monitor p-2 shadow-monitor border border-white/10 select-none overflow-hidden touch-none"
       >
         <div className="relative w-full h-full rounded-[6px] overflow-hidden bg-black flex items-center justify-center">
-          {errorFallback ? (
-            <div className="relative w-full h-full">
-              <img
-                src={selectedClip}
-                alt="Source footage"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-amber-900/30 mix-blend-color" />
+          {/* INSTANT SOURCE FRAME (Always visible immediately, no black frame latency) */}
+          <NextImage
+            src={selectedClip}
+            alt="Source footage"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 800px"
+            className={`object-cover transition-opacity duration-300 ${
+              isLutReady && !errorFallback ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
+            unoptimized={selectedClip.startsWith('data:') || selectedClip.endsWith('.svg')}
+          />
+
+          {/* WEBGL 3D LUT CANVAS (Wipes in once parsed) */}
+          <canvas
+            ref={canvasRef}
+            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+              isLutReady && !errorFallback ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          />
+
+          {/* CALIBRATION STATUS BADGE */}
+          {!isLutReady && !errorFallback && (
+            <div className="absolute bottom-4 left-4 z-10 px-2 py-1 rounded bg-black/75 backdrop-blur-sm text-paper-dim text-[11px] font-mono flex items-center gap-2 border border-white/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-macbeth-orange animate-pulse" />
+              Parsing 3D LUT (35,937 points)...
             </div>
-          ) : (
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full object-contain"
-            />
+          )}
+
+          {/* DRAG-AND-DROP ACTIVE OVERLAY */}
+          {isDraggingFile && (
+            <div className="absolute inset-0 z-30 bg-monitor/90 border-2 border-dashed border-macbeth-orange flex flex-col items-center justify-center gap-2 backdrop-blur-sm pointer-events-none animate-in fade-in duration-150">
+              <Upload className="w-8 h-8 text-macbeth-orange animate-bounce" />
+              <p className="text-sm font-semibold text-paper">Release to grade your frame</p>
+              <p className="text-xs text-paper-dim">Auto-scaled to 1080p in-memory</p>
+            </div>
           )}
 
           {/* SPLIT HANDLE (Draggable line and handle) */}
@@ -308,24 +423,27 @@ export function WebglLutViewer({
           </div>
           <div className="absolute top-4 right-4 z-10 px-2 py-1 rounded bg-black/60 backdrop-blur-sm text-paper font-medium text-xs flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-macbeth-orange" />
-            {title} ({Math.round(strength * 100)}%)
+            {customFrameName ? `Custom Frame · ${title}` : title} ({Math.round(strength * 100)}%)
           </div>
         </div>
       </div>
 
-      {/* CONTROLS STRIP (Clip switcher, strength slider, reset) */}
+      {/* CONTROLS STRIP (Clip switcher, custom upload, strength slider, reset) */}
       <div className="flex flex-wrap items-center justify-between gap-4 px-2 text-sm text-paper-dim">
-        {/* CLIP SELECTOR */}
+        {/* CLIP SELECTOR & CUSTOM FRAME UPLOAD */}
         {showClipSwitcher && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-paper-muted">Test clip:</span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-wrap">
               {availableClips.map((clip) => (
                 <button
                   key={clip.id}
-                  onClick={() => setSelectedClip(clip.src)}
-                  className={`px-2.5 py-1 text-xs rounded transition-colors ${
-                    selectedClip === clip.src
+                  onClick={() => {
+                    setSelectedClip(clip.src);
+                    setCustomFrameName(null);
+                  }}
+                  className={`px-2.5 py-1 text-xs rounded transition-colors active:scale-[0.96] transition-transform ${
+                    selectedClip === clip.src && !customFrameName
                       ? 'bg-paper text-monitor font-medium'
                       : 'bg-white/5 text-paper-dim hover:text-paper'
                   }`}
@@ -333,6 +451,30 @@ export function WebglLutViewer({
                   {clip.label.split(' ')[0]}
                 </button>
               ))}
+
+              {/* UPLOAD CUSTOM FRAME BUTTON */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileUpload(file);
+                }}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                title="Upload or drop your own camera frame (PNG/JPG)"
+                className={`flex items-center gap-1 px-2.5 py-1 text-xs rounded transition-colors active:scale-[0.96] transition-transform ${
+                  customFrameName
+                    ? 'bg-macbeth-orange text-paper font-medium'
+                    : 'bg-white/5 text-paper-dim hover:text-paper border border-dashed border-white/20'
+                }`}
+              >
+                <Upload className="w-3 h-3" />
+                <span>{customFrameName ? 'Custom Frame' : 'Upload Frame'}</span>
+              </button>
             </div>
           </div>
         )}
@@ -359,7 +501,7 @@ export function WebglLutViewer({
               setStrength(1.0);
             }}
             title="Reset viewer"
-            className="p-1 text-paper-muted hover:text-paper"
+            className="p-1 text-paper-muted hover:text-paper active:scale-95 transition-transform"
             aria-label="Reset split wipe and strength"
           >
             <RotateCcw className="w-3.5 h-3.5" />
