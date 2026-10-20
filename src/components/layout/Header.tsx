@@ -15,6 +15,14 @@ export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLocalhost, setIsLocalhost] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname;
+      setIsLocalhost(h === 'localhost' || h === '127.0.0.1' || h.endsWith('.local'));
+    }
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -72,6 +80,16 @@ export function Header() {
                 {label}
               </Link>
             ))}
+            {isLocalhost && (
+              <Link
+                href="/admin"
+                className="text-xs font-mono font-medium px-2.5 py-1 rounded bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-all flex items-center gap-1.5"
+                title="Full Localhost Operator Access"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                ⚡ Admin Cockpit
+              </Link>
+            )}
           </nav>
 
           {/* MOBILE MENU TOGGLE */}
@@ -101,6 +119,15 @@ export function Header() {
               {label}
             </Link>
           ))}
+          {isLocalhost && (
+            <Link
+              href="/admin"
+              className="text-lg py-2 border-b border-white/10 text-accent font-mono flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              ⚡ Admin Cockpit (Localhost Access)
+            </Link>
+          )}
         </div>
       )}
     </>

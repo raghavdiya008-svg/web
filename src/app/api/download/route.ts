@@ -35,6 +35,14 @@ export async function GET(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
 
+  const host = request.headers.get('host') || '';
+  const isLocalhost =
+    request.nextUrl.hostname === 'localhost' ||
+    request.nextUrl.hostname === '127.0.0.1' ||
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    process.env.NODE_ENV === 'development';
+
   // =========================================================================
   // 1. PRODUCTION MODE: SUPABASE CLOUD STORAGE & DATABASE
   // =========================================================================
@@ -50,9 +58,9 @@ export async function GET(request: NextRequest) {
           .single();
 
         if (drop && !dropError) {
-          // Check if canister is locked
+          // Check if canister is locked (bypassed on localhost)
           const isScheduledFuture = new Date(drop.scheduled_for) > new Date();
-          if (!drop.is_live && isScheduledFuture) {
+          if (!isLocalhost && !drop.is_live && isScheduledFuture) {
             return NextResponse.json(
               { error: 'Canister is sealed until scheduled drop time.' },
               { status: 403 }
@@ -108,7 +116,7 @@ export async function GET(request: NextRequest) {
   const catalogMatch = EDITX_VAULT_CATALOG.find((item) => item.id === resolvedId);
 
   if (catalogMatch) {
-    if (!catalogMatch.is_live && new Date(catalogMatch.scheduled_for) > new Date()) {
+    if (!isLocalhost && !catalogMatch.is_live && new Date(catalogMatch.scheduled_for) > new Date()) {
       return NextResponse.json(
         { error: 'Access denied: Canister is currently sealed.' },
         { status: 403 }

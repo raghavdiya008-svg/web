@@ -5,13 +5,21 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const { pathname } = req.nextUrl;
+  const host = req.headers.get('host') || '';
+  const isLocalhost =
+    req.nextUrl.hostname === 'localhost' ||
+    req.nextUrl.hostname === '127.0.0.1' ||
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    process.env.NODE_ENV === 'development';
 
-  // Only role-gate the /admin dashboard
+  // Always grant 100% full access on localhost so the owner can operate without barriers
+  if (isLocalhost) {
+    return NextResponse.next();
+  }
+
+  // Only role-gate the /admin dashboard on production remote domains
   if (pathname.startsWith('/admin')) {
-    // In local development, allow direct access so you can test admin pages
-    if (process.env.NODE_ENV === 'development') {
-      return NextResponse.next();
-    }
 
     // Check for Master Key session cookie
     const adminCookie = req.cookies.get('editx_admin_token')?.value;

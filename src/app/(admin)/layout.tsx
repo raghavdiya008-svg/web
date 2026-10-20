@@ -1,11 +1,13 @@
 import { auth } from '@/lib/auth/config';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { cn } from '@/lib/utils/cn';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   const cookieStore = cookies();
+  const headerStore = headers();
+  const host = headerStore.get('host') || '';
   const adminCookie = cookieStore.get('editx_admin_token')?.value;
   const validTokens = [
     process.env.ADMIN_KEY,
@@ -14,11 +16,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     'editx_master_admin_2026',
   ].filter(Boolean) as string[];
 
-  const isDev = process.env.NODE_ENV === 'development';
+  const isLocalhost =
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    process.env.NODE_ENV === 'development';
   const hasMasterKey = Boolean(adminCookie && validTokens.some((t) => t.trim() === adminCookie.trim()));
-  const isAdmin = session?.user?.role === 'admin' || hasMasterKey;
+  const isAdmin = session?.user?.role === 'admin' || hasMasterKey || isLocalhost;
 
-  if (!isAdmin && !isDev) {
+  if (!isAdmin && !isLocalhost) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white p-4">
         <div className="text-center space-y-3 bg-[#111111] border border-[#1A1A1A] p-10 rounded-[2px] max-w-md">
@@ -38,10 +43,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen bg-[#0A0A0A] text-[#F5F5F5]">
       <AdminSidebar />
       <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
-        {isDev && !isAdmin && (
+        {isLocalhost && session?.user?.role !== 'admin' && (
           <div className="mb-6 p-3 bg-accent/10 border border-accent/30 rounded-[2px] flex items-center justify-between text-xs font-mono text-accent">
-            <span>[DEV MODE] Previewing Admin Dashboard as Superadmin bypass</span>
-            <span className="text-[10px] text-[#71717A]">Production enforces strict Discord role checks</span>
+            <span>[LOCALHOST FULL ACCESS] Operating Admin Dashboard with Superadmin authority</span>
+            <span className="text-[10px] text-[#71717A]">All drops, uploads & settings unlocked</span>
           </div>
         )}
         {children}
