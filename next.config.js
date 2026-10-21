@@ -16,11 +16,16 @@ const nextConfig = {
       '/api/download': ['./private-vault-packages/**/*'],
     },
   },
-  rewrites: async () => [
-    { source: '/rotunda', destination: '/rotunda.html' },
-    { source: '/library', destination: '/rotunda.html' },
-    { source: '/cihannuma', destination: '/rotunda.html' },
-  ],
+  rewrites: async () => {
+    return {
+      beforeFiles: [
+        { source: '/', destination: '/rotunda.html' },
+        { source: '/rotunda', destination: '/rotunda.html' },
+        { source: '/library', destination: '/rotunda.html' },
+        { source: '/cihannuma', destination: '/rotunda.html' },
+      ],
+    };
+  },
   headers: async () => [
     {
       source: '/:path*',

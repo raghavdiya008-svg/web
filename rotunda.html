@@ -152,17 +152,25 @@
 
             <!-- Quick Vault Controls -->
             <div class="flex items-center gap-1.5 shrink-0">
+                <a href="/vault" title="Inspect Vault Reels" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-film text-amber-400"></i>
+                    <span class="hidden md:inline">Reels</span>
+                </a>
+                <a href="/today" title="Today's Drop" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-fire text-amber-400"></i>
+                    <span class="hidden md:inline">Today</span>
+                </a>
                 <button id="toggleMarkersBtn" title="Toggle 3D Department Plaques" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-compass text-amber-400"></i>
-                    <span class="hidden md:inline">Plaques</span>
+                    <span class="hidden lg:inline">Plaques</span>
                 </button>
                 <button id="exportLibraryBtn" title="Export Custom Library JSON" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-download text-amber-400"></i>
-                    <span class="hidden lg:inline">Backup</span>
+                    <span class="hidden xl:inline">Backup</span>
                 </button>
                 <label title="Import Library JSON" class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-upload text-amber-400"></i>
-                    <span class="hidden lg:inline">Restore</span>
+                    <span class="hidden xl:inline">Restore</span>
                     <input id="importLibraryInput" type="file" accept=".json" class="hidden">
                 </label>
             </div>

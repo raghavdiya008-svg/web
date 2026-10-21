@@ -6,9 +6,9 @@ import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const NAV_LINKS = [
+  { href: '/', label: '3D Library' },
   { href: '/today', label: "Today's Drop" },
   { href: '/vault', label: 'Vault Reels' },
-  { href: '/rotunda', label: '3D Rotunda' },
   { href: '/submit', label: 'Submit Asset' },
 ];
 
