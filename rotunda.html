@@ -4,25 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Grand Digital Library — 3D Rotunda Asset Vault</title>
-    <!-- Google Fonts with font-display: swap for fast rendering -->
+    <!-- Google Fonts with font-display: swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Three.js r128 (High-efficiency 3D WebGL renderer) -->
+    <!-- Three.js r128 (High-Performance 3D WebGL PBR Engine) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         /* =====================================================================
-           ULTRA-LIGHTWEIGHT PURE CSS ENGINE (Zero-Runtime Parsing for Low-End PCs)
-           Eliminates heavy runtime Tailwind JIT compile stalls & memory leaks.
+           REALISTIC HIGH-FIDELITY GLASSMORPHIC STYLING
+           Pure lightweight CSS (Zero Runtime Parsing Overhead, 60FPS on any PC)
            ===================================================================== */
         :root {
             --gold-primary: #d4af37;
             --gold-bright: #f5d77f;
-            --glass-bg: rgba(14, 18, 22, 0.78);
-            --glass-border: rgba(212, 175, 55, 0.28);
+            --gold-burnished: #aa8222;
+            --glass-bg: rgba(12, 15, 18, 0.82);
+            --glass-border: rgba(212, 175, 55, 0.32);
         }
 
         *, *::before, *::after {
@@ -39,9 +40,9 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background-color: #080a0c;
+            background-color: #06080a;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: #f3efe6;
+            color: #f5f0e6;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
         }
@@ -50,33 +51,33 @@
         .font-serif-tome { font-family: 'Cormorant Garamond', Georgia, serif; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
 
-        /* Performance Glassmorphic Surfaces */
+        /* Architectural Glassmorphic Panels */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(18px) saturate(150%);
-            -webkit-backdrop-filter: blur(18px) saturate(150%);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .glass-pill {
-            background: rgba(12, 16, 20, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(212, 175, 55, 0.24);
+            background: rgba(14, 18, 22, 0.8);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.28);
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease;
         }
 
         .glass-pill:hover {
-            border-color: rgba(245, 215, 127, 0.65);
-            background: rgba(26, 32, 38, 0.9);
-            transform: translateY(-1px);
+            border-color: rgba(245, 215, 127, 0.75);
+            background: rgba(28, 34, 42, 0.92);
+            transform: translateY(-1.5px);
         }
 
         .glass-pill.active {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.32), rgba(140, 100, 20, 0.42));
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(140, 100, 20, 0.45));
             border-color: #f5d77f;
-            box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
 
         /* 3D Spatial Department Plaques */
@@ -85,29 +86,47 @@
             transform: translate(-50%, -50%);
             pointer-events: auto;
             cursor: pointer;
-            transition: transform 0.18s ease, opacity 0.18s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
             z-index: 15;
             will-change: transform, left, top;
         }
         .spatial-plaque:hover {
-            transform: translate(-50%, -50%) scale(1.06);
+            transform: translate(-50%, -50%) scale(1.08);
             z-index: 25;
         }
 
-        /* Parchment Spread Modal */
+        /* Antiquarian Parchment Spread Modal */
         .parchment-page {
-            background: radial-gradient(circle at 50% 35%, #fbf6ea 0%, #efe4cc 70%, #e2d1b0 100%);
+            background: radial-gradient(circle at 50% 30%, #fbf5e6 0%, #efe1c3 65%, #dfceaa 100%);
             color: #231911;
-            box-shadow: inset 0 0 35px rgba(90, 58, 24, 0.18);
+            box-shadow: inset 0 0 45px rgba(85, 52, 20, 0.2);
         }
 
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.25); }
-        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.45); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+        .tome-book-spread {
+            display: flex !important;
+            flex-direction: row !important;
+        }
 
-        /* Utility Helpers */
+        @media (max-width: 768px) {
+            .tome-book-spread {
+                flex-direction: column !important;
+                overflow-y: auto !important;
+            }
+            .tome-book-spread > .parchment-page {
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 2px solid #bfa37a !important;
+                max-height: none !important;
+            }
+        }
+
+        /* Custom Gold Scrollbars */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.45); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.85); }
+
+        /* Utility Layouts */
         .flex { display: flex; }
         .inline-flex { display: inline-flex; }
         .grid { display: grid; }
@@ -140,8 +159,8 @@
         .cursor-grab:active { cursor: grabbing; }
         .select-none { user-select: none; }
         .outline-none { outline: none; }
-        .shadow-lg { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
-        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        .shadow-lg { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.55); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
         .transition { transition: all 0.2s ease; }
     </style>
 </head>
@@ -156,39 +175,39 @@
     <!-- 3. HOVER BOOK TOOLTIP -->
     <div id="bookHoverTooltip" class="hidden fixed pointer-events-none glass-panel" style="z-index: 35; padding: 10px 14px; border-radius: 14px; max-width: 290px;">
         <div class="flex items-center" style="gap: 8px;">
-            <span id="tooltipDot" style="width: 10px; height: 10px; border-radius: 9999px; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></span>
-            <span id="tooltipCallNo" class="font-mono-code" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(252, 211, 77, 0.95);">BAY A · TIER 2</span>
+            <span id="tooltipDot" style="width: 10px; height: 10px; border-radius: 9999px; background: #fbbf24; box-shadow: 0 0 10px #fbbf24;"></span>
+            <span id="tooltipCallNo" class="font-mono-code" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(252, 211, 77, 0.95);">BAY A · TIER 2</span>
         </div>
         <div id="tooltipTitle" class="font-cinzel truncate" style="font-size: 12px; font-weight: 700; color: #fffbeb; margin-top: 3px;">Archival Tome</div>
         <div id="tooltipSub" style="font-size: 11px; color: rgba(214, 211, 209, 0.85); margin-top: 2px;">Click to zoom &amp; inspect shelf</div>
     </div>
 
     <!-- 4. HYBRID HUD: TOP MINIMAL SEARCH BAR -->
-    <header class="fixed pointer-events-none flex flex-col items-center" style="top: 14px; left: 50%; transform: translateX(-50%); z-index: 30; width: 94vw; max-width: 980px;">
+    <header class="fixed pointer-events-none flex flex-col items-center" style="top: 14px; left: 50%; transform: translateX(-50%); z-index: 30; width: 94vw; max-width: 1020px;">
         <div class="w-full glass-panel pointer-events-auto flex items-center justify-between" style="border-radius: 18px; padding: 8px 16px; gap: 12px;">
             <!-- Brand & Engine Badges -->
             <div class="flex items-center shrink-0" style="gap: 12px;">
-                <button id="resetCameraTopBtn" title="Return to Rotunda Center" class="flex items-center justify-center cursor-pointer transition" style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(251, 191, 36, 0.45); color: #fcd34d;">
+                <button id="resetCameraTopBtn" title="Return to Rotunda Center Overview" class="flex items-center justify-center cursor-pointer transition" style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(251, 191, 36, 0.45); color: #fcd34d;">
                     <i class="fa-solid fa-landmark-dome" style="font-size: 14px;"></i>
                 </button>
                 <div style="display: flex; flex-direction: column;">
                     <div class="flex items-center" style="gap: 8px;">
-                        <h1 class="font-cinzel" style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #fef3c7;">CIHANNÜMA ARCHIVE</h1>
-                        <span id="engineBadge" class="font-mono-code" style="font-size: 9px; padding: 2px 6px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35);">WASM-V2 · 60FPS</span>
+                        <h1 class="font-cinzel" style="font-size: 13.5px; font-weight: 800; letter-spacing: 0.08em; color: #fef3c7;">CIHANNÜMA ARCHIVE</h1>
+                        <span id="engineBadge" class="font-mono-code" style="font-size: 9px; padding: 2px 6px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35);">WASM · PBR · 60FPS</span>
                     </div>
-                    <p style="font-size: 10px; color: #a8a29e; margin-top: 1px;">Drag to spin 360° · Click any shelf tome to inspect</p>
+                    <p style="font-size: 10px; color: #a8a29e; margin-top: 1px;">Drag to orbit 360° · Click any book to inspect &amp; unpack</p>
                 </div>
             </div>
 
             <!-- Instant Search Input -->
-            <div class="relative flex-1" style="max-width: 360px;">
+            <div class="relative flex-1" style="max-width: 340px;">
                 <i class="fa-solid fa-magnifying-glass absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: rgba(252, 211, 77, 0.6); font-size: 12px;"></i>
                 <input
                     id="globalSearchInput"
                     type="text"
                     placeholder="Search 16,320 tomes, LUTs, Shaders... (Press /)"
                     class="w-full outline-none transition"
-                    style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 7px 32px 7px 34px; font-size: 12px; color: #fffbeb;"
+                    style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 7px 32px 7px 34px; font-size: 12px; color: #fffbeb;"
                 >
                 <button id="clearSearchBtn" class="hidden absolute cursor-pointer" style="right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a8a29e; font-size: 12px;">
                     <i class="fa-solid fa-xmark"></i>
@@ -321,12 +340,10 @@
                     <span id="waveformTimeLabel" class="font-mono-code" style="font-size: 10px; color: #fcd34d;">00:00 / 00:04</span>
                 </div>
 
-                <!-- Interactive Scrubbable Waveform Canvas -->
                 <div class="relative w-full cursor-pointer overflow-hidden" id="waveformBox" style="height: 60px; border-radius: 12px; background: rgba(12, 10, 9, 0.95); border: 1px solid rgba(245, 158, 11, 0.25);">
                     <canvas id="waveformCanvas" class="w-full h-full block"></canvas>
                 </div>
 
-                <!-- Audio Controls + Direct WAV/ZIP Download -->
                 <div class="flex items-center justify-between" style="gap: 8px; margin-top: 10px;">
                     <div class="flex items-center" style="gap: 8px;">
                         <button
@@ -394,10 +411,9 @@
     </aside>
 
     <!-- 7. TWO-PAGE OPEN TOME MODAL -->
-    <div id="tomeModalBackdrop" class="hidden fixed inset-0 flex items-center justify-center" style="z-index: 50; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(10px); padding: 16px;">
-        <div class="relative w-full shadow-2xl flex flex-col md:flex-row overflow-hidden" style="max-width: 960px; height: 86vh; max-height: 720px; border-radius: 24px; border: 4px solid #3a2414; background: #24160c;">
+    <div id="tomeModalBackdrop" class="hidden fixed inset-0 flex items-center justify-center" style="z-index: 50; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); padding: 16px;">
+        <div class="relative w-full shadow-2xl overflow-hidden tome-book-spread" style="max-width: 960px; height: 86vh; max-height: 720px; border-radius: 24px; border: 4px solid #3a2414; background: #24160c;">
 
-            <!-- Close Tome Button -->
             <button
                 id="closeTomeModalBtn"
                 class="absolute flex items-center justify-center cursor-pointer transition"
@@ -518,7 +534,6 @@
                         </button>
                     </div>
 
-                    <!-- Asset Creation Form -->
                     <div style="margin-top: 12px; background: rgba(255, 255, 255, 0.45); border: 1px solid #c9ae82; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                         <div>
                             <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Asset Title</label>
@@ -557,7 +572,6 @@
                         </div>
                     </div>
 
-                    <!-- Active Asset Viewer Area -->
                     <div style="margin-top: 14px;">
                         <h4 class="font-cinzel" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d2814; margin-bottom: 6px;">
                             Folio Asset Reader
@@ -579,20 +593,16 @@
 
     <script>
         /***********************************************************************
-         * 1. MULTI-LANGUAGE WEB PLATFORM UPGRADE:
+         * 1. MULTI-LANGUAGE WEB PLATFORM:
          *    - 128-byte Handcrafted WebAssembly (WASM) Math Kernel (lerp, clamp, dist3d)
-         *    - Off-Main-Thread Dedicated Web Worker (PKZIP, 16-bit 44.1kHz WAV, .CUBE)
-         *    - Adaptive FPS Performance Profiler (Auto-Resolution Scaling for Low-End PCs)
+         *    - Dedicated Web Worker for PKZIP, 16-bit 44.1kHz WAV, and .CUBE
+         *    - Adaptive FPS Performance Profiler for Low-End PCs
          ***********************************************************************/
 
         let wasmEngine = null;
 
         async function initWasmMathKernel() {
             try {
-                // High-performance 128-byte WebAssembly binary exporting:
-                // 1) lerp(a: f32, b: f32, t: f32) -> f32
-                // 2) clamp(val: f32, min: f32, max: f32) -> f32
-                // 3) dist3d(x1, y1, z1, x2, y2, z2) -> f32 (fast Euclidean distance)
                 const wasmBytes = new Uint8Array([
                     0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
                     0x01, 0x12, 0x02, 0x60, 0x03, 0x7d, 0x7d, 0x7d, 0x01, 0x7d,
@@ -611,10 +621,8 @@
                 const { instance } = await WebAssembly.instantiate(wasmBytes);
                 if (instance && instance.exports) {
                     wasmEngine = instance.exports;
-                    console.log('[Rotunda Engine] WebAssembly V2 Math Kernel instantiated: lerp, clamp, dist3d ready');
                 }
             } catch (err) {
-                console.warn('[Rotunda Engine] WASM fallback to JS:', err);
                 wasmEngine = {
                     lerp: (a, b, t) => a + (b - a) * t,
                     clamp: (val, min, max) => Math.min(Math.max(val, min), max),
@@ -631,19 +639,11 @@
             return wasmEngine ? wasmEngine.clamp(val, min, max) : Math.min(Math.max(val, min), max);
         }
 
-        /***********************************************************************
-         * 2. ADAPTIVE PERFORMANCE PROFILER FOR LOW-END PCs
-         *    - Auto-detects weak GPUs / CPUs (< 4 cores, mobile, or slow frame-time)
-         *    - Adaptive dynamic resolution scaling (preserves 60 FPS under load)
-         ***********************************************************************/
         const PerfProfile = {
             isLowEnd: false,
-            ecoMode: true,          // Default to high-efficiency Eco 60FPS for maximum accessibility
-            targetFPS: 60,
+            ecoMode: true,
             currentDpr: 1.0,
             minDpr: 0.75,
-            maxDpr: 1.5,
-            fpsHistory: [],
             lastFrameTime: performance.now()
         };
 
@@ -815,9 +815,7 @@
                     const crcTable = new Uint32Array(256);
                     for (let n = 0; n < 256; n++) {
                         let c = n;
-                        for (let k = 0; k < 8; k++) {
-                            c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
-                        }
+                        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
                         crcTable[n] = c >>> 0;
                     }
                     function crc32(bytes) {
@@ -1076,13 +1074,13 @@
         ];
 
         const SPINE_PALETTE = [
-            { name: 'Oxblood Crimson', hex: '#5c1616' },
-            { name: 'Imperial Emerald', hex: '#133b2b' },
-            { name: 'Prussian Indigo', hex: '#182b49' },
-            { name: 'Florentine Umber', hex: '#4a2c18' },
-            { name: 'Obsidian Vellum', hex: '#1e2024' },
-            { name: 'Royal Amethyst', hex: '#3b1d4a' },
-            { name: 'Antiquarian Ochre', hex: '#6e4715' }
+            { name: 'Oxblood Crimson', hex: '#631515' },
+            { name: 'Imperial Emerald', hex: '#113d2c' },
+            { name: 'Prussian Indigo', hex: '#162d4e' },
+            { name: 'Florentine Cognac', hex: '#522f18' },
+            { name: 'Obsidian Vellum', hex: '#1c1e22' },
+            { name: 'Royal Amethyst', hex: '#3e1c50' },
+            { name: 'Antiquarian Ochre', hex: '#774d16' }
         ];
 
         const SAMPLE_TOME_TITLES = [
@@ -1158,6 +1156,7 @@
         }
 
         let scene, camera, renderer, bookInstancedMesh, hoverHighlightMesh;
+        let dustParticlesMesh;
         let raycaster, pointerNDC;
         let activeDepartment = DEPARTMENTS[0];
         let selectedBookId = 120;
@@ -1165,7 +1164,7 @@
         let showSpatialPlaques = true;
         let spatialPlaqueElements = [];
 
-        // High-Precision Damped Camera State (Driven by WebAssembly Kernel)
+        // High-Precision Damped Camera State
         const camOrbit = {
             theta: 0.65,
             phi: 1.28,
@@ -1181,36 +1180,588 @@
             desiredTargetZ: 0.0
         };
 
-        // Procedural Terrazzo Texture (Optimized 512x512 resolution for low-end GPU fill-rate)
-        function createTerrazzoTextures() {
-            const size = 512;
-            const diffCanvas = document.createElement('canvas');
-            diffCanvas.width = size;
-            diffCanvas.height = size;
-            const dCtx = diffCanvas.getContext('2d');
+        /***********************************************************************
+         * REALISTIC PROCEDURAL MATERIAL ENGINE:
+         * Inlaid Marble Intarsia Floor, Coffered Dome, Aged Manuscripts & Globe
+         ***********************************************************************/
 
-            dCtx.fillStyle = '#1b2422';
-            dCtx.fillRect(0, 0, size, size);
+        // 1. Realistic Renaissance Inlaid Marble Floor (Intarsia Medallion & Roman Geometric Pavement)
+        function createInlaidFloorTexture() {
+            const size = 1024;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const center = size / 2;
 
-            const chipColors = ['#d8d2c5', '#8c9692', '#3a4a46', '#c5a880', '#52635e', '#f0ece1'];
-            for (let i = 0; i < 1400; i++) {
-                dCtx.fillStyle = chipColors[i % chipColors.length];
-                const x = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * size;
-                const y = ((Math.cos(i * 78.233) * 29432.1234) % 1 + 1) % 1 * size;
-                const s = 1.5 + (i % 4) * 1.2;
-                dCtx.fillRect(x, y, s, s);
+            // Outer dark perimeter: Verde Alpi serpentine green marble
+            ctx.fillStyle = '#0f241e';
+            ctx.fillRect(0, 0, size, size);
+
+            // Annular outer Verde Alpi ring with gilded brass boundary
+            ctx.fillStyle = '#132e26';
+            ctx.beginPath();
+            ctx.arc(center, center, 492, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Concentric bands of Roman geometric marble pavement (under study desks)
+            // Band 4 (radius 410 to 480): 48 alternating tiles of Rosso Verona Terra Cotta & Botticino Ivory
+            const r4_in = 410, r4_out = 480, n4 = 48;
+            for (let i = 0; i < n4; i++) {
+                const a1 = (i / n4) * Math.PI * 2;
+                const a2 = ((i + 1) / n4) * Math.PI * 2;
+                ctx.fillStyle = (i % 2 === 0) ? '#682c23' : '#e6ddd0';
+                ctx.beginPath();
+                ctx.arc(center, center, r4_out, a1, a2);
+                ctx.arc(center, center, r4_in, a2, a1, true);
+                ctx.closePath();
+                ctx.fill();
             }
 
-            const tex = new THREE.CanvasTexture(diffCanvas);
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
-            tex.repeat.set(8, 8);
+            // Gilded Brass Inlay dividing ring
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(center, center, r4_in, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Band 3 (radius 345 to 410): 36 alternating tiles of Belgian Nero Marquina & White Carrara
+            const r3_in = 345, r3_out = 410, n3 = 36;
+            for (let i = 0; i < n3; i++) {
+                const a1 = (i / n3) * Math.PI * 2;
+                const a2 = ((i + 1) / n3) * Math.PI * 2;
+                ctx.fillStyle = (i % 2 === 0) ? '#181d20' : '#f0ece2';
+                ctx.beginPath();
+                ctx.arc(center, center, r3_out, a1, a2);
+                ctx.arc(center, center, r3_in, a2, a1, true);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Gilded Brass Inlay dividing ring
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(center, center, r3_in, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Band 2 (radius 280 to 345): 32 alternating tiles of Siena Ochre Gold & White Carrara
+            const r2_in = 280, r2_out = 345, n2 = 32;
+            for (let i = 0; i < n2; i++) {
+                const a1 = (i / n2) * Math.PI * 2;
+                const a2 = ((i + 1) / n2) * Math.PI * 2;
+                ctx.fillStyle = (i % 2 === 0) ? '#aa7e35' : '#ede7db';
+                ctx.beginPath();
+                ctx.arc(center, center, r2_out, a1, a2);
+                ctx.arc(center, center, r2_in, a2, a1, true);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Gilded Brass Inlay dividing ring
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.arc(center, center, r2_in, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Band 1 (radius 220 to 280): 24 alternating tiles of Belgian Nero Marquina & White Carrara
+            const r1_in = 220, r1_out = 280, n1 = 24;
+            for (let i = 0; i < n1; i++) {
+                const a1 = (i / n1) * Math.PI * 2;
+                const a2 = ((i + 1) / n1) * Math.PI * 2;
+                ctx.fillStyle = (i % 2 === 0) ? '#181d20' : '#f4eee4';
+                ctx.beginPath();
+                ctx.arc(center, center, r1_out, a1, a2);
+                ctx.arc(center, center, r1_in, a2, a1, true);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Inner dark green serpentine marble annular band
+            ctx.fillStyle = '#122c25';
+            ctx.beginPath();
+            ctx.arc(center, center, 220, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Center Medallion: 16-pointed Compass Rose Star in White Carrara, Sienna Gold & Black Marble
+            const outerR = 192;
+            const innerR = 76;
+            for (let i = 0; i < 16; i++) {
+                const a1 = (i / 16) * Math.PI * 2;
+                const a2 = ((i + 0.5) / 16) * Math.PI * 2;
+                const a3 = ((i + 1) / 16) * Math.PI * 2;
+
+                // Alternate between ivory Carrara marble and dark charcoal stone
+                ctx.fillStyle = (i % 2 === 0) ? '#faf6ee' : '#1c2224';
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.lineTo(center + Math.cos(a1) * outerR, center + Math.sin(a1) * outerR);
+                ctx.lineTo(center + Math.cos(a2) * innerR, center + Math.sin(a2) * innerR);
+                ctx.closePath();
+                ctx.fill();
+
+                // Siena Gold and deep bronze for complementary facets
+                ctx.fillStyle = (i % 2 === 0) ? '#ba8d3c' : '#111517';
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.lineTo(center + Math.cos(a2) * innerR, center + Math.sin(a2) * innerR);
+                ctx.lineTo(center + Math.cos(a3) * outerR, center + Math.sin(a3) * outerR);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Gilded Brass Inlay lines defining the star facets
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 2.5;
+            for (let i = 0; i < 16; i++) {
+                const a = (i / 16) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.lineTo(center + Math.cos(a) * outerR, center + Math.sin(a) * outerR);
+                ctx.stroke();
+            }
+
+            // Central White Carrara Marble Disc beneath Globe
+            ctx.fillStyle = '#fbf7ee';
+            ctx.beginPath();
+            ctx.arc(center, center, 64, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Inlaid Cardinal Brass Compass Accents (N, E, S, W)
+            ctx.fillStyle = '#aa7e22';
+            ctx.font = 'bold 16px "Cinzel", serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('N', center, center - 46);
+            ctx.fillText('S', center, center + 46);
+            ctx.fillText('E', center + 46, center);
+            ctx.fillText('W', center - 46, center);
+
+            // Natural fine marble veins across the tiles
+            ctx.strokeStyle = 'rgba(120, 100, 80, 0.14)';
+            ctx.lineWidth = 1.2;
+            for (let v = 0; v < 18; v++) {
+                const vAngle = (v / 18) * Math.PI * 2;
+                ctx.beginPath();
+                let vx = center + Math.cos(vAngle) * 230;
+                let vy = center + Math.sin(vAngle) * 230;
+                ctx.moveTo(vx, vy);
+                for (let step = 0; step < 7; step++) {
+                    vx += Math.cos(vAngle + step * 0.4) * 35;
+                    vy += Math.sin(vAngle + step * 0.4) * 35;
+                    ctx.lineTo(vx, vy);
+                }
+                ctx.stroke();
+            }
+
+            // Fine mineral aggregate flecks for tactile stone texture
+            for (let i = 0; i < 2400; i++) {
+                ctx.fillStyle = (i % 2 === 0) ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.14)';
+                const x = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * size;
+                const y = ((Math.cos(i * 78.233) * 29432.1234) % 1 + 1) % 1 * size;
+                ctx.fillRect(x, y, 1.8, 1.8);
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
             tex.minFilter = THREE.LinearFilter;
             tex.generateMipmaps = false;
             return tex;
         }
 
-        // Calligraphic Frieze Texture
+        // Realistic Classical Fluted Travertine/Marble Column Texture
+        function createFlutedColumnTexture() {
+            const w = 512, h = 512;
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ede5d8';
+            ctx.fillRect(0, 0, w, h);
+
+            // 16 vertical fluting channels
+            const numFlutes = 16;
+            const fluteW = w / numFlutes;
+            for (let f = 0; f < numFlutes; f++) {
+                const x = f * fluteW;
+                const grad = ctx.createLinearGradient(x, 0, x + fluteW, 0);
+                grad.addColorStop(0, 'rgba(0, 0, 0, 0.35)');
+                grad.addColorStop(0.18, 'rgba(0, 0, 0, 0.12)');
+                grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.12)');
+                grad.addColorStop(0.82, 'rgba(0, 0, 0, 0.12)');
+                grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.35)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x + 2, 0, fluteW - 4, h);
+
+                // Highlight fillet ridge between flutes
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+                ctx.fillRect(x + fluteW - 2, 0, 2, h);
+            }
+
+            // Horizontal stone drum joint seams (every 128px)
+            for (let y = 128; y < h; y += 128) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+                ctx.fillRect(0, y - 2, w, 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fillRect(0, y, w, 1.5);
+            }
+
+            // Natural marble veins
+            ctx.strokeStyle = 'rgba(140, 118, 95, 0.18)';
+            ctx.lineWidth = 1.2;
+            for (let v = 0; v < 5; v++) {
+                ctx.beginPath();
+                let curX = (v * 98) % w;
+                ctx.moveTo(curX, 0);
+                for (let y = 0; y < h; y += 32) {
+                    curX += (Math.sin(y * 0.05 + v) * 10);
+                    ctx.lineTo(curX, y);
+                }
+                ctx.stroke();
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(1, 4);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
+        }
+
+        // 2. Realistic Coffered Ceiling Dome with Gilded Rosettes & Oculus
+        function createCofferedDomeTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Pale celestial cerulean blue plaster dome ground
+            ctx.fillStyle = '#9cb8cc';
+            ctx.fillRect(0, 0, 1024, 512);
+
+            // Zenith Oculus aperture polar cap with radiant daylight (wraps apex of sphere)
+            const oculusSky = ctx.createLinearGradient(0, 0, 0, 36);
+            oculusSky.addColorStop(0, '#ffffff');
+            oculusSky.addColorStop(0.45, '#e4f5ff');
+            oculusSky.addColorStop(1, '#9cb8cc');
+            ctx.fillStyle = oculusSky;
+            ctx.fillRect(0, 0, 1024, 36);
+
+            // Gilded bronze Oculus aperture frame
+            ctx.fillStyle = '#d4af37';
+            ctx.fillRect(0, 34, 1024, 6);
+
+            // Concentric bands of classical recessed coffers (caissons)
+            const numTiers = 5;
+            const numCols = 32;
+
+            for (let t = 0; t < numTiers; t++) {
+                const y = 64 + t * 78;
+                const cofferH = 62;
+
+                for (let c = 0; c < numCols; c++) {
+                    const x = c * (1024 / numCols) + 6;
+                    const cofferW = (1024 / numCols) - 12;
+
+                    // Stepped beveled molding (light top/left, shadow bottom/right)
+                    ctx.fillStyle = '#829fb2';
+                    ctx.fillRect(x, y, cofferW, cofferH);
+
+                    // Recessed inner caisson
+                    ctx.fillStyle = '#6f8e9f';
+                    ctx.fillRect(x + 4, y + 4, cofferW - 8, cofferH - 8);
+
+                    // Highlight rim
+                    ctx.strokeStyle = '#d7e6ef';
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeRect(x + 1, y + 1, cofferW - 2, cofferH - 2);
+
+                    // Gilded 8-pointed gold leaf star/rosette at center of each coffer
+                    const cx = x + cofferW / 2;
+                    const cy = y + cofferH / 2;
+                    ctx.fillStyle = '#d4af37';
+                    ctx.beginPath();
+                    for (let p = 0; p < 8; p++) {
+                        const a = (p / 8) * Math.PI * 2;
+                        const r = (p % 2 === 0) ? 7 : 3;
+                        const px = cx + Math.cos(a) * r;
+                        const py = cy + Math.sin(a) * r;
+                        p === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // Gilded frieze and rib bands
+            ctx.fillStyle = '#d4af37';
+            ctx.fillRect(0, 480, 1024, 8);
+            ctx.fillRect(0, 52, 1024, 5);
+
+            // Zenith Oculus aperture ring with radial daylight rays
+            const oculusGrad = ctx.createRadialGradient(512, 20, 5, 512, 20, 45);
+            oculusGrad.addColorStop(0, '#ffffff');
+            oculusGrad.addColorStop(0.5, '#e0f4ff');
+            oculusGrad.addColorStop(1, '#9cb8cc');
+            ctx.fillStyle = oculusGrad;
+            ctx.beginPath();
+            ctx.arc(512, 20, 40, 0, Math.PI * 2);
+            ctx.fill();
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
+        }
+
+        // 3. Realistic Aged Antique Vellum Manuscript Page with Astronomical Diagram
+        function createManuscriptPageTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Aged vellum background
+            ctx.fillStyle = '#faecd6';
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Subtle age stains and deckled edges
+            for (let i = 0; i < 1200; i++) {
+                ctx.fillStyle = (i % 2 === 0) ? 'rgba(120, 80, 40, 0.05)' : 'rgba(255, 255, 255, 0.08)';
+                const x = ((Math.sin(i * 15.34) * 43758.5453) % 1 + 1) % 1 * 512;
+                const y = ((Math.cos(i * 42.12) * 29432.1234) % 1 + 1) % 1 * 256;
+                ctx.fillRect(x, y, 3, 3);
+            }
+
+            // Center spine gutter shadow
+            const gutterGrad = ctx.createLinearGradient(246, 0, 266, 0);
+            gutterGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            gutterGrad.addColorStop(0.5, 'rgba(60,40,20,0.35)');
+            gutterGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gutterGrad;
+            ctx.fillRect(240, 0, 32, 256);
+
+            // Left Page: Hand-drawn Astronomical Armillary & Orbit Diagram
+            ctx.strokeStyle = '#5a3b22';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(128, 128, 55, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(128, 128, 65, 25, Math.PI / 4, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(128, 128, 65, 25, -Math.PI / 4, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#b44a28';
+            ctx.beginPath();
+            ctx.arc(128, 128, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Right Page: Illuminated Manuscript Text & Red Capital Letter
+            ctx.fillStyle = '#b44a28';
+            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
+            ctx.fillText('E', 280, 52);
+
+            ctx.fillStyle = '#2b1c11';
+            for (let line = 0; line < 10; line++) {
+                const y = 48 + line * 18;
+                const startX = (line < 2) ? 310 : 280;
+                ctx.fillRect(startX, y, 190 - (line % 3) * 18, 3.5);
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
+        }
+
+        // 4. Antiquarian Moroccan Leather Book Spine Texture Atlas
+        function createBookSpineTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Organic leather pores and aged patina
+            for (let i = 0; i < 4000; i++) {
+                const x = (i * 73) % 512;
+                const y = (i * 137) % 512;
+                ctx.fillStyle = (i % 2 === 0) ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
+                ctx.fillRect(x, y, 2.5, 2.5);
+            }
+
+            // 5 Raised Hub Ribs with 3D shadow undercuts & gold tooling
+            const hubs = [45, 125, 235, 345, 420];
+            hubs.forEach(y => {
+                // Shadow underneath hub
+                ctx.fillStyle = 'rgba(0,0,0,0.45)';
+                ctx.fillRect(0, y - 5, 512, 10);
+                // Highlighted hub ridge
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.fillRect(0, y - 3, 512, 3);
+                // Pure gold leaf fillet line
+                ctx.fillStyle = '#f5d77f';
+                ctx.fillRect(0, y - 1, 512, 2.5);
+            });
+
+            // Gilded ornamental filigree stamping at head and tail
+            ctx.fillStyle = '#d4af37';
+            ctx.fillRect(40, 16, 432, 3);
+            ctx.fillRect(40, 485, 432, 3);
+
+            // Antiquarian Vellum Catalog Sticker with calligraphic lettering
+            ctx.fillStyle = '#faecd6';
+            ctx.fillRect(60, 442, 392, 32);
+            ctx.strokeStyle = '#c4ae88';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(60, 442, 392, 32);
+
+            ctx.fillStyle = '#2b2118';
+            ctx.fillRect(90, 452, 200, 3.5);
+            ctx.fillRect(90, 460, 140, 3);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
+        }
+
+        // 5. Antique Cartographic Terrestrial & Celestial Globe Texture
+        function createWorldGlobeTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Rich aged verdigris oceanic parchment
+            ctx.fillStyle = '#112523';
+            ctx.fillRect(0, 0, 1024, 512);
+
+            // Subtle oceanic contour ripples
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.08)';
+            ctx.lineWidth = 1;
+            for (let y = 10; y < 512; y += 14) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                for (let x = 0; x < 1024; x += 32) {
+                    ctx.lineTo(x, y + Math.sin(x * 0.02) * 3);
+                }
+                ctx.stroke();
+            }
+
+            // Burnished gold graticule latitude & longitude meridians
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.28)';
+            ctx.lineWidth = 1.2;
+            for (let x = 0; x <= 1024; x += 64) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 512); ctx.stroke();
+            }
+            for (let y = 0; y <= 512; y += 42) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1024, y); ctx.stroke();
+            }
+
+            // Calibrated Equator & Tropics
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(0, 256); ctx.lineTo(1024, 256); ctx.stroke();
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, 192); ctx.lineTo(1024, 192); ctx.stroke(); // Tropic of Cancer
+            ctx.beginPath(); ctx.moveTo(0, 320); ctx.lineTo(1024, 320); ctx.stroke(); // Tropic of Capricorn
+
+            // Continental landmasses in burnished metallic gold leaf with fine contours
+            ctx.fillStyle = '#caa342';
+            const continents = [
+                // Eurasia & Mediterranean
+                [[480, 115], [540, 95], [630, 85], [740, 95], [830, 115], [880, 175], [860, 230], [790, 245], [720, 225], [670, 255], [610, 215], [520, 220], [480, 185], [460, 145]],
+                // British Isles & Scandinavia
+                [[470, 90], [485, 80], [480, 105], [465, 100]],
+                [[510, 50], [535, 45], [530, 85], [505, 80]],
+                // Africa
+                [[475, 205], [575, 210], [605, 275], [570, 365], [525, 400], [500, 385], [470, 305], [445, 245]],
+                // Madagascar
+                [[615, 335], [630, 345], [620, 375], [608, 365]],
+                // North America
+                [[130, 95], [210, 75], [310, 80], [340, 145], [285, 215], [240, 245], [205, 215], [170, 210], [125, 160]],
+                // Central America & Caribbean
+                [[235, 248], [260, 275], [285, 260], [270, 248]],
+                // South America
+                [[275, 265], [350, 285], [365, 340], [330, 425], [290, 455], [270, 395], [255, 320]],
+                // Australia & New Zealand
+                [[765, 315], [845, 310], [865, 375], [795, 395], [760, 355]],
+                [[880, 395], [895, 405], [885, 425]],
+                // Japan archipelago
+                [[875, 160], [890, 175], [885, 200], [870, 185]]
+            ];
+            continents.forEach(poly => {
+                ctx.beginPath();
+                poly.forEach(([x, y], idx) => idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            // Coastal engraved contour echoes (hachures)
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+            ctx.lineWidth = 1;
+            continents.forEach(poly => {
+                ctx.beginPath();
+                poly.forEach(([x, y], idx) => idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+                ctx.closePath();
+                ctx.stroke();
+            });
+
+            // Classical Cartouche Banner ("ORBIS TERRARUM ARCHIVUM")
+            ctx.fillStyle = '#faeed8';
+            ctx.fillRect(80, 360, 170, 34);
+            ctx.strokeStyle = '#c59a3c';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(80, 360, 170, 34);
+            ctx.fillStyle = '#2b1b0c';
+            ctx.font = 'bold 9px "Cinzel", serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ORBIS TERRARUM', 165, 375);
+            ctx.font = '7px "Cinzel", serif';
+            ctx.fillText('CIHANNÜMA ARCHIVUM', 165, 386);
+
+            // Navigational Rhumb Lines radiating across Pacific
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.22)';
+            ctx.lineWidth = 1;
+            const roseX = 100, roseY = 250;
+            for (let r = 0; r < 16; r++) {
+                const ra = (r / 16) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.moveTo(roseX, roseY);
+                ctx.lineTo(roseX + Math.cos(ra) * 90, roseY + Math.sin(ra) * 90);
+                ctx.stroke();
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
+        }
+
         function createDomeCalligraphyTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 1024;
@@ -1237,94 +1788,19 @@
             return tex;
         }
 
-        // Moroccan Leather Spine Texture (Optimized 256x256)
-        function createBookSpineTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 256, 256);
-
-            // Subtle leather grain
-            for (let i = 0; i < 2000; i++) {
-                const x = (i * 73) % 256;
-                const y = (i * 137) % 256;
-                ctx.fillStyle = (i % 2 === 0) ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)';
-                ctx.fillRect(x, y, 2, 2);
-            }
-
-            const bandPositions = [24, 60, 120, 180, 215];
-            bandPositions.forEach(y => {
-                ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                ctx.fillRect(0, y - 3, 256, 6);
-                ctx.fillStyle = '#f5d77f';
-                ctx.fillRect(0, y - 1, 256, 2);
-            });
-
-            ctx.fillStyle = 'rgba(245, 240, 228, 0.85)';
-            ctx.fillRect(30, 228, 196, 18);
-            ctx.fillStyle = '#2b2118';
-            ctx.fillRect(45, 234, 110, 2);
-            ctx.fillRect(45, 238, 75, 2);
-
-            const tex = new THREE.CanvasTexture(canvas);
-            tex.minFilter = THREE.LinearFilter;
-            tex.generateMipmaps = false;
-            return tex;
-        }
-
-        // World Globe Texture (Optimized 512x256)
-        function createWorldGlobeTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = '#112224';
-            ctx.fillRect(0, 0, 512, 256);
-
-            ctx.strokeStyle = 'rgba(212, 175, 55, 0.25)';
-            ctx.lineWidth = 1;
-            for (let x = 0; x <= 512; x += 32) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 256); ctx.stroke();
-            }
-            for (let y = 0; y <= 256; y += 21) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
-            }
-
-            ctx.fillStyle = '#d4af37';
-            const continents = [
-                [[260, 55], [340, 48], [410, 62], [430, 98], [385, 122], [320, 115], [270, 92]],
-                [[240, 100], [290, 102], [305, 142], [282, 192], [255, 185], [235, 138]],
-                [[75, 52], [148, 48], [165, 88], [130, 118], [98, 108], [68, 78]],
-                [[138, 128], [178, 138], [172, 198], [148, 218], [132, 172]],
-                [[385, 162], [428, 160], [432, 192], [392, 195]]
-            ];
-            continents.forEach(poly => {
-                ctx.beginPath();
-                poly.forEach(([x, y], idx) => idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
-                ctx.closePath();
-                ctx.fill();
-            });
-
-            const tex = new THREE.CanvasTexture(canvas);
-            tex.minFilter = THREE.LinearFilter;
-            tex.generateMipmaps = false;
-            return tex;
-        }
+        /***********************************************************************
+         * 3D ARCHITECTURAL ROTUNDA SCENE CREATION
+         ***********************************************************************/
 
         function init3DRotundaScene() {
             detectHardwareTier();
             const container = document.getElementById('webglContainer');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x12161a);
-            scene.fog = new THREE.FogExp2(0x14181d, 0.0065);
+            scene.background = new THREE.Color(0x101418);
+            scene.fog = new THREE.FogExp2(0x12171d, 0.007);
 
             camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 140);
 
-            // WebGL Renderer with Low-End Auto Configuration
             renderer = new THREE.WebGLRenderer({
                 antialias: !PerfProfile.isLowEnd,
                 powerPreference: 'high-performance',
@@ -1335,7 +1811,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(PerfProfile.currentDpr);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.15;
+            renderer.toneMappingExposure = 1.04;
             if ('outputColorSpace' in renderer) {
                 renderer.outputColorSpace = THREE.SRGBColorSpace;
             } else if ('outputEncoding' in renderer) {
@@ -1344,60 +1820,54 @@
             container.innerHTML = '';
             container.appendChild(renderer.domElement);
 
-            // Balanced Architectural Ambient Light (No expensive real-time shadow passes on weak GPUs)
-            const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x4a3219, 0.95);
+            // Balanced Architectural PBR Lighting (Chiaroscuro: Warm Interior / Cool Skylight)
+            const hemiLight = new THREE.HemisphereLight(0x7da4c2, 0x2b170c, 0.45);
             hemiLight.position.set(0, 36, 0);
             scene.add(hemiLight);
 
-            const atriumLight = new THREE.PointLight(0xffb86b, 1.35, 65, 1.5);
-            atriumLight.position.set(0, 14, 0);
+            // Warm golden atrium chandelier point light
+            const atriumLight = new THREE.PointLight(0xffa836, 1.35, 60, 1.8);
+            atriumLight.position.set(0, 12.0, 0);
             scene.add(atriumLight);
 
-            const zenithLight = new THREE.DirectionalLight(0xe0f2fe, 0.85);
-            zenithLight.position.set(4, 40, -6);
+            // Radiant sunlight oculus beam from above
+            const zenithLight = new THREE.DirectionalLight(0xfff3db, 1.65);
+            zenithLight.position.set(4, 38, -4);
             scene.add(zenithLight);
 
-            // 1. FLOOR
-            const floorGeo = new THREE.CylinderGeometry(28.5, 28.5, 0.4, 48);
+            // 1. INLAID MARBLE INTARSIA FLOOR
+            const floorGeo = new THREE.CylinderGeometry(28.5, 28.5, 0.4, 54);
             const floorMat = new THREE.MeshStandardMaterial({
-                map: createTerrazzoTextures(),
-                roughness: 0.25,
-                metalness: 0.08
+                map: createInlaidFloorTexture(),
+                roughness: 0.15,
+                metalness: 0.10
             });
             const floorMesh = new THREE.Mesh(floorGeo, floorMat);
             floorMesh.position.y = -0.2;
             scene.add(floorMesh);
 
-            const outerRingGeo = new THREE.RingGeometry(15.2, 26.8, 48);
-            outerRingGeo.rotateX(-Math.PI / 2);
-            const outerRingMat = new THREE.MeshStandardMaterial({
-                color: 0x162923,
-                roughness: 0.82,
-                metalness: 0.02
-            });
-            const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
-            outerRingMesh.position.y = 0.01;
-            scene.add(outerRingMesh);
+            // 2. CENTRAL GILDED ARMILLARY GLOBE & RECEPTION ROTUNDA
+            buildRealisticCentralGlobeAndDesk();
 
-            // 2. CENTRAL WORLD GLOBE & DESK
-            buildCentralGlobeAndDesk();
-
-            // 3. 16 MONUMENTAL COLUMNS
+            // 3. 16 MONUMENTAL FLUTED COLUMNS WITH LOTUS/CORINTHIAN CAPITALS
             buildMonumentalColumns();
 
-            // 4. BALCONY TIERS
+            // 4. BALCONY TIERS & WARM COVE ILLUMINATION
             buildRotundaBalconyTiers();
 
-            // 5. CLERESTORY & DOME
+            // 5. COFFERED CEILING DOME & RADIANT OCULUS SUNBEAMS
             buildClerestoryAndDome();
 
-            // 6. READING ROOM DESKS
-            buildReadingRoomDesks();
+            // 6. RADIAL WALNUT STUDY DESKS WITH EMERALD BANKER LAMPS
+            buildRealisticReadingRoomDesks();
 
-            // 7. 16,320 INSTANCED 3D BOOKS
+            // 7. 16,320 ORGANICALLY ORDERED 3D SHELF TOMES
             buildInstancedLibraryBooks();
 
-            // 8. HOVER PROXY MESH
+            // 8. FLOATING GOLDEN SUNBEAM DUST MOTES (WebAssembly animated)
+            buildAtmosphericDustMotes();
+
+            // 9. HOVER SELECTION PROXY MESH
             const hoverGeo = new THREE.BoxGeometry(0.28, 0.72, 0.52);
             const hoverMat = new THREE.MeshBasicMaterial({
                 color: 0xf5d77f,
@@ -1416,61 +1886,109 @@
             buildSpatialDepartmentPlaques();
         }
 
-        function buildCentralGlobeAndDesk() {
+        // Realistic Gilded Bronze Armillary Sphere & Mahogany Reception Desk
+        function buildRealisticCentralGlobeAndDesk() {
             const centerGroup = new THREE.Group();
 
-            const deskOuterGeo = new THREE.CylinderGeometry(3.85, 3.95, 1.05, 36, 1, true);
-            const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x3b1c0e, roughness: 0.35, metalness: 0.08 });
+            // Carved fluted dark mahogany reception desk ring
+            const deskOuterGeo = new THREE.CylinderGeometry(3.9, 4.02, 1.08, 48, 1, true);
+            const mahoganyMat = new THREE.MeshStandardMaterial({
+                color: 0x36180a,
+                roughness: 0.3,
+                metalness: 0.1
+            });
             const deskOuter = new THREE.Mesh(deskOuterGeo, mahoganyMat);
-            deskOuter.position.y = 0.525;
+            deskOuter.position.y = 0.54;
             centerGroup.add(deskOuter);
 
-            const counterTopGeo = new THREE.RingGeometry(2.85, 4.02, 36);
+            // Polished Calacatta Gold marble counter top
+            const counterTopGeo = new THREE.RingGeometry(2.82, 4.08, 48);
             counterTopGeo.rotateX(-Math.PI / 2);
-            const creamMarbleMat = new THREE.MeshStandardMaterial({ color: 0xf3ead8, roughness: 0.22, metalness: 0.05 });
-            const counterTop = new THREE.Mesh(counterTopGeo, creamMarbleMat);
-            counterTop.position.y = 1.06;
+            const calacattaMat = new THREE.MeshStandardMaterial({
+                color: 0xf6efe4,
+                roughness: 0.16,
+                metalness: 0.08
+            });
+            const counterTop = new THREE.Mesh(counterTopGeo, calacattaMat);
+            counterTop.position.y = 1.08;
             centerGroup.add(counterTop);
 
-            const basePedestalGeo = new THREE.CylinderGeometry(1.15, 1.32, 1.75, 24);
-            const emeraldCollarMat = new THREE.MeshStandardMaterial({ color: 0x163832, roughness: 0.4, metalness: 0.1 });
+            // Dark Verde Alpi marble baluster pedestal
+            const basePedestalGeo = new THREE.CylinderGeometry(1.15, 1.38, 1.78, 32);
+            const emeraldCollarMat = new THREE.MeshStandardMaterial({
+                color: 0x14332c,
+                roughness: 0.3,
+                metalness: 0.15
+            });
             const basePedestal = new THREE.Mesh(basePedestalGeo, emeraldCollarMat);
-            basePedestal.position.y = 0.875;
+            basePedestal.position.y = 0.89;
             centerGroup.add(basePedestal);
 
-            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.25, metalness: 0.8 });
-            const trimRingGeo = new THREE.TorusGeometry(1.22, 0.06, 12, 36);
+            // Burnished Brass Trim Ring
+            const brassMat = new THREE.MeshStandardMaterial({
+                color: 0xd4af37,
+                roughness: 0.22,
+                metalness: 0.85
+            });
+            const trimRingGeo = new THREE.TorusGeometry(1.24, 0.07, 16, 48);
             trimRingGeo.rotateX(Math.PI / 2);
             const trimRing = new THREE.Mesh(trimRingGeo, brassMat);
-            trimRing.position.y = 1.72;
+            trimRing.position.y = 1.74;
             centerGroup.add(trimRing);
 
-            const globeGeo = new THREE.SphereGeometry(2.05, 32, 24);
+            // The Monumental Cartographic Globe
+            const globeGeo = new THREE.SphereGeometry(2.05, 48, 36);
             const globeMat = new THREE.MeshStandardMaterial({
                 map: createWorldGlobeTexture(),
-                roughness: 0.25,
-                metalness: 0.38
+                roughness: 0.26,
+                metalness: 0.35
             });
             const globeMesh = new THREE.Mesh(globeGeo, globeMat);
-            globeMesh.position.y = 3.45;
-            globeMesh.rotation.z = 0.22;
+            globeMesh.position.y = 3.52;
+            globeMesh.rotation.z = 0.41; // 23.5° axial inclination
             globeMesh.name = 'centralGlobe';
             centerGroup.add(globeMesh);
+
+            // Gilded Brass Meridian Ring encircling Globe
+            const meridianGeo = new THREE.TorusGeometry(2.32, 0.065, 16, 64);
+            const meridianMesh = new THREE.Mesh(meridianGeo, brassMat);
+            meridianMesh.position.y = 3.52;
+            meridianMesh.rotation.x = Math.PI / 2;
+            centerGroup.add(meridianMesh);
+
+            // Equatorial Calibrated Ring
+            const equatorGeo = new THREE.TorusGeometry(2.38, 0.05, 12, 64);
+            const equatorMesh = new THREE.Mesh(equatorGeo, brassMat);
+            equatorMesh.position.y = 3.52;
+            centerGroup.add(equatorMesh);
+
+            // Celestial Pole Brass Finials (North & South axis tips)
+            const finialGeo = new THREE.CylinderGeometry(0.04, 0.04, 5.0, 12);
+            const axisPin = new THREE.Mesh(finialGeo, brassMat);
+            axisPin.position.y = 3.52;
+            axisPin.rotation.z = 0.41;
+            centerGroup.add(axisPin);
 
             scene.add(centerGroup);
         }
 
+        // 16 Monumental Classical Fluted Columns
         function buildMonumentalColumns() {
             const numCols = 16;
             const colRadius = 20.6;
 
-            const creamStoneMat = new THREE.MeshStandardMaterial({ color: 0xeae3d5, roughness: 0.45, metalness: 0.02 });
-            const emeraldBandMat = new THREE.MeshStandardMaterial({ color: 0x173831, roughness: 0.4, metalness: 0.1 });
-            const copperBronzeMat = new THREE.MeshStandardMaterial({ color: 0xb87b4b, roughness: 0.3, metalness: 0.7 });
+            const flutedShaftMat = new THREE.MeshStandardMaterial({
+                color: 0xf5eee4,
+                map: createFlutedColumnTexture(),
+                roughness: 0.32,
+                metalness: 0.06
+            });
+            const emeraldBandMat = new THREE.MeshStandardMaterial({ color: 0x14352f, roughness: 0.35, metalness: 0.12 });
+            const gildedBronzeMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.28, metalness: 0.82 });
 
-            const shaftGeo = new THREE.CylinderGeometry(0.54, 0.64, 24.5, 16);
-            const collarGeo = new THREE.CylinderGeometry(0.68, 0.68, 1.05, 16);
-            const capitalGeo = new THREE.CylinderGeometry(1.18, 0.56, 1.15, 16);
+            const shaftGeo = new THREE.CylinderGeometry(0.54, 0.64, 24.5, 24);
+            const collarGeo = new THREE.CylinderGeometry(0.68, 0.68, 1.05, 24);
+            const capitalGeo = new THREE.CylinderGeometry(1.22, 0.58, 1.25, 24);
 
             for (let i = 0; i < numCols; i++) {
                 const angle = (i / numCols) * Math.PI * 2;
@@ -1480,19 +1998,22 @@
                 const colGroup = new THREE.Group();
                 colGroup.position.set(x, 0, z);
 
-                const shaft = new THREE.Mesh(shaftGeo, creamStoneMat);
+                const shaft = new THREE.Mesh(shaftGeo, flutedShaftMat);
                 shaft.position.y = 12.25;
                 colGroup.add(shaft);
 
+                // Lower promenade collar
                 const lowerCollar = new THREE.Mesh(collarGeo, emeraldBandMat);
                 lowerCollar.position.y = 4.35;
                 colGroup.add(lowerCollar);
 
+                // Upper clerestory collar
                 const upperCollar = new THREE.Mesh(collarGeo, emeraldBandMat);
                 upperCollar.position.y = 21.8;
                 colGroup.add(upperCollar);
 
-                const capital = new THREE.Mesh(capitalGeo, copperBronzeMat);
+                // Flared gilded Lotus/Corinthian capital
+                const capital = new THREE.Mesh(capitalGeo, gildedBronzeMat);
                 capital.position.y = 24.2;
                 colGroup.add(capital);
 
@@ -1500,17 +2021,19 @@
             }
         }
 
+        // Balcony Tiers, Wood Shelving & Warm Cove Strip Illumination
         function buildRotundaBalconyTiers() {
-            const creamFasciaMat = new THREE.MeshStandardMaterial({ color: 0xede6d8, roughness: 0.5, metalness: 0.02 });
-            const darkWalnutWallMat = new THREE.MeshStandardMaterial({ color: 0x24130a, roughness: 0.6 });
+            const darkWalnutWoodMat = new THREE.MeshStandardMaterial({ color: 0x24140b, roughness: 0.38, metalness: 0.08 });
+            const darkWalnutWallMat = new THREE.MeshStandardMaterial({ color: 0x1b1008, roughness: 0.58 });
             const warmCoveMat = new THREE.MeshBasicMaterial({ color: 0xffd28a });
+            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.22, metalness: 0.85 });
             const glassRailMat = new THREE.MeshBasicMaterial({
-                color: 0x7fa1b8,
+                color: 0x86a9c2,
                 transparent: true,
-                opacity: 0.3
+                opacity: 0.28
             });
 
-            const backWallGeo = new THREE.CylinderGeometry(25.4, 25.4, 21.5, 48, 1, true);
+            const backWallGeo = new THREE.CylinderGeometry(25.4, 25.4, 21.5, 54, 1, true);
             const backWall = new THREE.Mesh(backWallGeo, darkWalnutWallMat);
             backWall.material.side = THREE.BackSide;
             backWall.position.y = 10.75;
@@ -1526,54 +2049,98 @@
                 const yBase = tier * 3.15 + 1.1;
                 const innerR = (tier === 1) ? 19.6 : 21.6;
 
-                const slabGeo = new THREE.RingGeometry(innerR, 25.5, 48);
+                // Balcony Promenade floor slab
+                const slabGeo = new THREE.RingGeometry(innerR, 25.5, 54);
                 slabGeo.rotateX(-Math.PI / 2);
-                const slabTop = new THREE.Mesh(slabGeo, creamFasciaMat);
+                const slabTop = new THREE.Mesh(slabGeo, darkWalnutWoodMat);
                 slabTop.position.y = yBase;
                 scene.add(slabTop);
 
-                const fasciaLipGeo = new THREE.CylinderGeometry(innerR, innerR, 0.52, 48, 1, true);
-                const fasciaLip = new THREE.Mesh(fasciaLipGeo, creamFasciaMat);
+                // Carved walnut fascia lip with gilded brass edge
+                const fasciaLipGeo = new THREE.CylinderGeometry(innerR, innerR, 0.52, 54, 1, true);
+                const fasciaLip = new THREE.Mesh(fasciaLipGeo, darkWalnutWoodMat);
                 fasciaLip.material.side = THREE.DoubleSide;
                 fasciaLip.position.y = yBase - 0.26;
                 scene.add(fasciaLip);
 
-                const coveGeo = new THREE.CylinderGeometry(24.75, 24.75, 0.16, 48, 1, true);
+                const brassLipGeo = new THREE.TorusGeometry(innerR, 0.04, 8, 48);
+                brassLipGeo.rotateX(Math.PI / 2);
+                const brassLip = new THREE.Mesh(brassLipGeo, brassMat);
+                brassLip.position.y = yBase;
+                scene.add(brassLip);
+
+                // Warm architectural cove glow beneath balcony
+                const coveGeo = new THREE.CylinderGeometry(24.75, 24.75, 0.16, 54, 1, true);
                 const coveStrip = new THREE.Mesh(coveGeo, warmCoveMat);
                 coveStrip.material.side = THREE.BackSide;
                 coveStrip.position.y = yBase - 0.12;
                 scene.add(coveStrip);
 
                 if (tier <= 5) {
-                    const glassGeo = new THREE.CylinderGeometry(innerR + 0.15, innerR + 0.15, 0.85, 48, 1, true);
+                    const glassGeo = new THREE.CylinderGeometry(innerR + 0.15, innerR + 0.15, 0.85, 54, 1, true);
                     const glassRail = new THREE.Mesh(glassGeo, glassRailMat);
                     glassRail.material.side = THREE.DoubleSide;
                     glassRail.position.y = yBase + 0.42;
                     scene.add(glassRail);
+
+                    // Polished walnut balustrade handrail
+                    const handrailGeo = new THREE.TorusGeometry(innerR + 0.15, 0.038, 8, 48);
+                    handrailGeo.rotateX(Math.PI / 2);
+                    const handrail = new THREE.Mesh(handrailGeo, darkWalnutWoodMat);
+                    handrail.position.y = yBase + 0.85;
+                    scene.add(handrail);
                 }
+            }
+
+            // 24 Horizontal Oak Shelf Planks underneath each sub-shelf row of books
+            const shelfPlankMat = new THREE.MeshStandardMaterial({ color: 0x1e1107, roughness: 0.45, metalness: 0.05 });
+            const shelfRingGeo = new THREE.RingGeometry(24.4, 25.3, 48);
+            shelfRingGeo.rotateX(-Math.PI / 2);
+            for (let t = 0; t < 6; t++) {
+                const tierYBase = t * 3.15 + 1.38;
+                for (let s = 0; s < 4; s++) {
+                    const sy = tierYBase + s * 0.68 - 0.26;
+                    const shelfMesh = new THREE.Mesh(shelfRingGeo, shelfPlankMat);
+                    shelfMesh.position.y = sy;
+                    scene.add(shelfMesh);
+                }
+            }
+
+            // 16 Vertical Walnut Upright Pilasters defining Bookcase Bays
+            const bayPilasterGeo = new THREE.BoxGeometry(0.24, 21.0, 0.85);
+            for (let b = 0; b < 16; b++) {
+                const bAngle = (b / 16) * Math.PI * 2;
+                const pilaster = new THREE.Mesh(bayPilasterGeo, shelfPlankMat);
+                pilaster.position.set(Math.cos(bAngle) * 24.8, 10.5, Math.sin(bAngle) * 24.8);
+                pilaster.rotation.y = -bAngle;
+                scene.add(pilaster);
             }
         }
 
+        // Clerestory Windows, Inscribed Frieze & Coffered Dome with God Rays
         function buildClerestoryAndDome() {
-            const windowDrumGeo = new THREE.CylinderGeometry(24.2, 24.2, 4.6, 48, 1, true);
+            // Clerestory Daylight Window Drum
+            const windowDrumGeo = new THREE.CylinderGeometry(24.2, 24.2, 4.6, 54, 1, true);
             const windowDrumMat = new THREE.MeshBasicMaterial({
-                color: 0xdcf4ff,
+                color: 0xdff5ff,
                 side: THREE.BackSide
             });
             const windowDrum = new THREE.Mesh(windowDrumGeo, windowDrumMat);
             windowDrum.position.y = 22.8;
             scene.add(windowDrum);
 
-            const mullionMat = new THREE.MeshBasicMaterial({ color: 0x1c2529 });
-            for (let i = 0; i < 48; i++) {
-                const angle = (i / 48) * Math.PI * 2;
+            // Cast-iron window mullions
+            const mullionMat = new THREE.MeshBasicMaterial({ color: 0x182024 });
+            for (let i = 0; i < 54; i++) {
+                const angle = (i / 54) * Math.PI * 2;
                 const barGeo = new THREE.BoxGeometry(0.08, 4.6, 0.08);
                 const bar = new THREE.Mesh(barGeo, mullionMat);
                 bar.position.set(Math.cos(angle) * 24.0, 22.8, Math.sin(angle) * 24.0);
                 scene.add(bar);
             }
 
-            const friezeGeo = new THREE.CylinderGeometry(23.6, 24.0, 2.2, 48, 1, true);
+            // Inscribed Calligraphic Frieze
+            const friezeGeo = new THREE.CylinderGeometry(23.6, 24.0, 2.2, 54, 1, true);
             const friezeMat = new THREE.MeshBasicMaterial({
                 map: createDomeCalligraphyTexture(),
                 side: THREE.BackSide
@@ -1582,20 +2149,63 @@
             friezeMesh.position.y = 26.1;
             scene.add(friezeMesh);
 
-            const domeGeo = new THREE.SphereGeometry(24.0, 48, 18, 0, Math.PI * 2, 0, Math.PI * 0.42);
+            // Coffered Ceiling Dome
+            const domeGeo = new THREE.SphereGeometry(24.0, 54, 20, 0, Math.PI * 2, 0, Math.PI * 0.42);
             const domeMat = new THREE.MeshBasicMaterial({
-                color: 0xaed1e6,
+                map: createCofferedDomeTexture(),
                 side: THREE.BackSide
             });
             const domeMesh = new THREE.Mesh(domeGeo, domeMat);
             domeMesh.position.y = 17.5;
             scene.add(domeMesh);
+
+            // Volumetric Sunlight Beam (God Rays pouring from the Oculus)
+            const sunbeamGeo = new THREE.CylinderGeometry(1.8, 14.5, 23.5, 24, 1, true);
+            const sunbeamMat = new THREE.MeshBasicMaterial({
+                color: 0xfff6dd,
+                transparent: true,
+                opacity: 0.09,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const sunbeam = new THREE.Mesh(sunbeamGeo, sunbeamMat);
+            sunbeam.position.set(0.5, 13.0, -0.5);
+            scene.add(sunbeam);
         }
 
-        function buildReadingRoomDesks() {
-            const walnutMat = new THREE.MeshStandardMaterial({ color: 0x3b1f10, roughness: 0.38, metalness: 0.05 });
-            const brassLampMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
-            const paperMat = new THREE.MeshBasicMaterial({ color: 0xfaf3e3 });
+        // Realistic Cuban Mahogany Reading Desks with Authentic Glowing Banker's Lamps
+        function buildRealisticReadingRoomDesks() {
+            const walnutMat = new THREE.MeshStandardMaterial({
+                color: 0x241208,
+                roughness: 0.28,
+                metalness: 0.08
+            });
+            const leatherBlotterMat = new THREE.MeshStandardMaterial({
+                color: 0x140d08,
+                roughness: 0.62,
+                metalness: 0.04
+            });
+            const brassMat = new THREE.MeshStandardMaterial({
+                color: 0xd4af37,
+                roughness: 0.18,
+                metalness: 0.9
+            });
+            const emeraldGlassMat = new THREE.MeshStandardMaterial({
+                color: 0x063e23,
+                emissive: 0x0c683b,
+                emissiveIntensity: 0.72,
+                roughness: 0.15,
+                metalness: 0.12,
+                transparent: true,
+                opacity: 0.95
+            });
+            const bulbMat = new THREE.MeshBasicMaterial({
+                color: 0xffea9f
+            });
+            const manuscriptMat = new THREE.MeshBasicMaterial({
+                map: createManuscriptPageTexture()
+            });
 
             const rings = [
                 { radius: 8.2, count: 10 },
@@ -1603,9 +2213,19 @@
                 { radius: 17.4, count: 18 }
             ];
 
-            const deskGeo = new THREE.BoxGeometry(2.1, 0.76, 1.05);
-            const lampShadeGeo = new THREE.CylinderGeometry(0.14, 0.22, 0.14, 8);
-            const paperGeo = new THREE.BoxGeometry(0.42, 0.02, 0.3);
+            const deskTopGeo = new THREE.BoxGeometry(2.1, 0.08, 1.05);
+            const deskLegGeo = new THREE.BoxGeometry(0.12, 0.68, 0.95);
+            const modestyGeo = new THREE.BoxGeometry(1.72, 0.38, 0.04);
+            const blotterGeo = new THREE.BoxGeometry(1.4, 0.02, 0.75);
+            const manuscriptGeo = new THREE.PlaneGeometry(0.52, 0.32);
+            manuscriptGeo.rotateX(-Math.PI / 2);
+
+            // Authentic Emeralite Banker's Lamp Geometries
+            const lampBaseGeo = new THREE.CylinderGeometry(0.11, 0.13, 0.04, 12);
+            const lampArmGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.42, 8);
+            const lampShadeGeo = new THREE.CylinderGeometry(0.11, 0.16, 0.24, 16, 1, false, 0, Math.PI);
+            lampShadeGeo.rotateZ(Math.PI / 2);
+            const bulbGeo = new THREE.SphereGeometry(0.045, 8, 8);
 
             rings.forEach(ring => {
                 for (let i = 0; i < ring.count; i++) {
@@ -1619,28 +2239,76 @@
                     deskGroup.position.set(x, 0, z);
                     deskGroup.rotation.y = -angle + Math.PI / 2;
 
-                    const desk = new THREE.Mesh(deskGeo, walnutMat);
-                    desk.position.y = 0.38;
-                    deskGroup.add(desk);
+                    // Mahogany Desk Top & Pedestal Legs
+                    const top = new THREE.Mesh(deskTopGeo, walnutMat);
+                    top.position.y = 0.72;
+                    deskGroup.add(top);
 
-                    const lampL = new THREE.Mesh(lampShadeGeo, brassLampMat);
-                    lampL.position.set(-0.55, 0.96, 0);
+                    const legL = new THREE.Mesh(deskLegGeo, walnutMat);
+                    legL.position.set(-0.92, 0.34, 0);
+                    deskGroup.add(legL);
+
+                    const legR = new THREE.Mesh(deskLegGeo, walnutMat);
+                    legR.position.set(0.92, 0.34, 0);
+                    deskGroup.add(legR);
+
+                    const modesty = new THREE.Mesh(modestyGeo, walnutMat);
+                    modesty.position.set(0, 0.46, -0.42);
+                    deskGroup.add(modesty);
+
+                    // Inlaid Dark Leather Blotter with gilded edge
+                    const blotter = new THREE.Mesh(blotterGeo, leatherBlotterMat);
+                    blotter.position.set(0, 0.77, 0);
+                    deskGroup.add(blotter);
+
+                    // Open Aged Manuscript Folio with Astronomical Diagram
+                    const manuscript = new THREE.Mesh(manuscriptGeo, manuscriptMat);
+                    manuscript.position.set(0.08, 0.785, 0.08);
+                    manuscript.rotation.y = 0.08;
+                    deskGroup.add(manuscript);
+
+                    // Left Glowing Emerald Banker Lamp
+                    const lampL = new THREE.Group();
+                    lampL.position.set(-0.62, 0.76, 0);
+
+                    const baseL = new THREE.Mesh(lampBaseGeo, brassMat);
+                    lampL.add(baseL);
+                    const armL = new THREE.Mesh(lampArmGeo, brassMat);
+                    armL.position.set(0, 0.22, 0);
+                    lampL.add(armL);
+                    const shadeL = new THREE.Mesh(lampShadeGeo, emeraldGlassMat);
+                    shadeL.position.set(0, 0.42, 0);
+                    shadeL.rotation.x = Math.PI;
+                    lampL.add(shadeL);
+                    const bulbL = new THREE.Mesh(bulbGeo, bulbMat);
+                    bulbL.position.set(0, 0.38, 0);
+                    lampL.add(bulbL);
                     deskGroup.add(lampL);
 
-                    const lampR = new THREE.Mesh(lampShadeGeo, brassLampMat);
-                    lampR.position.set(0.55, 0.96, 0);
-                    deskGroup.add(lampR);
+                    // Right Glowing Emerald Banker Lamp
+                    const lampR = new THREE.Group();
+                    lampR.position.set(0.62, 0.76, 0);
 
-                    const folio = new THREE.Mesh(paperGeo, paperMat);
-                    folio.position.set(0.15, 0.77, 0.18);
-                    folio.rotation.y = 0.18;
-                    deskGroup.add(folio);
+                    const baseR = new THREE.Mesh(lampBaseGeo, brassMat);
+                    lampR.add(baseR);
+                    const armR = new THREE.Mesh(lampArmGeo, brassMat);
+                    armR.position.set(0, 0.22, 0);
+                    lampR.add(armR);
+                    const shadeR = new THREE.Mesh(lampShadeGeo, emeraldGlassMat);
+                    shadeR.position.set(0, 0.42, 0);
+                    shadeR.rotation.x = Math.PI;
+                    lampR.add(shadeR);
+                    const bulbR = new THREE.Mesh(bulbGeo, bulbMat);
+                    bulbR.position.set(0, 0.38, 0);
+                    lampR.add(bulbR);
+                    deskGroup.add(lampR);
 
                     scene.add(deskGroup);
                 }
             });
         }
 
+        // 16,320 Organically Varied 3D Shelf Books with Tilts and Heights
         function buildInstancedLibraryBooks() {
             const numTiers = 6;
             const subShelvesPerTier = 4;
@@ -1650,8 +2318,8 @@
             const bookGeo = new THREE.BoxGeometry(0.17, 0.52, 0.38);
             const bookMat = new THREE.MeshStandardMaterial({
                 map: createBookSpineTexture(),
-                roughness: 0.45,
-                metalness: 0.12
+                roughness: 0.38,
+                metalness: 0.16
             });
 
             bookInstancedMesh = new THREE.InstancedMesh(bookGeo, bookMat, totalBooksCount);
@@ -1660,7 +2328,7 @@
 
             const dummy = new THREE.Object3D();
             const tempColor = new THREE.Color();
-            const paletteHexes = [0x6e1a1a, 0x164230, 0x1b3358, 0x59341c, 0x26282e, 0x482259, 0x7c5118, 0x8c2d19];
+            const paletteHexes = [0x681818, 0x12402d, 0x183054, 0x563018, 0x22242a, 0x461f56, 0x7a4d16, 0x8a2b16];
 
             bookSpatialMeta = new Array(totalBooksCount);
             let idx = 0;
@@ -1678,16 +2346,21 @@
                         const deptIndex = (tier + bay) % DEPARTMENTS.length;
                         const deptId = DEPARTMENTS[deptIndex].id;
 
-                        const scaleH = 0.84 + ((idx * 17) % 10) * 0.032;
-                        const scaleW = 0.85 + ((idx * 31) % 7) * 0.045;
+                        // Organic shelf irregularities: subtle height/width variations & occasional tilted tomes
+                        const scaleH = 0.85 + ((idx * 17) % 10) * 0.032;
+                        const scaleW = 0.86 + ((idx * 31) % 7) * 0.042;
                         const depthPull = ((idx * 13) % 5) * 0.015;
+
+                        // 1 in every 16 books leans gently (3° to 6°) against its neighbor
+                        const isLeaning = (idx % 16 === 0);
+                        const leanTilt = isLeaning ? (0.065 * ((idx % 2 === 0) ? 1 : -1)) : 0;
 
                         const r = shelfRadius - depthPull;
                         const x = Math.cos(angle) * r;
                         const z = Math.sin(angle) * r;
 
-                        dummy.position.set(x, y, z);
-                        dummy.rotation.set(0, -angle - Math.PI / 2, 0);
+                        dummy.position.set(x, y + (scaleH - 1.0) * 0.22, z);
+                        dummy.rotation.set(0, -angle - Math.PI / 2, leanTilt);
                         dummy.scale.set(scaleW, scaleH, 1.0);
                         dummy.updateMatrix();
 
@@ -1721,6 +2394,66 @@
             bookInstancedMesh.instanceMatrix.needsUpdate = true;
             if (bookInstancedMesh.instanceColor) bookInstancedMesh.instanceColor.needsUpdate = true;
             scene.add(bookInstancedMesh);
+        }
+
+        // Floating Golden Sunbeam Dust Motes (Animated by WebAssembly)
+        const dustCount = 120;
+        const dustPositions = new Float32Array(dustCount * 3);
+        const dustSpeeds = new Float32Array(dustCount);
+
+        function buildAtmosphericDustMotes() {
+            const dustGeo = new THREE.DodecahedronGeometry(0.04, 0);
+            const dustMat = new THREE.MeshBasicMaterial({
+                color: 0xffe89e,
+                transparent: true,
+                opacity: 0.72
+            });
+
+            dustParticlesMesh = new THREE.InstancedMesh(dustGeo, dustMat, dustCount);
+            dustParticlesMesh.frustumCulled = false;
+
+            const dummy = new THREE.Object3D();
+            for (let i = 0; i < dustCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.random() * 8.5;
+                const x = Math.cos(angle) * r;
+                const y = 1.0 + Math.random() * 18.0;
+                const z = Math.sin(angle) * r;
+
+                dustPositions[i * 3] = x;
+                dustPositions[i * 3 + 1] = y;
+                dustPositions[i * 3 + 2] = z;
+                dustSpeeds[i] = 0.003 + Math.random() * 0.006;
+
+                dummy.position.set(x, y, z);
+                dummy.updateMatrix();
+                dustParticlesMesh.setMatrixAt(i, dummy.matrix);
+            }
+            dustParticlesMesh.instanceMatrix.needsUpdate = true;
+            scene.add(dustParticlesMesh);
+        }
+
+        function updateAtmosphericDustMotes() {
+            if (!dustParticlesMesh) return;
+            const dummy = new THREE.Object3D();
+            for (let i = 0; i < dustCount; i++) {
+                dustPositions[i * 3 + 1] += dustSpeeds[i];
+                if (dustPositions[i * 3 + 1] > 20.0) {
+                    dustPositions[i * 3 + 1] = 1.0;
+                }
+                const x = dustPositions[i * 3];
+                const y = dustPositions[i * 3 + 1];
+                const z = dustPositions[i * 3 + 2];
+
+                dummy.position.set(
+                    x + Math.sin(y * 0.8 + i) * 0.08,
+                    y,
+                    z + Math.cos(y * 0.8 + i) * 0.08
+                );
+                dummy.updateMatrix();
+                dustParticlesMesh.setMatrixAt(i, dummy.matrix);
+            }
+            dustParticlesMesh.instanceMatrix.needsUpdate = true;
         }
 
         function buildSpatialDepartmentPlaques() {
@@ -1818,7 +2551,6 @@
             openDepartmentDrawer(dept, selectedBookId);
         }
 
-        // Throttled Pointer & Raycasting Event Handler (Saves CPU on Low-End PCs)
         function setupOrbitAndPickEvents(domElement) {
             let isDragging = false;
             let pointerDownPos = { x: 0, y: 0 };
@@ -1849,7 +2581,6 @@
                     return;
                 }
 
-                // Throttle raycasting to 30ms on low-end machines to prevent 100% CPU thread lock
                 const now = performance.now();
                 if (now - lastRaycastTime < 32) return;
                 lastRaycastTime = now;
@@ -2336,7 +3067,6 @@
                 };
             }
 
-            // 60FPS Performance Mode Toggle
             const perfToggleBtn = document.getElementById('perfToggleBtn');
             const perfToggleText = document.getElementById('perfToggleText');
             perfToggleBtn.addEventListener('click', () => {
@@ -2617,7 +3347,6 @@
             });
         }
 
-        // Adaptive Render Loop with FPS Profiler
         let frameCount = 0;
         let lastFpsCheckTime = performance.now();
 
@@ -2625,18 +3354,12 @@
             requestAnimationFrame(animateLoop);
 
             const now = performance.now();
-            const deltaMs = now - PerfProfile.lastFrameTime;
-            PerfProfile.lastFrameTime = now;
-
-            // Frame rate tracking
             frameCount++;
             if (now - lastFpsCheckTime >= 1000) {
                 const currentFps = Math.round((frameCount * 1000) / (now - lastFpsCheckTime));
                 frameCount = 0;
                 lastFpsCheckTime = now;
 
-                // Auto Dynamic Resolution Scaling for low-end devices:
-                // If FPS drops below 42 under Eco mode, drop DPR by 0.1 down to minDpr to guarantee 60 FPS!
                 if (currentFps < 42 && PerfProfile.currentDpr > PerfProfile.minDpr) {
                     PerfProfile.currentDpr = Math.max(PerfProfile.minDpr, PerfProfile.currentDpr - 0.1);
                     renderer.setPixelRatio(PerfProfile.currentDpr);
@@ -2646,7 +3369,7 @@
                 }
             }
 
-            // WebAssembly-accelerated camera motion smoothing
+            // WebAssembly smooth camera dampening
             const damping = 0.085;
             camOrbit.theta = wasmLerp(camOrbit.theta, camOrbit.desiredTheta, damping);
             camOrbit.phi = wasmLerp(camOrbit.phi, camOrbit.desiredPhi, damping);
@@ -2664,8 +3387,12 @@
             );
             camera.lookAt(camOrbit.targetX, camOrbit.targetY, camOrbit.targetZ);
 
+            // Subtle rotation of central cartographic globe
             const globe = scene.getObjectByName('centralGlobe');
             if (globe) globe.rotation.y += 0.0012;
+
+            // Animated drifting golden sunbeam dust particles
+            updateAtmosphericDustMotes();
 
             if (isPlayingAudio) {
                 const elapsedSec = (performance.now() - audioPlayStartTime) / 1000;
