@@ -37,6 +37,7 @@ next-env.d.ts
 .gemini/
 __pycache__/
 *.pyc
+_site_audit/
 all_messages_dump.txt
 check_html.txt
 dump_from_chat.txt

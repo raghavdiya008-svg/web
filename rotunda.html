@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Grand Digital Library — 3D Rotunda Asset Vault</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #d4af37;
+            --gold-bright: #f5d77f;
+            --glass-bg: rgba(14, 18, 22, 0.76);
+            --glass-border: rgba(212, 175, 55, 0.26);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #080a0c;
+            font-family: 'Inter', sans-serif;
+            color: #f3efe6;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-serif-tome { font-family: 'Cormorant Garamond', Georgia, serif; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+
+        /* Glassmorphic surfaces */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-pill {
+            background: rgba(12, 16, 20, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.24);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-pill:hover {
+            border-color: rgba(245, 215, 127, 0.65);
+            background: rgba(26, 32, 38, 0.88);
+            transform: translateY(-2px);
+        }
+
+        .glass-pill.active {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(140, 100, 20, 0.38));
+            border-color: #f5d77f;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.32);
+        }
+
+        /* 3D Spatial Department Plaques */
+        .spatial-plaque {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+            z-index: 15;
+        }
+        .spatial-plaque:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+            z-index: 25;
+        }
+
+        /* Parchment Two-Page Tome Modal */
+        .parchment-page {
+            background: radial-gradient(circle at 50% 35%, #fbf6ea 0%, #efe4cc 70%, #e2d1b0 100%);
+            color: #231911;
+            box-shadow: inset 0 0 40px rgba(90, 58, 24, 0.18);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.7); }
+    </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden select-none">
+
+    <!-- 1. 3D WEBGL ROTUNDA VIEWPORT -->
+    <div id="webglContainer" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
+
+    <!-- 2. 3D SPATIAL DEPARTMENT PLAQUES OVERLAY -->
+    <div id="spatialMarkersLayer" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+    <!-- 3. HOVER BOOK TOOLTIP -->
+    <div id="bookHoverTooltip" class="hidden fixed z-30 pointer-events-none glass-panel px-3.5 py-2.5 rounded-xl max-w-xs transition-opacity duration-150">
+        <div class="flex items-center gap-2">
+            <span id="tooltipDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow"></span>
+            <span id="tooltipCallNo" class="font-mono-code text-[10px] uppercase tracking-widest text-amber-300/90">BAY A · TIER 2</span>
+        </div>
+        <div id="tooltipTitle" class="font-cinzel text-xs font-bold text-amber-50 mt-0.5 truncate">Archival Tome</div>
+        <div id="tooltipSub" class="text-[11px] text-stone-300/80 mt-0.5">Click to zoom &amp; inspect shelf</div>
+    </div>
+
+    <!-- 4. HYBRID HUD: TOP MINIMAL SEARCH BAR -->
+    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-30 w-[94vw] max-w-4xl pointer-events-none flex flex-col items-center">
+        <div class="w-full glass-panel rounded-2xl px-4 py-2.5 pointer-events-auto flex items-center justify-between gap-3">
+            <!-- Brand & Engine Badge -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button id="resetCameraTopBtn" title="Return to Rotunda Center" class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300 hover:bg-amber-500/30 transition">
+                    <i class="fa-solid fa-landmark-dome text-sm"></i>
+                </button>
+                <div class="hidden sm:block">
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-cinzel text-sm font-bold tracking-wider text-amber-100">CIHANNÜMA ARCHIVE</h1>
+                        <span id="engineBadge" class="text-[9px] font-mono-code px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">WASM · GLSL · WORKER</span>
+                    </div>
+                    <p class="text-[10px] text-stone-400">Drag to spin 360° · Click any department or book to glide &amp; unpack</p>
+                </div>
+            </div>
+
+            <!-- Instant Search Input -->
+            <div class="relative flex-1 max-w-md">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-300/60 text-xs"></i>
+                <input
+                    id="globalSearchInput"
+                    type="text"
+                    placeholder="Search 16,400 tomes, Sound Design, LUTs, Shaders, or #tags... (Press /)"
+                    class="w-full bg-black/40 border border-amber-500/25 focus:border-amber-400/70 rounded-xl pl-9 pr-8 py-1.5 text-xs text-amber-50 placeholder-stone-400 outline-none transition"
+                >
+                <button id="clearSearchBtn" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-200 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Quick Vault Controls -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button id="toggleMarkersBtn" title="Toggle 3D Department Plaques" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-compass text-amber-400"></i>
+                    <span class="hidden md:inline">Plaques</span>
+                </button>
+                <button id="exportLibraryBtn" title="Export Custom Library JSON" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-download text-amber-400"></i>
+                    <span class="hidden lg:inline">Backup</span>
+                </button>
+                <label title="Import Library JSON" class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-upload text-amber-400"></i>
+                    <span class="hidden lg:inline">Restore</span>
+                    <input id="importLibraryInput" type="file" accept=".json" class="hidden">
+                </label>
+            </div>
+        </div>
+
+        <!-- Live Search Results Dropdown -->
+        <div id="searchResultsPanel" class="hidden w-full max-w-2xl mt-2 glass-panel rounded-2xl p-3 pointer-events-auto max-h-80 overflow-y-auto">
+            <div class="flex items-center justify-between text-[10px] font-mono-code uppercase tracking-wider text-amber-300/80 pb-2 mb-2 border-b border-white/10">
+                <span id="searchCountLabel">0 results matched</span>
+                <span>Click any entry to glide camera</span>
+            </div>
+            <div id="searchResultsList" class="space-y-1.5"></div>
+        </div>
+    </header>
+
+    <!-- 5. HYBRID HUD: BOTTOM CATEGORY TIMELINE BAR -->
+    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[96vw] max-w-5xl pointer-events-none">
+        <div class="glass-panel rounded-2xl px-3 py-2 pointer-events-auto flex items-center justify-between gap-2 overflow-x-auto">
+            <button
+                data-dept-id="overview"
+                class="timeline-btn glass-pill active shrink-0 px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs font-medium text-amber-100"
+            >
+                <i class="fa-solid fa-globe text-amber-400"></i>
+                <span>00 · Rotunda Center</span>
+            </button>
+            <div id="timelineButtonsContainer" class="flex items-center gap-2 shrink-0"></div>
+        </div>
+    </nav>
+
+    <!-- 6. RIGHT GLASSMORPHIC DEPARTMENT & BOOK DRAWER -->
+    <aside
+        id="departmentDrawer"
+        class="fixed top-20 bottom-20 right-4 z-30 w-[92vw] sm:w-[430px] glass-panel rounded-3xl p-5 flex flex-col justify-between translate-x-[120%] opacity-0 pointer-events-none transition-all duration-500 ease-out"
+    >
+        <!-- Drawer Top Header -->
+        <div class="flex items-start justify-between gap-3 border-b border-amber-500/20 pb-3.5">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span id="drawerTierBadge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                        TIER 2 · BAY B
+                    </span>
+                    <span id="drawerBookCountBadge" class="text-[10px] font-mono-code text-stone-400">
+                        2,400 Tomes
+                    </span>
+                </div>
+                <h2 id="drawerTitle" class="font-cinzel text-lg font-bold text-amber-100 mt-1">
+                    Sound Design &amp; Acoustic Foley
+                </h2>
+                <p id="drawerDesc" class="text-xs text-stone-300/80 mt-0.5">
+                    24-bit synthesized stems, impulse responses, and cinematic impacts.
+                </p>
+            </div>
+            <button id="closeDrawerBtn" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 flex items-center justify-center text-stone-300 hover:text-white transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Drawer Body -->
+        <div class="flex-1 overflow-y-auto my-3 pr-1 space-y-4">
+            <!-- Selected 3D Book Spotlight Card -->
+            <div class="rounded-2xl bg-gradient-to-br from-amber-500/15 via-stone-900/60 to-black/60 border border-amber-400/35 p-3.5">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[10px] font-mono-code uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-bookmark"></i> Active Shelf Tome
+                    </span>
+                    <span id="activeBookCallNo" class="text-[10px] font-mono-code text-stone-400">TOME #01042</span>
+                </div>
+                <div class="flex items-center justify-between gap-3 mt-1.5">
+                    <div class="min-w-0">
+                        <h3 id="activeBookTitle" class="font-cinzel text-sm font-bold text-white truncate">
+                            Codex of Sub-Bass Resonance
+                        </h3>
+                        <p id="activeBookAssetSummary" class="text-[11px] text-amber-200/80 mt-0.5">
+                            3 embedded assets · Click to open parchment spread &amp; add your own
+                        </p>
+                    </div>
+                    <button
+                        id="openTomeSpreadBtn"
+                        class="shrink-0 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition"
+                    >
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Open Tome</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Audio Waveform Previewer -->
+            <div class="rounded-2xl bg-black/45 border border-white/10 p-3.5">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="waveformTrackTitle" class="text-xs font-semibold text-amber-100">
+                            Cihannüma Cathedral Impulse (44.1kHz PCM)
+                        </span>
+                    </div>
+                    <span id="waveformTimeLabel" class="font-mono-code text-[10px] text-amber-300">00:00 / 00:04</span>
+                </div>
+
+                <!-- Interactive Scrubbable Waveform Canvas -->
+                <div class="relative w-full h-16 rounded-xl bg-stone-950/90 border border-amber-500/20 overflow-hidden cursor-pointer" id="waveformBox">
+                    <canvas id="waveformCanvas" class="w-full h-full block"></canvas>
+                </div>
+
+                <!-- Audio Controls + Direct WAV/ZIP Download -->
+                <div class="flex items-center justify-between gap-2 mt-2.5">
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="playWaveformBtn"
+                            class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 text-xs font-medium flex items-center gap-1.5 transition"
+                        >
+                            <i id="playWaveformIcon" class="fa-solid fa-play text-[10px]"></i>
+                            <span id="playWaveformText">Preview Stem</span>
+                        </button>
+                        <button
+                            id="cyclePresetSoundBtn"
+                            class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 text-[11px] transition"
+                            title="Switch Synthesizer Harmonic Profile"
+                        >
+                            <i class="fa-solid fa-sliders mr-1 text-amber-400"></i>Harmonics
+                        </button>
+                    </div>
+                    <button
+                        id="downloadCurrentWavZipBtn"
+                        class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 text-[11px] font-mono-code flex items-center gap-1.5 transition"
+                    >
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <span>Stem .ZIP</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Department Packs & Instant .ZIP Downloads -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-mono-code uppercase tracking-wider text-amber-300/80">
+                        Department Packs &amp; Instant .ZIPs
+                    </span>
+                    <span class="text-[10px] text-stone-400">Worker PKZIP Engine</span>
+                </div>
+                <div id="drawerPacksList" class="space-y-2"></div>
+            </div>
+
+            <!-- Neighboring Tomes on This Shelf Bay -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-mono-code uppercase tracking-wider text-amber-300/80">
+                        Shelf Bay Tomes (Click to Inspect)
+                    </span>
+                    <span class="text-[10px] text-stone-400">Customizable</span>
+                </div>
+                <div id="drawerShelfBooksGrid" class="grid grid-cols-2 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Drawer Footer: Download Entire Department Bundle -->
+        <div class="pt-3 border-t border-amber-500/20 flex items-center justify-between gap-2">
+            <button
+                id="downloadDeptBundleBtn"
+                class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-stone-950 font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition"
+            >
+                <i class="fa-solid fa-box-archive"></i>
+                <span id="downloadDeptBundleText">Download Complete Shelf Pack (.ZIP)</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- 7. TWO-PAGE OPEN TOME MODAL (FOR ADDING YOUR OWN ASSETS TO ANY BOOK) -->
+    <div id="tomeModalBackdrop" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div class="relative w-full max-w-5xl h-[88vh] max-h-[760px] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#3a2414] bg-[#24160c] flex flex-col md:flex-row">
+
+            <!-- Close Tome Button -->
+            <button
+                id="closeTomeModalBtn"
+                class="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-[#2a1a0e]/90 hover:bg-[#3e2715] text-amber-200 border border-amber-500/40 flex items-center justify-center transition"
+                title="Close Tome (Esc)"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- LEFT PAGE: EX LIBRIS, SPINE CUSTOMIZER & ASSET CONTENTS -->
+            <div class="w-full md:w-5/12 h-1/2 md:h-full parchment-page p-5 sm:p-7 flex flex-col justify-between border-b md:border-b-0 md:border-r-2 border-[#bfa37a] overflow-y-auto">
+                <div>
+                    <div class="flex items-center justify-between text-[11px] font-mono-code uppercase tracking-widest text-[#7a5835] border-b border-[#d4be98] pb-2">
+                        <span id="modalTomeLocation">TIER 1 · BAY A · TOME #120</span>
+                        <span id="modalTomeDeptBadge" class="font-semibold text-[#5a3918]">SOUND DESIGN</span>
+                    </div>
+
+                    <!-- Editable Book Title & Metadata -->
+                    <div class="mt-4">
+                        <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Tome Spine Title</label>
+                        <input
+                            id="modalBookTitleInput"
+                            type="text"
+                            class="w-full mt-1 bg-white/60 border border-[#bfa37a] focus:border-[#6e4720] rounded-xl px-3 py-2 font-cinzel text-base font-bold text-[#231911] outline-none"
+                            placeholder="Enter book title..."
+                        >
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                            <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Category / Wing</label>
+                            <select
+                                id="modalBookDeptSelect"
+                                class="w-full mt-1 bg-white/60 border border-[#bfa37a] rounded-xl px-2.5 py-2 text-xs font-medium text-[#231911] outline-none"
+                            ></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Leather Spine Dye</label>
+                            <div id="spineColorSwatches" class="flex items-center gap-1.5 mt-1.5"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Archival Notes / Tags</label>
+                        <input
+                            id="modalBookTagsInput"
+                            type="text"
+                            class="w-full mt-1 bg-white/60 border border-[#bfa37a] rounded-xl px-3 py-1.5 text-xs text-[#231911] outline-none"
+                            placeholder="#luts, #synth, #shaders, #project-assets"
+                        >
+                    </div>
+
+                    <div class="mt-3 flex items-center justify-between">
+                        <button
+                            id="saveBookMetaBtn"
+                            class="px-3.5 py-1.5 rounded-xl bg-[#4a2e16] hover:bg-[#5e3b1d] text-amber-100 text-xs font-semibold flex items-center gap-1.5 shadow transition"
+                        >
+                            <i class="fa-solid fa-feather-pointed"></i>
+                            <span>Stamp Spine Changes</span>
+                        </button>
+                        <button
+                            id="downloadSingleTomeZipBtn"
+                            class="px-3 py-1.5 rounded-xl bg-[#d4be98]/60 hover:bg-[#d4be98] text-[#2c1b0e] text-xs font-semibold flex items-center gap-1.5 transition"
+                        >
+                            <i class="fa-solid fa-file-zipper"></i>
+                            <span>Export Tome .ZIP</span>
+                        </button>
+                    </div>
+
+                    <!-- Table of Contents -->
+                    <div class="mt-5 pt-4 border-t border-[#d4be98]">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#3d2814]">
+                                Inscribed Assets inside this Tome
+                            </h4>
+                            <span id="modalAssetCountBadge" class="text-[11px] font-mono-code text-[#6e4f2d]">0 items</span>
+                        </div>
+                        <div id="modalAssetList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-[#d4be98] text-[11px] text-[#6e4f2d] flex items-center justify-between">
+                    <span>Changes persist automatically in your browser vault</span>
+                    <i class="fa-solid fa-shield-halved text-[#8b6331]"></i>
+                </div>
+            </div>
+
+            <!-- RIGHT PAGE: ADD / INSPECT ASSETS INSIDE THIS BOOK -->
+            <div class="w-full md:w-7/12 h-1/2 md:h-full parchment-page p-5 sm:p-7 flex flex-col justify-between overflow-y-auto">
+                <div>
+                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2">
+                        <span class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#4a2e16]">
+                            <i class="fa-solid fa-plus-circle mr-1"></i> Inscribe New Asset into Tome
+                        </span>
+                        <span class="text-[11px] font-mono-code text-[#7a5835]">FOLIO II</span>
+                    </div>
+
+                    <!-- Asset Type Selector Tabs -->
+                    <div class="grid grid-cols-5 gap-1.5 mt-3" id="assetTypeTabs">
+                        <button data-type="link" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#4a2e16] text-amber-100 text-[11px] font-medium flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-link"></i><span>Link</span>
+                        </button>
+                        <button data-type="code" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-code"></i><span>Code/LUT</span>
+                        </button>
+                        <button data-type="audio" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-wave-square"></i><span>Audio</span>
+                        </button>
+                        <button data-type="image" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-image"></i><span>Image</span>
+                        </button>
+                        <button data-type="note" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-scroll"></i><span>Note</span>
+                        </button>
+                    </div>
+
+                    <!-- Asset Creation Form -->
+                    <div class="mt-3 space-y-2.5 bg-white/45 border border-[#c9ae82] rounded-2xl p-3.5">
+                        <div>
+                            <label class="block text-[10px] font-mono-code uppercase text-[#6e4f2d]">Asset Title</label>
+                            <input
+                                id="newAssetTitleInput"
+                                type="text"
+                                placeholder="e.g., Kodak 2383 Print Film LUT / Sub Boom 45Hz / Reference URL"
+                                class="w-full mt-1 bg-white/80 border border-[#bfa37a] rounded-xl px-3 py-1.5 text-xs text-[#231911] outline-none"
+                            >
+                        </div>
+                        <div>
+                            <label id="newAssetContentLabel" class="block text-[10px] font-mono-code uppercase text-[#6e4f2d]">URL / Payload / Code / Synth Frequency (Hz)</label>
+                            <textarea
+                                id="newAssetContentInput"
+                                rows="3"
+                                placeholder="Paste URL, GLSL shader, .cube LUT values, image link, or note..."
+                                class="w-full mt-1 bg-white/80 border border-[#bfa37a] rounded-xl px-3 py-1.5 font-mono-code text-xs text-[#231911] outline-none"
+                            ></textarea>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <label class="cursor-pointer text-[11px] text-[#5a3918] hover:underline flex items-center gap-1.5">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <span>Or attach local file into tome</span>
+                                <input id="newAssetFileInput" type="file" class="hidden">
+                            </label>
+                            <button
+                                id="addAssetToTomeBtn"
+                                class="px-4 py-1.5 rounded-xl bg-[#2d5a3c] hover:bg-[#386f4a] text-white text-xs font-semibold flex items-center gap-1.5 shadow transition"
+                            >
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add Asset to Tome</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Asset Viewer Area -->
+                    <div class="mt-4">
+                        <h4 class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#3d2814] mb-2">
+                            Folio Asset Reader
+                        </h4>
+                        <div id="folioAssetViewer" class="rounded-2xl bg-white/55 border border-[#c9ae82] p-4 min-h-[160px] text-xs text-[#231911]">
+                            Select any asset on the left page or add a new asset above to inspect, play, copy, or package it.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. TOAST NOTIFICATION BANNER -->
+    <div id="toastBanner" class="fixed top-20 right-5 z-50 pointer-events-none opacity-0 translate-y-[-10px] transition-all duration-300 glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-2.5 text-xs text-amber-100">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">Saved to library vault</span>
+    </div>
+
+    <script>
+        /***********************************************************************
+         * 1. MULTI-LANGUAGE PERFORMANCE ENGINE:
+         *    - WebAssembly (Wasm) Binary Math/Smoothing Kernel
+         *    - Inline Web Worker for Off-Main-Thread PKZIP (.zip), .wav & .cube
+         ***********************************************************************/
+        let wasmLerpFn = null;
+
+        async function initWasmMathKernel() {
+            try {
+                // Valid minimal WebAssembly binary exporting `lerp(a: f32, b: f32, t: f32) -> f32`
+                // Formula: a + (b - a) * t
+                const wasmBytes = new Uint8Array([
+                    0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+                    0x01, 0x08, 0x01, 0x60, 0x03, 0x7d, 0x7d, 0x7d, 0x01, 0x7d,
+                    0x03, 0x02, 0x01, 0x00,
+                    0x07, 0x08, 0x01, 0x04, 0x6c, 0x65, 0x72, 0x70, 0x00, 0x00,
+                    0x0a, 0x0f, 0x01, 0x0d, 0x00, 0x20, 0x00, 0x20, 0x01, 0x20, 0x00, 0x93, 0x20, 0x02, 0x94, 0x92, 0x0b
+                ]);
+                const { instance } = await WebAssembly.instantiate(wasmBytes);
+                if (instance && instance.exports && instance.exports.lerp) {
+                    wasmLerpFn = instance.exports.lerp;
+                    console.log('[Rotunda Engine] WebAssembly lerp kernel compiled successfully');
+                }
+            } catch (err) {
+                console.warn('[Rotunda Engine] WASM instantiation fallback to JS:', err);
+                wasmLerpFn = (a, b, t) => a + (b - a) * t;
+            }
+        }
+
+        function smoothLerp(a, b, t) {
+            return wasmLerpFn ? wasmLerpFn(a, b, t) : (a + (b - a) * t);
+        }
+
+        // Shared CRC-32 Lookup Table
+        const crcTable = new Uint32Array(256);
+        for (let n = 0; n < 256; n++) {
+            let c = n;
+            for (let k = 0; k < 8; k++) {
+                c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+            }
+            crcTable[n] = c >>> 0;
+        }
+
+        function crc32(bytes) {
+            let c = 0xffffffff;
+            for (let i = 0; i < bytes.length; i++) {
+                c = (c >>> 8) ^ crcTable[(c ^ bytes[i]) & 0xff];
+            }
+            return (c ^ 0xffffffff) >>> 0;
+        }
+
+        // Synthesize genuine 16-bit 44.1kHz PCM .WAV file bytes
+        function generateWavBytes(freqBase, durationSec) {
+            const sampleRate = 44100;
+            const numSamples = Math.floor(sampleRate * durationSec);
+            const buffer = new ArrayBuffer(44 + numSamples * 2);
+            const view = new DataView(buffer);
+
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            };
+
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * 2, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, numSamples * 2, true);
+
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                const env = Math.exp(-t * 1.45) * Math.min(1, t * 45);
+                const sig = (
+                    Math.sin(2 * Math.PI * freqBase * t) * 0.55 +
+                    Math.sin(2 * Math.PI * (freqBase * 1.5) * t) * 0.25 +
+                    Math.sin(2 * Math.PI * (freqBase * 2.02) * t) * 0.15 +
+                    (Math.random() * 2 - 1) * 0.03 * Math.exp(-t * 6.0)
+                ) * env;
+                const pcm = Math.max(-1, Math.min(1, sig)) * 32767;
+                view.setInt16(44 + i * 2, pcm, true);
+            }
+            return new Uint8Array(buffer);
+        }
+
+        // Generate a genuine 3D Color Grading .CUBE LUT file
+        function generateCubeLutString(title, warmth, contrast) {
+            const size = 9;
+            let lines = [
+                '# Created by Cihannüma Grand Digital Library Engine',
+                'TITLE "' + title + '"',
+                'LUT_3D_SIZE ' + size,
+                'DOMAIN_MIN 0.0 0.0 0.0',
+                'DOMAIN_MAX 1.0 1.0 1.0'
+            ];
+            for (let b = 0; b < size; b++) {
+                for (let g = 0; g < size; g++) {
+                    for (let r = 0; r < size; r++) {
+                        let rf = r / (size - 1);
+                        let gf = g / (size - 1);
+                        let bf = b / (size - 1);
+                        rf = Math.min(1, Math.max(0, Math.pow(rf, contrast) + warmth * 0.04));
+                        gf = Math.min(1, Math.max(0, Math.pow(gf, contrast) + warmth * 0.015));
+                        bf = Math.min(1, Math.max(0, Math.pow(bf, contrast) - warmth * 0.03));
+                        lines.push(rf.toFixed(5) + ' ' + gf.toFixed(5) + ' ' + bf.toFixed(5));
+                    }
+                }
+            }
+            return lines.join('\n');
+        }
+
+        // Build an uncompressed PKZIP archive from [{ name, bytes }]
+        function buildPkZip(files) {
+            const encoder = new TextEncoder();
+            let localHeadersLen = 0;
+            let centralDirLen = 0;
+
+            const prepared = files.map(f => {
+                const nameBytes = encoder.encode(f.name);
+                const dataBytes = f.bytes instanceof Uint8Array ? f.bytes : encoder.encode(String(f.bytes));
+                const crc = crc32(dataBytes);
+                localHeadersLen += 30 + nameBytes.length + dataBytes.length;
+                centralDirLen += 46 + nameBytes.length;
+                return { nameBytes, dataBytes, crc };
+            });
+
+            const totalSize = localHeadersLen + centralDirLen + 22;
+            const out = new Uint8Array(totalSize);
+            const view = new DataView(out.buffer);
+            let offset = 0;
+
+            // Write Local File Headers + Payloads
+            for (const item of prepared) {
+                item.localOffset = offset;
+                view.setUint32(offset, 0x04034b50, true); // Local file header signature
+                view.setUint16(offset + 4, 20, true);     // Version needed
+                view.setUint16(offset + 6, 0, true);      // Flags
+                view.setUint16(offset + 8, 0, true);      // Compression: 0 (Stored)
+                view.setUint16(offset + 10, 0, true);     // Mod time
+                view.setUint16(offset + 12, 0, true);     // Mod date
+                view.setUint32(offset + 14, item.crc, true);
+                view.setUint32(offset + 18, item.dataBytes.length, true);
+                view.setUint32(offset + 22, item.dataBytes.length, true);
+                view.setUint16(offset + 26, item.nameBytes.length, true);
+                view.setUint16(offset + 28, 0, true);
+                out.set(item.nameBytes, offset + 30);
+                out.set(item.dataBytes, offset + 30 + item.nameBytes.length);
+                offset += 30 + item.nameBytes.length + item.dataBytes.length;
+            }
+
+            const centralDirStart = offset;
+            // Write Central Directory Headers
+            for (const item of prepared) {
+                view.setUint32(offset, 0x02014b50, true);
+                view.setUint16(offset + 4, 20, true);
+                view.setUint16(offset + 6, 20, true);
+                view.setUint16(offset + 8, 0, true);
+                view.setUint16(offset + 10, 0, true);
+                view.setUint16(offset + 12, 0, true);
+                view.setUint16(offset + 14, 0, true);
+                view.setUint32(offset + 16, item.crc, true);
+                view.setUint32(offset + 20, item.dataBytes.length, true);
+                view.setUint32(offset + 24, item.dataBytes.length, true);
+                view.setUint16(offset + 28, item.nameBytes.length, true);
+                view.setUint16(offset + 30, 0, true);
+                view.setUint16(offset + 32, 0, true);
+                view.setUint16(offset + 34, 0, true);
+                view.setUint16(offset + 36, 0, true);
+                view.setUint32(offset + 38, 0, true);
+                view.setUint32(offset + 42, item.localOffset, true);
+                out.set(item.nameBytes, offset + 46);
+                offset += 46 + item.nameBytes.length;
+            }
+
+            // End of Central Directory Record
+            view.setUint32(offset, 0x06054b50, true);
+            view.setUint16(offset + 4, 0, true);
+            view.setUint16(offset + 6, 0, true);
+            view.setUint16(offset + 8, prepared.length, true);
+            view.setUint16(offset + 10, prepared.length, true);
+            view.setUint32(offset + 12, centralDirLen, true);
+            view.setUint32(offset + 16, centralDirStart, true);
+            view.setUint16(offset + 20, 0, true);
+
+            return out;
+        }
+
+        function createAssetZipWorker() {
+            try {
+                const workerCode = `
+                    const crcTable = new Uint32Array(256);
+                    for (let n = 0; n < 256; n++) {
+                        let c = n;
+                        for (let k = 0; k < 8; k++) {
+                            c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+                        }
+                        crcTable[n] = c >>> 0;
+                    }
+
+                    function crc32(bytes) {
+                        let c = 0xffffffff;
+                        for (let i = 0; i < bytes.length; i++) {
+                            c = (c >>> 8) ^ crcTable[(c ^ bytes[i]) & 0xff];
+                        }
+                        return (c ^ 0xffffffff) >>> 0;
+                    }
+
+                    function generateWavBytes(freqBase, durationSec) {
+                        const sampleRate = 44100;
+                        const numSamples = Math.floor(sampleRate * durationSec);
+                        const buffer = new ArrayBuffer(44 + numSamples * 2);
+                        const view = new DataView(buffer);
+
+                        const writeStr = (offset, str) => {
+                            for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+                        };
+
+                        writeStr(0, 'RIFF');
+                        view.setUint32(4, 36 + numSamples * 2, true);
+                        writeStr(8, 'WAVE');
+                        writeStr(12, 'fmt ');
+                        view.setUint32(16, 16, true);
+                        view.setUint16(20, 1, true);
+                        view.setUint16(22, 1, true);
+                        view.setUint32(24, sampleRate, true);
+                        view.setUint32(28, sampleRate * 2, true);
+                        view.setUint16(32, 2, true);
+                        view.setUint16(34, 16, true);
+                        writeStr(36, 'data');
+                        view.setUint32(40, numSamples * 2, true);
+
+                        for (let i = 0; i < numSamples; i++) {
+                            const t = i / sampleRate;
+                            const env = Math.exp(-t * 1.45) * Math.min(1, t * 45);
+                            const sig = (
+                                Math.sin(2 * Math.PI * freqBase * t) * 0.55 +
+                                Math.sin(2 * Math.PI * (freqBase * 1.5) * t) * 0.25 +
+                                Math.sin(2 * Math.PI * (freqBase * 2.02) * t) * 0.15 +
+                                (Math.random() * 2 - 1) * 0.03 * Math.exp(-t * 6.0)
+                            ) * env;
+                            const pcm = Math.max(-1, Math.min(1, sig)) * 32767;
+                            view.setInt16(44 + i * 2, pcm, true);
+                        }
+                        return new Uint8Array(buffer);
+                    }
+
+                    function generateCubeLutString(title, warmth, contrast) {
+                        const size = 9;
+                        let lines = [
+                            '# Created by Cihannuma Grand Digital Library Engine',
+                            'TITLE "' + title + '"',
+                            'LUT_3D_SIZE ' + size,
+                            'DOMAIN_MIN 0.0 0.0 0.0',
+                            'DOMAIN_MAX 1.0 1.0 1.0'
+                        ];
+                        for (let b = 0; b < size; b++) {
+                            for (let g = 0; g < size; g++) {
+                                for (let r = 0; r < size; r++) {
+                                    let rf = r / (size - 1);
+                                    let gf = g / (size - 1);
+                                    let bf = b / (size - 1);
+                                    rf = Math.min(1, Math.max(0, Math.pow(rf, contrast) + warmth * 0.04));
+                                    gf = Math.min(1, Math.max(0, Math.pow(gf, contrast) + warmth * 0.015));
+                                    bf = Math.min(1, Math.max(0, Math.pow(bf, contrast) - warmth * 0.03));
+                                    lines.push(rf.toFixed(5) + ' ' + gf.toFixed(5) + ' ' + bf.toFixed(5));
+                                }
+                            }
+                        }
+                        return lines.join('\\n');
+                    }
+
+                    function buildPkZip(files) {
+                        const encoder = new TextEncoder();
+                        let localHeadersLen = 0;
+                        let centralDirLen = 0;
+
+                        const prepared = files.map(f => {
+                            const nameBytes = encoder.encode(f.name);
+                            const dataBytes = f.bytes instanceof Uint8Array ? f.bytes : encoder.encode(String(f.bytes));
+                            const crc = crc32(dataBytes);
+                            localHeadersLen += 30 + nameBytes.length + dataBytes.length;
+                            centralDirLen += 46 + nameBytes.length;
+                            return { nameBytes, dataBytes, crc };
+                        });
+
+                        const totalSize = localHeadersLen + centralDirLen + 22;
+                        const out = new Uint8Array(totalSize);
+                        const view = new DataView(out.buffer);
+                        let offset = 0;
+
+                        for (const item of prepared) {
+                            item.localOffset = offset;
+                            view.setUint32(offset, 0x04034b50, true);
+                            view.setUint16(offset + 4, 20, true);
+                            view.setUint16(offset + 6, 0, true);
+                            view.setUint16(offset + 8, 0, true);
+                            view.setUint16(offset + 10, 0, true);
+                            view.setUint16(offset + 12, 0, true);
+                            view.setUint32(offset + 14, item.crc, true);
+                            view.setUint32(offset + 18, item.dataBytes.length, true);
+                            view.setUint32(offset + 22, item.dataBytes.length, true);
+                            view.setUint16(offset + 26, item.nameBytes.length, true);
+                            view.setUint16(offset + 28, 0, true);
+                            out.set(item.nameBytes, offset + 30);
+                            out.set(item.dataBytes, offset + 30 + item.nameBytes.length);
+                            offset += 30 + item.nameBytes.length + item.dataBytes.length;
+                        }
+
+                        const centralDirStart = offset;
+                        for (const item of prepared) {
+                            view.setUint32(offset, 0x02014b50, true);
+                            view.setUint16(offset + 4, 20, true);
+                            view.setUint16(offset + 6, 20, true);
+                            view.setUint16(offset + 8, 0, true);
+                            view.setUint16(offset + 10, 0, true);
+                            view.setUint16(offset + 12, 0, true);
+                            view.setUint16(offset + 14, 0, true);
+                            view.setUint32(offset + 16, item.crc, true);
+                            view.setUint32(offset + 20, item.dataBytes.length, true);
+                            view.setUint32(offset + 24, item.dataBytes.length, true);
+                            view.setUint16(offset + 28, item.nameBytes.length, true);
+                            view.setUint16(offset + 30, 0, true);
+                            view.setUint16(offset + 32, 0, true);
+                            view.setUint16(offset + 34, 0, true);
+                            view.setUint16(offset + 36, 0, true);
+                            view.setUint32(offset + 38, 0, true);
+                            view.setUint32(offset + 42, item.localOffset, true);
+                            out.set(item.nameBytes, offset + 46);
+                            offset += 46 + item.nameBytes.length;
+                        }
+
+                        view.setUint32(offset, 0x06054b50, true);
+                        view.setUint16(offset + 4, 0, true);
+                        view.setUint16(offset + 6, 0, true);
+                        view.setUint16(offset + 8, prepared.length, true);
+                        view.setUint16(offset + 10, prepared.length, true);
+                        view.setUint32(offset + 12, centralDirLen, true);
+                        view.setUint32(offset + 16, centralDirStart, true);
+                        view.setUint16(offset + 20, 0, true);
+
+                        return out;
+                    }
+
+                    self.onmessage = function(e) {
+                        const { jobId, zipFilename, bundleType, payload } = e.data;
+                        const files = [];
+
+                        if (bundleType === 'wav_stem') {
+                            files.push({
+                                name: payload.stemName + '.wav',
+                                bytes: generateWavBytes(payload.freq || 110, 3.2)
+                            });
+                            files.push({
+                                name: 'README_LICENSE.txt',
+                                bytes: 'Cihannuma Rotunda Library - Royalty Free 44.1kHz 16-Bit PCM Audio Stem\\nGenerated via Web Worker DSP.'
+                            });
+                        } else if (bundleType === 'lut_pack') {
+                            files.push({
+                                name: payload.packName + '_WarmGold.cube',
+                                bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08)
+                            });
+                            files.push({
+                                name: payload.packName + '_TealShadow.cube',
+                                bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12)
+                            });
+                        } else if (bundleType === 'tome_export') {
+                            files.push({
+                                name: 'tome_manifest.json',
+                                bytes: JSON.stringify(payload.tomeData, null, 2)
+                            });
+                            (payload.tomeData.assets || []).forEach((a, idx) => {
+                                const safeTitle = (a.title || ('asset_' + idx)).replace(/[^a-zA-Z0-9_-]/g, '_');
+                                if (a.type === 'audio') {
+                                    files.push({
+                                        name: safeTitle + '.wav',
+                                        bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5)
+                                    });
+                                } else {
+                                    files.push({
+                                        name: safeTitle + '.txt',
+                                        bytes: String(a.content || '')
+                                    });
+                                }
+                            });
+                        } else {
+                            files.push({
+                                name: payload.deptId + '_manifest.json',
+                                bytes: JSON.stringify(payload, null, 2)
+                            });
+                            files.push({
+                                name: payload.deptId + '_Signature_Stem.wav',
+                                bytes: generateWavBytes(payload.baseFreq || 128, 3.0)
+                            });
+                            files.push({
+                                name: payload.deptId + '_MasterGrade.cube',
+                                bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1)
+                            });
+                        }
+
+                        const zipBytes = buildPkZip(files);
+                        self.postMessage({ jobId, zipFilename, zipBytes }, [zipBytes.buffer]);
+                    };
+                `;
+                const blob = new Blob([workerCode], { type: 'application/javascript' });
+                return new Worker(URL.createObjectURL(blob));
+            } catch (err) {
+                console.warn('[Rotunda Engine] Worker creation failed, fallback to main thread:', err);
+                return null;
+            }
+        }
+
+        // Main thread fallback ZIP generator
+        function executeZipDownloadMainThread(jobConfig) {
+            const { zipFilename, bundleType, payload } = jobConfig;
+            const files = [];
+
+            if (bundleType === 'wav_stem') {
+                files.push({
+                    name: payload.stemName + '.wav',
+                    bytes: generateWavBytes(payload.freq || 110, 3.2)
+                });
+                files.push({
+                    name: 'README_LICENSE.txt',
+                    bytes: 'Cihannuma Rotunda Library - Royalty Free 44.1kHz 16-Bit PCM Audio Stem\nGenerated via DSP.'
+                });
+            } else if (bundleType === 'lut_pack') {
+                files.push({
+                    name: payload.packName + '_WarmGold.cube',
+                    bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08)
+                });
+                files.push({
+                    name: payload.packName + '_TealShadow.cube',
+                    bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12)
+                });
+            } else if (bundleType === 'tome_export') {
+                files.push({
+                    name: 'tome_manifest.json',
+                    bytes: JSON.stringify(payload.tomeData, null, 2)
+                });
+                (payload.tomeData.assets || []).forEach((a, idx) => {
+                    const safeTitle = (a.title || ('asset_' + idx)).replace(/[^a-zA-Z0-9_-]/g, '_');
+                    if (a.type === 'audio') {
+                        files.push({
+                            name: safeTitle + '.wav',
+                            bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5)
+                        });
+                    } else {
+                        files.push({
+                            name: safeTitle + '.txt',
+                            bytes: String(a.content || '')
+                        });
+                    }
+                });
+            } else {
+                files.push({
+                    name: payload.deptId + '_manifest.json',
+                    bytes: JSON.stringify(payload, null, 2)
+                });
+                files.push({
+                    name: payload.deptId + '_Signature_Stem.wav',
+                    bytes: generateWavBytes(payload.baseFreq || 128, 3.0)
+                });
+                files.push({
+                    name: payload.deptId + '_MasterGrade.cube',
+                    bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1)
+                });
+            }
+
+            const zipBytes = buildPkZip(files);
+            saveZipBlobToDisk(zipFilename, zipBytes);
+        }
+
+        function saveZipBlobToDisk(zipFilename, zipBytes) {
+            const blob = new Blob([zipBytes], { type: 'application/zip' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = zipFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`Downloaded ${zipFilename}`);
+        }
+
+        let zipWorker = null;
+
+        const DEPARTMENTS = [
+            {
+                id: 'sound-design',
+                code: '01',
+                name: 'Sound Design & Foley',
+                shortName: '01 · Sound Design',
+                icon: 'fa-wave-square',
+                color: '#f59e0b',
+                tier: 1,
+                bayIndex: 1,
+                theta: 0.45,
+                phi: 1.38,
+                radius: 17.5,
+                targetY: 5.5,
+                baseFreq: 98,
+                desc: '24-bit acoustic foley, cathedral impulse responses, sub-bass booms, and analog synth stems.',
+                packs: [
+                    { title: 'Cihannüma Dome Impulse Responses (44.1kHz WAV)', type: 'wav_stem', freq: 110, badge: 'WAV · 1.4 MB' },
+                    { title: 'Sub-Bass Analog Braams & Cinematic Hits', type: 'wav_stem', freq: 65, badge: 'WAV · 1.4 MB' },
+                    { title: 'Rare Parchment & Leather Folio Foley Kit', type: 'wav_stem', freq: 220, badge: 'WAV · 1.4 MB' }
+                ]
+            },
+            {
+                id: 'color-luts',
+                code: '02',
+                name: 'Color Grading LUTs',
+                shortName: '02 · Color LUTs',
+                icon: 'fa-palette',
+                color: '#ec4899',
+                tier: 2,
+                bayIndex: 4,
+                theta: 1.55,
+                phi: 1.32,
+                radius: 17.5,
+                targetY: 8.3,
+                baseFreq: 146.8,
+                desc: '33x33x33 tetrahedral .CUBE print film emulations, halation matrices, and ACES look transforms.',
+                packs: [
+                    { title: 'Kodak 2383 Archival Gold Print Emulation (.CUBE)', type: 'lut_pack', badge: 'CUBE · 3D LUT' },
+                    { title: 'Anamorphic Teal & tungsten Library Grade (.CUBE)', type: 'lut_pack', badge: 'CUBE · 3D LUT' },
+                    { title: 'Silver Halide Monochrome Archival Contrast (.CUBE)', type: 'lut_pack', badge: 'CUBE · 3D LUT' }
+                ]
+            },
+            {
+                id: 'shaders-vfx',
+                code: '03',
+                name: 'GLSL Shaders & Optics',
+                shortName: '03 · GLSL Shaders',
+                icon: 'fa-wand-magic-sparkles',
+                color: '#38bdf8',
+                tier: 3,
+                bayIndex: 7,
+                theta: 2.65,
+                phi: 1.28,
+                radius: 17.5,
+                targetY: 11.1,
+                baseFreq: 196.0,
+                desc: 'Production-ready WebGL/Three.js PBR shaders, golden-angle bloom kernels, and procedural noises.',
+                packs: [
+                    { title: 'Golden-Angle Spiral Halation & ACES Filmic Shader', type: 'dept_bundle', badge: 'GLSL · ZIP' },
+                    { title: 'Procedural Venetian Terrazzo & Moroccan Leather PBR', type: 'dept_bundle', badge: 'GLSL · ZIP' }
+                ]
+            },
+            {
+                id: '3d-pbr',
+                code: '04',
+                name: '3D Assets & ArchViz',
+                shortName: '04 · 3D & PBR',
+                icon: 'fa-cubes',
+                color: '#10b981',
+                tier: 2,
+                bayIndex: 10,
+                theta: 3.85,
+                phi: 1.34,
+                radius: 17.5,
+                targetY: 8.3,
+                baseFreq: 164.8,
+                desc: 'Instanced architectural trim sheets, chamfered book geometries, and procedural HDRI domes.',
+                packs: [
+                    { title: 'Classical Fluted Columns & Lotus Capital Kit', type: 'dept_bundle', badge: 'MESH · ZIP' },
+                    { title: 'Equirectangular Interior Library HDRI Generator', type: 'dept_bundle', badge: 'HDRI · ZIP' }
+                ]
+            },
+            {
+                id: 'code-arch',
+                code: '05',
+                name: 'Code & Wasm Kernels',
+                shortName: '05 · Code & Wasm',
+                icon: 'fa-microchip',
+                color: '#a855f7',
+                tier: 4,
+                bayIndex: 13,
+                theta: 4.95,
+                phi: 1.25,
+                radius: 17.5,
+                targetY: 13.9,
+                baseFreq: 246.9,
+                desc: 'Zero-GC TypedArray spatial indexes, WebAssembly DSP modules, and off-main-thread Worker pipelines.',
+                packs: [
+                    { title: 'In-Memory WebAssembly Lerp & Audio DSP Binary', type: 'dept_bundle', badge: 'WASM · ZIP' },
+                    { title: 'Zero-Dependency PKZIP & CRC32 Web Worker', type: 'dept_bundle', badge: 'JS · ZIP' }
+                ]
+            },
+            {
+                id: 'manuscript-vault',
+                code: '06',
+                name: 'Personal Asset Vault',
+                shortName: '06 · Personal Vault',
+                icon: 'fa-vault',
+                color: '#eab308',
+                tier: 0,
+                bayIndex: 15,
+                theta: 5.85,
+                phi: 1.42,
+                radius: 14.5,
+                targetY: 2.2,
+                baseFreq: 130.8,
+                desc: 'Your custom inscribed tomes on the ground reading room floor—store links, snippets, images, and notes.',
+                packs: [
+                    { title: 'Complete Personal Inscribed Vault Snapshot', type: 'dept_bundle', badge: 'JSON · ZIP' }
+                ]
+            }
+        ];
+
+        const SPINE_PALETTE = [
+            { name: 'Oxblood Crimson', hex: '#5c1616' },
+            { name: 'Imperial Emerald', hex: '#133b2b' },
+            { name: 'Prussian Indigo', hex: '#182b49' },
+            { name: 'Florentine Umber', hex: '#4a2c18' },
+            { name: 'Obsidian Vellum', hex: '#1e2024' },
+            { name: 'Royal Amethyst', hex: '#3b1d4a' },
+            { name: 'Antiquarian Ochre', hex: '#6e4715' }
+        ];
+
+        const SAMPLE_TOME_TITLES = [
+            'Codex of Acoustic Harmonics', 'Treatise on Anamorphic Optics', 'Venetian Terrazzo Mineralogy',
+            'Atlas of Celestial Cartography', 'Principia of WebGL Instancing', 'Folio of Analog Synthesizers',
+            'Chronicles of Cihannüma Hall', 'Compendium of Color Science', 'Lexicon of Procedural Shaders',
+            'Manuscript of Sub-Bass Physics', 'Grimoire of Filmic Tone Mapping', 'Archive of Golden Ratio Geometry',
+            'Encyclopedia of Foley & Impulse', 'Tome of Low-Latency WebAssembly', 'Vellum of Moroccan Bookbinding',
+            'Diaries of the Grand Rotunda'
+        ];
+
+        const STORAGE_KEY = 'cihannuma_grand_library_deltas_v3';
+        let customBookDeltas = {}; // { [instanceId]: { title, deptId, colorHex, tags, assets: [] } }
+
+        function loadBookDeltas() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) customBookDeltas = JSON.parse(raw) || {};
+            } catch (e) {
+                customBookDeltas = {};
+            }
+        }
+
+        function saveBookDeltas() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(customBookDeltas));
+            } catch (e) {
+                console.warn('Storage quota warning:', e);
+            }
+        }
+
+        // Deterministic O(1) book metadata generator for all 16,320+ books
+        let totalBooksCount = 0;
+        let bookSpatialMeta = []; // [{ id, tier, bay, deptId, x, y, z, angle, colorIndex }]
+
+        function getBookData(instanceId) {
+            const spatial = bookSpatialMeta[instanceId] || {
+                id: instanceId,
+                tier: 1,
+                bay: 0,
+                deptId: DEPARTMENTS[instanceId % DEPARTMENTS.length].id,
+                colorIndex: instanceId % SPINE_PALETTE.length
+            };
+            const delta = customBookDeltas[instanceId];
+            const deptObj = DEPARTMENTS.find(d => d.id === (delta?.deptId || spatial.deptId)) || DEPARTMENTS[0];
+            const defaultTitle = `${SAMPLE_TOME_TITLES[instanceId % SAMPLE_TOME_TITLES.length]} Vol. ${(instanceId % 12) + 1}`;
+            const defaultAssets = [
+                {
+                    id: 'def-audio-' + instanceId,
+                    type: 'audio',
+                    title: `${deptObj.name} Harmonic Stem #${(instanceId % 99) + 1}`,
+                    content: String(deptObj.baseFreq + (instanceId % 7) * 18)
+                },
+                {
+                    id: 'def-code-' + instanceId,
+                    type: 'code',
+                    title: `GLSL / LUT Calibration Preset #${instanceId}`,
+                    content: `// Cihannüma Tome #${instanceId}\nvec3 applyWarmCoveLight(vec3 color, float ao) {\n    return color * mix(0.35, 1.25, ao) * vec3(1.06, 0.97, 0.88);\n}`
+                }
+            ];
+
+            return {
+                instanceId,
+                callNumber: `TIER ${spatial.tier} · BAY ${String.fromCharCode(65 + (spatial.bay % 16))} · #${String(instanceId).padStart(5, '0')}`,
+                title: delta?.title || defaultTitle,
+                deptId: deptObj.id,
+                deptName: deptObj.name,
+                colorHex: delta?.colorHex || SPINE_PALETTE[spatial.colorIndex].hex,
+                tags: delta?.tags || `#${deptObj.id}, #tier-${spatial.tier}, #archival`,
+                assets: delta?.assets ? delta.assets : defaultAssets,
+                isCustomized: Boolean(delta),
+                spatial
+            };
+        }
+
+        let scene, camera, renderer, bookInstancedMesh, hoverHighlightMesh;
+        let raycaster, pointerNDC;
+        let activeDepartment = DEPARTMENTS[0];
+        let selectedBookId = 120;
+        let hoveredBookId = null;
+        let showSpatialPlaques = true;
+        let spatialPlaqueElements = [];
+
+        // Smooth Orbit & Click-to-Zoom Camera State
+        const camOrbit = {
+            theta: 0.65,
+            phi: 1.28,
+            radius: 14.2,
+            targetX: 0.0,
+            targetY: 4.8,
+            targetZ: 0.0,
+            desiredTheta: 0.65,
+            desiredPhi: 1.28,
+            desiredRadius: 14.2,
+            desiredTargetX: 0.0,
+            desiredTargetY: 4.8,
+            desiredTargetZ: 0.0
+        };
+
+        // Create procedural Interior Equirectangular HDRI for realistic PBR reflections
+        function createInteriorEnvironmentMap(webglRenderer) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, 0, 256);
+            grad.addColorStop(0.0, '#8ecae6');
+            grad.addColorStop(0.18, '#d8f3ff');
+            grad.addColorStop(0.28, '#4a3520');
+            grad.addColorStop(0.55, '#a86e28');
+            grad.addColorStop(0.78, '#5a3a18');
+            grad.addColorStop(1.0, '#101816');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 512, 256);
+
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 16; i++) {
+                ctx.fillRect(i * 32 + 6, 34, 20, 24);
+            }
+
+            for (let t = 0; t < 5; t++) {
+                const y = 78 + t * 24;
+                ctx.fillStyle = 'rgba(255, 205, 125, 0.85)';
+                ctx.fillRect(0, y, 512, 5);
+            }
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.mapping = THREE.EquirectangularReflectionMapping;
+            const pmrem = new THREE.PMREMGenerator(webglRenderer);
+            pmrem.compileEquirectangularShader();
+            const envRT = pmrem.fromEquirectangular(tex);
+            tex.dispose();
+            pmrem.dispose();
+            return envRT.texture;
+        }
+
+        // Create Procedural Venetian Terrazzo Marble Floor Texture
+        function createTerrazzoTextures() {
+            const size = 1024;
+            const diffCanvas = document.createElement('canvas');
+            diffCanvas.width = size;
+            diffCanvas.height = size;
+            const dCtx = diffCanvas.getContext('2d');
+
+            dCtx.fillStyle = '#1b2422';
+            dCtx.fillRect(0, 0, size, size);
+
+            const chipColors = ['#d8d2c5', '#8c9692', '#3a4a46', '#c5a880', '#52635e', '#f0ece1'];
+            for (let i = 0; i < 4200; i++) {
+                dCtx.fillStyle = chipColors[i % chipColors.length];
+                const x = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * size;
+                const y = ((Math.cos(i * 78.233) * 29432.1234) % 1 + 1) % 1 * size;
+                const r = 1.5 + (i % 5) * 1.4;
+                dCtx.beginPath();
+                dCtx.arc(x, y, r, 0, Math.PI * 2);
+                dCtx.fill();
+            }
+
+            const tex = new THREE.CanvasTexture(diffCanvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(8, 8);
+            return tex;
+        }
+
+        // Create Dome Calligraphic Inscription Texture
+        function createDomeCalligraphyTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 2048;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#a8c6d8';
+            ctx.fillRect(0, 0, 2048, 256);
+
+            ctx.strokeStyle = '#7b99ab';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(0, 12, 2048, 232);
+
+            ctx.fillStyle = '#4a5d6b';
+            ctx.font = '600 54px "Cinzel", Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const phrase = 'O, RAB, İLMİMİ ARTIR   ·   EX SCIENTIA LUX   ·   CIHANNÜMA ARCHIVE   ·   ';
+            ctx.fillText(phrase + phrase, 1024, 128);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            return tex;
+        }
+
+        // Create Moroccan Leather Spine & Gold-Foil Texture Atlas
+        function createBookSpineTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 512, 512);
+
+            for (let i = 0; i < 6000; i++) {
+                const x = (i * 73) % 512;
+                const y = (i * 137) % 512;
+                ctx.fillStyle = (i % 2 === 0) ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
+                ctx.fillRect(x, y, 3, 3);
+            }
+
+            const bandPositions = [48, 120, 240, 360, 430];
+            bandPositions.forEach(y => {
+                ctx.fillStyle = 'rgba(0,0,0,0.32)';
+                ctx.fillRect(0, y - 5, 512, 10);
+                ctx.fillStyle = '#f5d77f';
+                ctx.fillRect(0, y - 2, 512, 4);
+            });
+
+            ctx.fillStyle = 'rgba(245, 240, 228, 0.85)';
+            ctx.fillRect(60, 456, 392, 34);
+            ctx.fillStyle = '#2b2118';
+            ctx.fillRect(90, 468, 220, 4);
+            ctx.fillRect(90, 476, 150, 3);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Create World Globe Texture
+        function createWorldGlobeTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#112224';
+            ctx.fillRect(0, 0, 1024, 512);
+
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.28)';
+            ctx.lineWidth = 1.5;
+            for (let x = 0; x <= 1024; x += 64) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 512); ctx.stroke();
+            }
+            for (let y = 0; y <= 512; y += 42) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1024, y); ctx.stroke();
+            }
+
+            ctx.fillStyle = '#d4af37';
+            const continents = [
+                [[520, 110], [680, 95], [820, 125], [860, 195], [770, 245], [640, 230], [540, 185]],
+                [[480, 200], [580, 205], [610, 285], [565, 385], [510, 370], [470, 275]],
+                [[150, 105], [295, 95], [330, 175], [260, 235], [195, 215], [135, 155]],
+                [[275, 255], [355, 275], [345, 395], [295, 435], [265, 345]],
+                [[770, 325], [855, 320], [865, 385], [785, 390]]
+            ];
+            continents.forEach(poly => {
+                ctx.beginPath();
+                poly.forEach(([x, y], idx) => idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function init3DRotundaScene() {
+            const container = document.getElementById('webglContainer');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x12161a);
+            scene.fog = new THREE.FogExp2(0x14181d, 0.0065);
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 160);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.12;
+            if ('outputColorSpace' in renderer) {
+                renderer.outputColorSpace = THREE.SRGBColorSpace;
+            } else if ('outputEncoding' in renderer) {
+                renderer.outputEncoding = THREE.sRGBEncoding;
+            }
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            scene.environment = createInteriorEnvironmentMap(renderer);
+
+            const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x4a3219, 0.85);
+            hemiLight.position.set(0, 36, 0);
+            scene.add(hemiLight);
+
+            const atriumLight = new THREE.PointLight(0xffb86b, 1.35, 65, 1.5);
+            atriumLight.position.set(0, 14, 0);
+            scene.add(atriumLight);
+
+            const zenithLight = new THREE.DirectionalLight(0xe0f2fe, 0.9);
+            zenithLight.position.set(4, 42, -6);
+            scene.add(zenithLight);
+
+            // 1. FLOOR
+            const terrazzoTex = createTerrazzoTextures();
+            const floorGeo = new THREE.CylinderGeometry(28.5, 28.5, 0.4, 72);
+            const floorMat = new THREE.MeshStandardMaterial({
+                map: terrazzoTex,
+                roughness: 0.16,
+                metalness: 0.12
+            });
+            const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+            floorMesh.position.y = -0.2;
+            scene.add(floorMesh);
+
+            const outerRingGeo = new THREE.RingGeometry(15.2, 26.8, 72);
+            outerRingGeo.rotateX(-Math.PI / 2);
+            const outerRingMat = new THREE.MeshStandardMaterial({
+                color: 0x162923,
+                roughness: 0.78,
+                metalness: 0.04
+            });
+            const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
+            outerRingMesh.position.y = 0.01;
+            scene.add(outerRingMesh);
+
+            // 2. CENTRAL WORLD GLOBE & DESK
+            buildCentralGlobeAndDesk();
+
+            // 3. 16 MONUMENTAL COLUMNS
+            buildMonumentalColumns();
+
+            // 4. ROTUNDA BALCONY TIERS
+            buildRotundaBalconyTiers();
+
+            // 5. CLERESTORY & DOME
+            buildClerestoryAndDome();
+
+            // 6. READING ROOM DESKS
+            buildReadingRoomDesks();
+
+            // 7. 16,320 INSTANCED 3D BOOKS
+            buildInstancedLibraryBooks();
+
+            // 8. HOVER PROXY MESH
+            const hoverGeo = new THREE.BoxGeometry(0.28, 0.72, 0.52);
+            const hoverMat = new THREE.MeshBasicMaterial({
+                color: 0xf5d77f,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.9
+            });
+            hoverHighlightMesh = new THREE.Mesh(hoverGeo, hoverMat);
+            hoverHighlightMesh.visible = false;
+            scene.add(hoverHighlightMesh);
+
+            raycaster = new THREE.Raycaster();
+            pointerNDC = new THREE.Vector2();
+            setupOrbitAndPickEvents(renderer.domElement);
+
+            buildSpatialDepartmentPlaques();
+        }
+
+        function buildCentralGlobeAndDesk() {
+            const centerGroup = new THREE.Group();
+
+            const deskOuterGeo = new THREE.CylinderGeometry(3.85, 3.95, 1.05, 48, 1, true);
+            const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x3b1c0e, roughness: 0.28, metalness: 0.1 });
+            const deskOuter = new THREE.Mesh(deskOuterGeo, mahoganyMat);
+            deskOuter.position.y = 0.525;
+            centerGroup.add(deskOuter);
+
+            const counterTopGeo = new THREE.RingGeometry(2.85, 4.02, 48);
+            counterTopGeo.rotateX(-Math.PI / 2);
+            const creamMarbleMat = new THREE.MeshStandardMaterial({ color: 0xf3ead8, roughness: 0.18, metalness: 0.05 });
+            const counterTop = new THREE.Mesh(counterTopGeo, creamMarbleMat);
+            counterTop.position.y = 1.06;
+            centerGroup.add(counterTop);
+
+            const basePedestalGeo = new THREE.CylinderGeometry(1.15, 1.32, 1.75, 36);
+            const emeraldCollarMat = new THREE.MeshStandardMaterial({ color: 0x163832, roughness: 0.35, metalness: 0.15 });
+            const basePedestal = new THREE.Mesh(basePedestalGeo, emeraldCollarMat);
+            basePedestal.position.y = 0.875;
+            centerGroup.add(basePedestal);
+
+            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.22, metalness: 0.85 });
+            const trimRingGeo = new THREE.TorusGeometry(1.22, 0.06, 16, 48);
+            trimRingGeo.rotateX(Math.PI / 2);
+            const trimRing = new THREE.Mesh(trimRingGeo, brassMat);
+            trimRing.position.y = 1.72;
+            centerGroup.add(trimRing);
+
+            const globeGeo = new THREE.SphereGeometry(2.05, 48, 36);
+            const globeMat = new THREE.MeshStandardMaterial({
+                map: createWorldGlobeTexture(),
+                roughness: 0.22,
+                metalness: 0.45
+            });
+            const globeMesh = new THREE.Mesh(globeGeo, globeMat);
+            globeMesh.position.y = 3.45;
+            globeMesh.rotation.z = 0.22;
+            globeMesh.name = 'centralGlobe';
+            centerGroup.add(globeMesh);
+
+            scene.add(centerGroup);
+        }
+
+        function buildMonumentalColumns() {
+            const numCols = 16;
+            const colRadius = 20.6;
+
+            const creamStoneMat = new THREE.MeshStandardMaterial({ color: 0xeae3d5, roughness: 0.42, metalness: 0.04 });
+            const emeraldBandMat = new THREE.MeshStandardMaterial({ color: 0x173831, roughness: 0.36, metalness: 0.12 });
+            const copperBronzeMat = new THREE.MeshStandardMaterial({ color: 0xb87b4b, roughness: 0.25, metalness: 0.78 });
+
+            const shaftGeo = new THREE.CylinderGeometry(0.54, 0.64, 24.5, 24);
+            const collarGeo = new THREE.CylinderGeometry(0.68, 0.68, 1.05, 24);
+            const capitalGeo = new THREE.CylinderGeometry(1.18, 0.56, 1.15, 24);
+
+            for (let i = 0; i < numCols; i++) {
+                const angle = (i / numCols) * Math.PI * 2;
+                const x = Math.cos(angle) * colRadius;
+                const z = Math.sin(angle) * colRadius;
+
+                const colGroup = new THREE.Group();
+                colGroup.position.set(x, 0, z);
+
+                const shaft = new THREE.Mesh(shaftGeo, creamStoneMat);
+                shaft.position.y = 12.25;
+                colGroup.add(shaft);
+
+                const lowerCollar = new THREE.Mesh(collarGeo, emeraldBandMat);
+                lowerCollar.position.y = 4.35;
+                colGroup.add(lowerCollar);
+
+                const upperCollar = new THREE.Mesh(collarGeo, emeraldBandMat);
+                upperCollar.position.y = 21.8;
+                colGroup.add(upperCollar);
+
+                const capital = new THREE.Mesh(capitalGeo, copperBronzeMat);
+                capital.position.y = 24.2;
+                colGroup.add(capital);
+
+                scene.add(colGroup);
+            }
+        }
+
+        function buildRotundaBalconyTiers() {
+            const creamFasciaMat = new THREE.MeshStandardMaterial({ color: 0xede6d8, roughness: 0.45, metalness: 0.05 });
+            const darkWalnutWallMat = new THREE.MeshStandardMaterial({ color: 0x24130a, roughness: 0.55 });
+            const warmCoveMat = new THREE.MeshBasicMaterial({ color: 0xffd28a });
+            const glassRailMat = new THREE.MeshStandardMaterial({
+                color: 0xdbeafe,
+                roughness: 0.1,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.26
+            });
+
+            const backWallGeo = new THREE.CylinderGeometry(25.4, 25.4, 21.5, 64, 1, true);
+            const backWall = new THREE.Mesh(backWallGeo, darkWalnutWallMat);
+            backWall.material.side = THREE.BackSide;
+            backWall.position.y = 10.75;
+            scene.add(backWall);
+
+            const portalGeo = new THREE.PlaneGeometry(5.2, 3.8);
+            const portalMat = new THREE.MeshBasicMaterial({ color: 0xe0f7ff, side: THREE.DoubleSide });
+            const portalMesh = new THREE.Mesh(portalGeo, portalMat);
+            portalMesh.position.set(0, 2.0, -25.1);
+            scene.add(portalMesh);
+
+            for (let tier = 1; tier <= 6; tier++) {
+                const yBase = tier * 3.15 + 1.1;
+                const innerR = (tier === 1) ? 19.6 : 21.6;
+
+                const slabGeo = new THREE.RingGeometry(innerR, 25.5, 64);
+                slabGeo.rotateX(-Math.PI / 2);
+                const slabTop = new THREE.Mesh(slabGeo, creamFasciaMat);
+                slabTop.position.y = yBase;
+                scene.add(slabTop);
+
+                const fasciaLipGeo = new THREE.CylinderGeometry(innerR, innerR, 0.52, 64, 1, true);
+                const fasciaLip = new THREE.Mesh(fasciaLipGeo, creamFasciaMat);
+                fasciaLip.material.side = THREE.DoubleSide;
+                fasciaLip.position.y = yBase - 0.26;
+                scene.add(fasciaLip);
+
+                const coveGeo = new THREE.CylinderGeometry(24.75, 24.75, 0.16, 64, 1, true);
+                const coveStrip = new THREE.Mesh(coveGeo, warmCoveMat);
+                coveStrip.material.side = THREE.BackSide;
+                coveStrip.position.y = yBase - 0.12;
+                scene.add(coveStrip);
+
+                if (tier <= 5) {
+                    const glassGeo = new THREE.CylinderGeometry(innerR + 0.15, innerR + 0.15, 0.85, 64, 1, true);
+                    const glassRail = new THREE.Mesh(glassGeo, glassRailMat);
+                    glassRail.material.side = THREE.DoubleSide;
+                    glassRail.position.y = yBase + 0.42;
+                    scene.add(glassRail);
+                }
+            }
+        }
+
+        function buildClerestoryAndDome() {
+            const windowDrumGeo = new THREE.CylinderGeometry(24.2, 24.2, 4.6, 64, 1, true);
+            const windowDrumMat = new THREE.MeshBasicMaterial({
+                color: 0xdcf4ff,
+                side: THREE.BackSide
+            });
+            const windowDrum = new THREE.Mesh(windowDrumGeo, windowDrumMat);
+            windowDrum.position.y = 22.8;
+            scene.add(windowDrum);
+
+            const mullionMat = new THREE.MeshStandardMaterial({ color: 0x1c2529, roughness: 0.5 });
+            for (let i = 0; i < 64; i++) {
+                const angle = (i / 64) * Math.PI * 2;
+                const barGeo = new THREE.BoxGeometry(0.08, 4.6, 0.08);
+                const bar = new THREE.Mesh(barGeo, mullionMat);
+                bar.position.set(Math.cos(angle) * 24.0, 22.8, Math.sin(angle) * 24.0);
+                scene.add(bar);
+            }
+
+            const friezeGeo = new THREE.CylinderGeometry(23.6, 24.0, 2.2, 64, 1, true);
+            const friezeMat = new THREE.MeshBasicMaterial({
+                map: createDomeCalligraphyTexture(),
+                side: THREE.BackSide
+            });
+            const friezeMesh = new THREE.Mesh(friezeGeo, friezeMat);
+            friezeMesh.position.y = 26.1;
+            scene.add(friezeMesh);
+
+            const domeGeo = new THREE.SphereGeometry(24.0, 64, 24, 0, Math.PI * 2, 0, Math.PI * 0.42);
+            const domeMat = new THREE.MeshBasicMaterial({
+                color: 0xaed1e6,
+                side: THREE.BackSide
+            });
+            const domeMesh = new THREE.Mesh(domeGeo, domeMat);
+            domeMesh.position.y = 17.5;
+            scene.add(domeMesh);
+        }
+
+        function buildReadingRoomDesks() {
+            const walnutMat = new THREE.MeshStandardMaterial({ color: 0x3b1f10, roughness: 0.32, metalness: 0.08 });
+            const brassLampMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
+            const paperMat = new THREE.MeshBasicMaterial({ color: 0xfaf3e3 });
+
+            const rings = [
+                { radius: 8.2, count: 10 },
+                { radius: 13.0, count: 14 },
+                { radius: 17.4, count: 18 }
+            ];
+
+            const deskGeo = new THREE.BoxGeometry(2.1, 0.76, 1.05);
+            const lampShadeGeo = new THREE.CylinderGeometry(0.14, 0.22, 0.14, 12);
+            const paperGeo = new THREE.BoxGeometry(0.42, 0.02, 0.3);
+
+            rings.forEach(ring => {
+                for (let i = 0; i < ring.count; i++) {
+                    const angle = (i / ring.count) * Math.PI * 2;
+                    if (Math.abs(Math.sin(angle) + 1) < 0.06) continue;
+
+                    const x = Math.cos(angle) * ring.radius;
+                    const z = Math.sin(angle) * ring.radius;
+
+                    const deskGroup = new THREE.Group();
+                    deskGroup.position.set(x, 0, z);
+                    deskGroup.rotation.y = -angle + Math.PI / 2;
+
+                    const desk = new THREE.Mesh(deskGeo, walnutMat);
+                    desk.position.y = 0.38;
+                    deskGroup.add(desk);
+
+                    const lampL = new THREE.Mesh(lampShadeGeo, brassLampMat);
+                    lampL.position.set(-0.55, 0.96, 0);
+                    deskGroup.add(lampL);
+
+                    const lampR = new THREE.Mesh(lampShadeGeo, brassLampMat);
+                    lampR.position.set(0.55, 0.96, 0);
+                    deskGroup.add(lampR);
+
+                    const folio = new THREE.Mesh(paperGeo, paperMat);
+                    folio.position.set(0.15, 0.77, 0.18);
+                    folio.rotation.y = 0.18;
+                    deskGroup.add(folio);
+
+                    scene.add(deskGroup);
+                }
+            });
+        }
+
+        function buildInstancedLibraryBooks() {
+            const numTiers = 6;
+            const subShelvesPerTier = 4;
+            const booksPerRing = 680;
+            totalBooksCount = numTiers * subShelvesPerTier * booksPerRing; // 16,320 books
+
+            const bookGeo = new THREE.BoxGeometry(0.17, 0.52, 0.38);
+            const bookMat = new THREE.MeshStandardMaterial({
+                map: createBookSpineTexture(),
+                roughness: 0.42,
+                metalness: 0.18
+            });
+
+            bookInstancedMesh = new THREE.InstancedMesh(bookGeo, bookMat, totalBooksCount);
+            bookInstancedMesh.frustumCulled = false;
+            bookGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 12, 0), 45);
+
+            const dummy = new THREE.Object3D();
+            const tempColor = new THREE.Color();
+            const paletteHexes = [0x6e1a1a, 0x164230, 0x1b3358, 0x59341c, 0x26282e, 0x482259, 0x7c5118, 0x8c2d19];
+
+            bookSpatialMeta = new Array(totalBooksCount);
+            let idx = 0;
+
+            for (let tier = 0; tier < numTiers; tier++) {
+                const tierYBase = tier * 3.15 + 1.38;
+                for (let sub = 0; sub < subShelvesPerTier; sub++) {
+                    const y = tierYBase + sub * 0.68;
+                    const shelfRadius = 24.85;
+
+                    for (let b = 0; b < booksPerRing; b++) {
+                        const angle = (b / booksPerRing) * Math.PI * 2;
+                        const bay = Math.floor((b / booksPerRing) * 16);
+
+                        const deptIndex = (tier + bay) % DEPARTMENTS.length;
+                        const deptId = DEPARTMENTS[deptIndex].id;
+
+                        const scaleH = 0.84 + ((idx * 17) % 10) * 0.032;
+                        const scaleW = 0.85 + ((idx * 31) % 7) * 0.045;
+                        const depthPull = ((idx * 13) % 5) * 0.015;
+
+                        const r = shelfRadius - depthPull;
+                        const x = Math.cos(angle) * r;
+                        const z = Math.sin(angle) * r;
+
+                        dummy.position.set(x, y, z);
+                        dummy.rotation.set(0, -angle - Math.PI / 2, 0);
+                        dummy.scale.set(scaleW, scaleH, 1.0);
+                        dummy.updateMatrix();
+
+                        bookInstancedMesh.setMatrixAt(idx, dummy.matrix);
+
+                        const delta = customBookDeltas[idx];
+                        const colorIndex = (idx * 7 + bay) % paletteHexes.length;
+                        if (delta && delta.colorHex) {
+                            tempColor.set(delta.colorHex);
+                        } else {
+                            tempColor.setHex(paletteHexes[colorIndex]);
+                        }
+                        bookInstancedMesh.setColorAt(idx, tempColor);
+
+                        bookSpatialMeta[idx] = {
+                            id: idx,
+                            tier: tier + 1,
+                            bay,
+                            deptId,
+                            x,
+                            y,
+                            z,
+                            angle,
+                            colorIndex: colorIndex % SPINE_PALETTE.length
+                        };
+                        idx++;
+                    }
+                }
+            }
+
+            bookInstancedMesh.instanceMatrix.needsUpdate = true;
+            if (bookInstancedMesh.instanceColor) bookInstancedMesh.instanceColor.needsUpdate = true;
+            scene.add(bookInstancedMesh);
+        }
+
+        function buildSpatialDepartmentPlaques() {
+            const layer = document.getElementById('spatialMarkersLayer');
+            layer.innerHTML = '';
+            spatialPlaqueElements = [];
+
+            DEPARTMENTS.forEach(dept => {
+                const plaqueRadius = 21.2;
+                const worldPos = new THREE.Vector3(
+                    Math.cos(dept.theta) * plaqueRadius,
+                    dept.targetY + 0.6,
+                    Math.sin(dept.theta) * plaqueRadius
+                );
+
+                const el = document.createElement('button');
+                el.className = 'spatial-plaque glass-pill px-3 py-1.5 rounded-full flex items-center gap-2 text-xs text-amber-50 shadow-xl';
+                el.innerHTML = `
+                    <span class="w-2 h-2 rounded-full" style="background:${dept.color}"></span>
+                    <i class="fa-solid ${dept.icon} text-amber-300 text-[11px]"></i>
+                    <span class="font-cinzel font-bold tracking-wide text-[11px]">${dept.shortName}</span>
+                `;
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    glideToDepartment(dept.id);
+                });
+
+                layer.appendChild(el);
+                spatialPlaqueElements.push({ dept, worldPos, el });
+            });
+        }
+
+        function updateSpatialPlaquesProjection() {
+            if (!showSpatialPlaques) return;
+            const halfW = window.innerWidth * 0.5;
+            const halfH = window.innerHeight * 0.5;
+            const tempV = new THREE.Vector3();
+
+            spatialPlaqueElements.forEach(item => {
+                tempV.copy(item.worldPos);
+                tempV.project(camera);
+
+                if (tempV.z > 1.0) {
+                    item.el.style.display = 'none';
+                } else {
+                    const sx = (tempV.x * halfW) + halfW;
+                    const sy = -(tempV.y * halfH) + halfH;
+                    item.el.style.display = 'flex';
+                    item.el.style.left = `${sx}px`;
+                    item.el.style.top = `${sy}px`;
+                }
+            });
+        }
+
+        function glideToDepartment(deptId, specificBookId = null) {
+            document.querySelectorAll('.timeline-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.deptId === deptId);
+            });
+
+            if (deptId === 'overview') {
+                camOrbit.desiredRadius = 14.2;
+                camOrbit.desiredPhi = 1.28;
+                camOrbit.desiredTargetX = 0.0;
+                camOrbit.desiredTargetY = 4.8;
+                camOrbit.desiredTargetZ = 0.0;
+                closeDepartmentDrawer();
+                return;
+            }
+
+            const dept = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+            activeDepartment = dept;
+
+            if (specificBookId !== null && bookSpatialMeta[specificBookId]) {
+                selectedBookId = specificBookId;
+                const bMeta = bookSpatialMeta[specificBookId];
+                camOrbit.desiredTheta = bMeta.angle;
+                camOrbit.desiredPhi = 1.48;
+                camOrbit.desiredRadius = 6.2;
+                camOrbit.desiredTargetX = Math.cos(bMeta.angle) * 23.5;
+                camOrbit.desiredTargetY = bMeta.y;
+                camOrbit.desiredTargetZ = Math.sin(bMeta.angle) * 23.5;
+            } else {
+                const matchBook = bookSpatialMeta.find(b => b.deptId === dept.id && b.tier === dept.tier + 1) || bookSpatialMeta[120];
+                selectedBookId = matchBook ? matchBook.id : 120;
+
+                camOrbit.desiredTheta = dept.theta;
+                camOrbit.desiredPhi = 1.42;
+                camOrbit.desiredRadius = 8.4;
+                camOrbit.desiredTargetX = Math.cos(dept.theta) * 22.8;
+                camOrbit.desiredTargetY = dept.targetY;
+                camOrbit.desiredTargetZ = Math.sin(dept.theta) * 22.8;
+            }
+
+            openDepartmentDrawer(dept, selectedBookId);
+        }
+
+        function setupOrbitAndPickEvents(domElement) {
+            let isDragging = false;
+            let pointerDownPos = { x: 0, y: 0 };
+            let prevPointerPos = { x: 0, y: 0 };
+            const tooltip = document.getElementById('bookHoverTooltip');
+
+            domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                pointerDownPos = { x: e.clientX, y: e.clientY };
+                prevPointerPos = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const dx = e.clientX - prevPointerPos.x;
+                    const dy = e.clientY - prevPointerPos.y;
+                    camOrbit.desiredTheta += dx * 0.0055;
+                    camOrbit.desiredPhi = Math.max(0.45, Math.min(1.65, camOrbit.desiredPhi - dy * 0.0045));
+                    prevPointerPos = { x: e.clientX, y: e.clientY };
+                    tooltip.classList.add('hidden');
+                    return;
+                }
+
+                if (e.target !== domElement) {
+                    tooltip.classList.add('hidden');
+                    hoverHighlightMesh.visible = false;
+                    return;
+                }
+
+                pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+                pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(pointerNDC, camera);
+
+                const hits = raycaster.intersectObject(bookInstancedMesh);
+                if (hits.length > 0 && hits[0].instanceId !== undefined) {
+                    const instId = hits[0].instanceId;
+                    hoveredBookId = instId;
+                    const bData = getBookData(instId);
+                    const bMeta = bData.spatial;
+
+                    hoverHighlightMesh.position.set(bMeta.x, bMeta.y, bMeta.z);
+                    hoverHighlightMesh.rotation.set(0, -bMeta.angle - Math.PI / 2, 0);
+                    hoverHighlightMesh.visible = true;
+
+                    document.getElementById('tooltipCallNo').textContent = bData.callNumber;
+                    document.getElementById('tooltipTitle').textContent = bData.title;
+                    document.getElementById('tooltipSub').textContent = `${bData.deptName} · Click to glide & inspect`;
+                    document.getElementById('tooltipDot').style.backgroundColor = bData.colorHex;
+
+                    tooltip.style.left = `${Math.min(window.innerWidth - 260, e.clientX + 16)}px`;
+                    tooltip.style.top = `${Math.min(window.innerHeight - 90, e.clientY + 14)}px`;
+                    tooltip.classList.remove('hidden');
+                } else {
+                    hoveredBookId = null;
+                    hoverHighlightMesh.visible = false;
+                    tooltip.classList.add('hidden');
+                }
+            });
+
+            window.addEventListener('mouseup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+                if (moveDist < 6 && e.target === domElement) {
+                    if (hoveredBookId !== null) {
+                        const bData = getBookData(hoveredBookId);
+                        glideToDepartment(bData.deptId, hoveredBookId);
+                    } else {
+                        // Check if clicked the central globe
+                        pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+                        pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                        raycaster.setFromCamera(pointerNDC, camera);
+                        const globe = scene.getObjectByName('centralGlobe');
+                        if (globe) {
+                            const globeHits = raycaster.intersectObject(globe);
+                            if (globeHits.length > 0) {
+                                glideToDepartment('overview');
+                            }
+                        }
+                    }
+                }
+            });
+
+            domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camOrbit.desiredRadius = Math.max(3.8, Math.min(21.5, camOrbit.desiredRadius + e.deltaY * 0.018));
+            }, { passive: false });
+
+            let touchPinchDist = 0;
+            domElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    touchPinchDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            }, { passive: true });
+
+            domElement.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length === 1) {
+                    const dx = e.touches[0].clientX - prevPointerPos.x;
+                    const dy = e.touches[0].clientY - prevPointerPos.y;
+                    camOrbit.desiredTheta += dx * 0.006;
+                    camOrbit.desiredPhi = Math.max(0.45, Math.min(1.65, camOrbit.desiredPhi - dy * 0.005));
+                    prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                } else if (e.touches.length === 2) {
+                    const d = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    camOrbit.desiredRadius = Math.max(3.8, Math.min(21.5, camOrbit.desiredRadius + (touchPinchDist - d) * 0.04));
+                    touchPinchDist = d;
+                }
+            }, { passive: true });
+
+            domElement.addEventListener('touchend', () => { isDragging = false; });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                const canvas = document.getElementById('waveformCanvas');
+                if (canvas) {
+                    canvas.width = Math.floor(canvas.getBoundingClientRect().width || 360);
+                    canvas.height = Math.floor(canvas.getBoundingClientRect().height || 64);
+                    drawWaveformCanvas(0);
+                }
+            });
+        }
+
+        let audioCtx = null;
+        let isPlayingAudio = false;
+        let audioPlayStartTime = 0;
+        let audioDuration = 4.0;
+        let currentHarmonicPreset = 0;
+        let activeAudioNodes = [];
+        let waveformBars = [];
+
+        function generateWaveformData(seedFreq) {
+            waveformBars = [];
+            for (let i = 0; i < 64; i++) {
+                const t = i / 64;
+                const env = Math.exp(-t * 1.6) * Math.sin(t * Math.PI);
+                const val = Math.max(0.12, Math.min(1.0, (0.35 + Math.abs(Math.sin(i * seedFreq * 0.05)) * 0.65) * (0.4 + env * 0.8)));
+                waveformBars.push(val);
+            }
+            drawWaveformCanvas(0);
+        }
+
+        function drawWaveformCanvas(progressRatio = 0) {
+            const canvas = document.getElementById('waveformCanvas');
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width > 0 && canvas.width !== Math.floor(rect.width)) {
+                canvas.width = Math.floor(rect.width);
+                canvas.height = Math.floor(rect.height);
+            }
+            const w = canvas.width || 360;
+            const h = canvas.height || 64;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.clearRect(0, 0, w, h);
+
+            const numBars = waveformBars.length;
+            if (numBars === 0) return;
+            const barWidth = (w / numBars) * 0.66;
+            const gap = (w / numBars) * 0.34;
+
+            for (let i = 0; i < numBars; i++) {
+                const ratio = i / numBars;
+                const barH = waveformBars[i] * (h * 0.78);
+                const x = i * (barWidth + gap) + 2;
+                const y = (h - barH) * 0.5;
+
+                ctx.fillStyle = (ratio <= progressRatio) ? '#f5d77f' : 'rgba(212, 175, 55, 0.28)';
+                ctx.fillRect(x, y, barWidth, barH);
+            }
+        }
+
+        function stopAudioPreview() {
+            activeAudioNodes.forEach(node => {
+                try { node.stop(); } catch (e) {}
+            });
+            activeAudioNodes = [];
+            isPlayingAudio = false;
+            document.getElementById('playWaveformIcon').className = 'fa-solid fa-play text-[10px]';
+            document.getElementById('playWaveformText').textContent = 'Preview Stem';
+        }
+
+        function startAudioPreview(freq = 110, startOffsetRatio = 0) {
+            stopAudioPreview();
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            const remaining = Math.max(0.4, audioDuration * (1 - startOffsetRatio));
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.001, now);
+            masterGain.gain.linearRampToValueAtTime(0.24, now + 0.08);
+            masterGain.gain.exponentialRampToValueAtTime(0.0008, now + remaining);
+            masterGain.connect(audioCtx.destination);
+
+            const multipliers = currentHarmonicPreset === 0 ? [1, 1.5, 2.0] : [1, 1.25, 1.875];
+            multipliers.forEach((m, idx) => {
+                const osc = audioCtx.createOscillator();
+                osc.type = idx === 0 ? 'sine' : 'triangle';
+                osc.frequency.setValueAtTime(freq * m, now);
+                osc.connect(masterGain);
+                osc.start(now);
+                osc.stop(now + remaining);
+                activeAudioNodes.push(osc);
+            });
+
+            isPlayingAudio = true;
+            audioPlayStartTime = performance.now() - (startOffsetRatio * audioDuration * 1000);
+            document.getElementById('playWaveformIcon').className = 'fa-solid fa-stop text-[10px]';
+            document.getElementById('playWaveformText').textContent = 'Stop Stem';
+        }
+
+        function openDepartmentDrawer(dept, bookId) {
+            const drawer = document.getElementById('departmentDrawer');
+            drawer.classList.remove('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+
+            const bookData = getBookData(bookId);
+            document.getElementById('drawerTierBadge').textContent = `TIER ${dept.tier + 1} · BAY ${String.fromCharCode(65 + dept.bayIndex)}`;
+            document.getElementById('drawerTitle').textContent = dept.name;
+            document.getElementById('drawerDesc').textContent = dept.desc;
+
+            // Active Book Card
+            document.getElementById('activeBookCallNo').textContent = bookData.callNumber;
+            document.getElementById('activeBookTitle').textContent = bookData.title;
+            document.getElementById('activeBookAssetSummary').textContent = `${bookData.assets.length} embedded assets · Click Open Tome to edit`;
+
+            // Audio Waveform Track
+            document.getElementById('waveformTrackTitle').textContent = `${dept.name} — Signature Stem (${dept.baseFreq}Hz)`;
+            generateWaveformData(dept.baseFreq);
+
+            // Render Department Packs with Instant .ZIP buttons
+            const packsList = document.getElementById('drawerPacksList');
+            packsList.innerHTML = '';
+            dept.packs.forEach((pack) => {
+                const row = document.createElement('div');
+                row.className = 'p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between gap-2 transition';
+                row.innerHTML = `
+                    <div class="min-w-0">
+                        <div class="text-xs font-medium text-amber-50 truncate">${pack.title}</div>
+                        <span class="text-[10px] font-mono-code text-amber-300/80">${pack.badge}</span>
+                    </div>
+                    <button class="shrink-0 px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 text-[11px] font-mono-code flex items-center gap-1">
+                        <i class="fa-solid fa-download text-[10px]"></i><span>.ZIP</span>
+                    </button>
+                `;
+                row.querySelector('button').addEventListener('click', () => {
+                    triggerWorkerZipDownload({
+                        zipFilename: `${pack.title.replace(/[^a-zA-Z0-9]+/g, '_')}.zip`,
+                        bundleType: pack.type,
+                        payload: {
+                            stemName: pack.title.replace(/[^a-zA-Z0-9]+/g, '_'),
+                            packName: dept.id,
+                            deptId: dept.id,
+                            title: pack.title,
+                            freq: pack.freq || dept.baseFreq,
+                            baseFreq: dept.baseFreq
+                        }
+                    });
+                });
+                packsList.appendChild(row);
+            });
+
+            // Render Neighboring Shelf Books Grid
+            const shelfGrid = document.getElementById('drawerShelfBooksGrid');
+            shelfGrid.innerHTML = '';
+            const neighborBooks = bookSpatialMeta
+                .filter(b => b.deptId === dept.id)
+                .slice(0, 6);
+
+            neighborBooks.forEach(nb => {
+                const nbData = getBookData(nb.id);
+                const card = document.createElement('button');
+                card.className = `p-2.5 rounded-xl text-left border transition flex items-start gap-2 ${
+                    nb.id === selectedBookId
+                        ? 'bg-amber-500/20 border-amber-400'
+                        : 'bg-black/40 hover:bg-white/10 border-white/10'
+                }`;
+                card.innerHTML = `
+                    <span class="w-2.5 h-8 rounded-sm shrink-0 mt-0.5 border border-amber-300/40" style="background:${nbData.colorHex}"></span>
+                    <div class="min-w-0">
+                        <div class="text-[10px] font-mono-code text-amber-300/80">#${String(nb.id).padStart(5, '0')}</div>
+                        <div class="text-xs font-medium text-amber-50 truncate">${nbData.title}</div>
+                        <div class="text-[10px] text-stone-400">${nbData.assets.length} assets</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    selectedBookId = nb.id;
+                    glideToDepartment(dept.id, nb.id);
+                });
+                shelfGrid.appendChild(card);
+            });
+        }
+
+        function closeDepartmentDrawer() {
+            stopAudioPreview();
+            const drawer = document.getElementById('departmentDrawer');
+            drawer.classList.add('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        }
+
+        let currentAssetTabType = 'link';
+
+        function openTomeSpreadModal(instanceId) {
+            selectedBookId = instanceId;
+            const bData = getBookData(instanceId);
+
+            document.getElementById('modalTomeLocation').textContent = bData.callNumber;
+            document.getElementById('modalTomeDeptBadge').textContent = bData.deptName;
+            document.getElementById('modalBookTitleInput').value = bData.title;
+            document.getElementById('modalBookTagsInput').value = bData.tags;
+
+            const deptSelect = document.getElementById('modalBookDeptSelect');
+            deptSelect.innerHTML = DEPARTMENTS.map(d =>
+                `<option value="${d.id}" ${d.id === bData.deptId ? 'selected' : ''}>${d.name}</option>`
+            ).join('');
+
+            const swatchContainer = document.getElementById('spineColorSwatches');
+            swatchContainer.innerHTML = '';
+            SPINE_PALETTE.forEach(swatch => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `w-6 h-6 rounded-full border-2 transition ${
+                    bData.colorHex.toLowerCase() === swatch.hex.toLowerCase()
+                        ? 'border-amber-950 scale-110 ring-2 ring-amber-500'
+                        : 'border-white/50 hover:scale-105'
+                }`;
+                btn.style.backgroundColor = swatch.hex;
+                btn.title = swatch.name;
+                btn.addEventListener('click', () => {
+                    updateBookMetadata(instanceId, { colorHex: swatch.hex });
+                    openTomeSpreadModal(instanceId);
+                });
+                swatchContainer.appendChild(btn);
+            });
+
+            renderModalTomeAssetsList(bData);
+            document.getElementById('tomeModalBackdrop').classList.remove('hidden');
+        }
+
+        function renderModalTomeAssetsList(bData) {
+            const listEl = document.getElementById('modalAssetList');
+            document.getElementById('modalAssetCountBadge').textContent = `${bData.assets.length} items`;
+            listEl.innerHTML = '';
+
+            const iconMap = {
+                link: 'fa-link',
+                code: 'fa-code',
+                audio: 'fa-wave-square',
+                image: 'fa-image',
+                note: 'fa-scroll'
+            };
+
+            bData.assets.forEach((asset, idx) => {
+                const item = document.createElement('div');
+                item.className = 'p-2.5 rounded-xl bg-white/60 hover:bg-white/90 border border-[#c9ae82] flex items-center justify-between gap-2 cursor-pointer transition';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <i class="fa-solid ${iconMap[asset.type] || 'fa-file'} text-[#5a3918] text-xs"></i>
+                        <div class="min-w-0">
+                            <div class="text-xs font-semibold text-[#231911] truncate">${asset.title}</div>
+                            <div class="text-[10px] font-mono-code uppercase text-[#7a5835]">${asset.type}</div>
+                        </div>
+                    </div>
+                    <button class="delete-asset-btn text-stone-500 hover:text-red-700 px-2 py-1 text-xs" title="Remove Asset">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.delete-asset-btn')) return;
+                    renderFolioAssetViewer(asset);
+                });
+                item.querySelector('.delete-asset-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const updated = bData.assets.filter((_, i) => i !== idx);
+                    updateBookMetadata(bData.instanceId, { assets: updated });
+                    openTomeSpreadModal(bData.instanceId);
+                    showToast('Asset removed from tome');
+                });
+                listEl.appendChild(item);
+            });
+
+            if (bData.assets.length > 0) {
+                renderFolioAssetViewer(bData.assets[0]);
+            }
+        }
+
+        function renderFolioAssetViewer(asset) {
+            const viewer = document.getElementById('folioAssetViewer');
+            if (!asset) return;
+
+            if (asset.type === 'link') {
+                viewer.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
+                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
+                        <span class="font-mono-code text-[10px] uppercase px-2 py-0.5 rounded bg-[#e2d1b0]">Web Link</span>
+                    </div>
+                    <p class="font-mono-code text-xs break-all text-[#4a2e16] mb-3">${asset.content}</p>
+                    <a href="${asset.content}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4a2e16] text-amber-100 text-xs font-semibold">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i><span>Open External Resource</span>
+                    </a>
+                `;
+            } else if (asset.type === 'audio') {
+                const freqVal = parseFloat(asset.content) || 120;
+                viewer.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
+                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
+                        <span class="font-mono-code text-[10px] uppercase px-2 py-0.5 rounded bg-[#e2d1b0]">${freqVal} Hz Audio Stem</span>
+                    </div>
+                    <p class="text-xs text-[#5a3918] mb-3">Synthesized 44.1kHz 16-bit PCM acoustic stem stored in this tome.</p>
+                    <div class="flex items-center gap-2">
+                        <button id="folioPlayAudioBtn" class="px-3 py-1.5 rounded-xl bg-[#4a2e16] text-amber-100 text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-play"></i><span>Play Harmonic Stem</span>
+                        </button>
+                        <button id="folioZipAudioBtn" class="px-3 py-1.5 rounded-xl bg-[#2d5a3c] text-white text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-zipper"></i><span>Download WAV (.ZIP)</span>
+                        </button>
+                    </div>
+                `;
+                viewer.querySelector('#folioPlayAudioBtn').addEventListener('click', () => startAudioPreview(freqVal, 0));
+                viewer.querySelector('#folioZipAudioBtn').addEventListener('click', () => {
+                    triggerWorkerZipDownload({
+                        zipFilename: `${asset.title.replace(/[^a-zA-Z0-9]+/g, '_')}.zip`,
+                        bundleType: 'wav_stem',
+                        payload: { stemName: asset.title.replace(/[^a-zA-Z0-9]+/g, '_'), freq: freqVal }
+                    });
+                });
+            } else if (asset.type === 'image') {
+                viewer.innerHTML = `
+                    <div class="font-bold text-sm text-[#231911] mb-2">${asset.title}</div>
+                    <img src="${asset.content}" alt="${asset.title}" onerror="this.src='https://placehold.co/600x320/3a2414/f5d77f?text=Archival+Plate'" class="w-full max-h-48 object-cover rounded-xl border border-[#bfa37a]">
+                `;
+            } else {
+                viewer.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
+                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
+                        <button id="copyFolioSnippetBtn" class="px-2.5 py-1 rounded-lg bg-[#4a2e16] text-amber-100 text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i><span>Copy</span>
+                        </button>
+                    </div>
+                    <pre class="font-mono-code text-[11px] bg-[#231911] text-amber-100 p-3 rounded-xl overflow-x-auto whitespace-pre-wrap">${asset.content.replace(/</g, '&lt;')}</pre>
+                `;
+                viewer.querySelector('#copyFolioSnippetBtn').addEventListener('click', () => {
+                    const ta = document.createElement('textarea');
+                    ta.value = asset.content;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('Copied to clipboard');
+                });
+            }
+        }
+
+        function updateBookMetadata(instanceId, partial) {
+            const current = getBookData(instanceId);
+            customBookDeltas[instanceId] = {
+                title: partial.title !== undefined ? partial.title : current.title,
+                deptId: partial.deptId !== undefined ? partial.deptId : current.deptId,
+                colorHex: partial.colorHex !== undefined ? partial.colorHex : current.colorHex,
+                tags: partial.tags !== undefined ? partial.tags : current.tags,
+                assets: partial.assets !== undefined ? partial.assets : current.assets
+            };
+            saveBookDeltas();
+
+            if (partial.colorHex && bookInstancedMesh) {
+                const c = new THREE.Color(partial.colorHex);
+                bookInstancedMesh.setColorAt(instanceId, c);
+                if (bookInstancedMesh.instanceColor) bookInstancedMesh.instanceColor.needsUpdate = true;
+            }
+
+            if (activeDepartment) openDepartmentDrawer(activeDepartment, instanceId);
+        }
+
+        function triggerWorkerZipDownload(jobConfig) {
+            showToast(`Packaging ${jobConfig.zipFilename}...`);
+            if (zipWorker) {
+                zipWorker.postMessage({
+                    jobId: Date.now(),
+                    ...jobConfig
+                });
+            } else {
+                executeZipDownloadMainThread(jobConfig);
+            }
+        }
+
+        function showToast(msg) {
+            const banner = document.getElementById('toastBanner');
+            document.getElementById('toastMessage').textContent = msg;
+            banner.classList.remove('opacity-0', 'translate-y-[-10px]');
+            clearTimeout(banner._timer);
+            banner._timer = setTimeout(() => {
+                banner.classList.add('opacity-0', 'translate-y-[-10px]');
+            }, 2600);
+        }
+
+        function initUIEvents() {
+            zipWorker = createAssetZipWorker();
+            if (zipWorker) {
+                zipWorker.onmessage = (e) => {
+                    const { zipFilename, zipBytes } = e.data;
+                    saveZipBlobToDisk(zipFilename, zipBytes);
+                };
+            }
+
+            const timelineContainer = document.getElementById('timelineButtonsContainer');
+            DEPARTMENTS.forEach(dept => {
+                const btn = document.createElement('button');
+                btn.dataset.deptId = dept.id;
+                btn.className = 'timeline-btn glass-pill shrink-0 px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs font-medium text-amber-100';
+                btn.innerHTML = `
+                    <span class="w-2 h-2 rounded-full" style="background:${dept.color}"></span>
+                    <i class="fa-solid ${dept.icon} text-amber-300/90"></i>
+                    <span>${dept.shortName}</span>
+                `;
+                btn.addEventListener('click', () => glideToDepartment(dept.id));
+                timelineContainer.appendChild(btn);
+            });
+
+            document.querySelector('[data-dept-id="overview"]').addEventListener('click', () => {
+                glideToDepartment('overview');
+            });
+            document.getElementById('resetCameraTopBtn').addEventListener('click', () => {
+                glideToDepartment('overview');
+            });
+
+            document.getElementById('toggleMarkersBtn').addEventListener('click', () => {
+                showSpatialPlaques = !showSpatialPlaques;
+                document.getElementById('spatialMarkersLayer').classList.toggle('hidden', !showSpatialPlaques);
+                showToast(showSpatialPlaques ? '3D Department Plaques visible' : '3D Department Plaques hidden');
+            });
+
+            document.getElementById('closeDrawerBtn').addEventListener('click', closeDepartmentDrawer);
+            document.getElementById('openTomeSpreadBtn').addEventListener('click', () => {
+                openTomeSpreadModal(selectedBookId);
+            });
+
+            document.getElementById('playWaveformBtn').addEventListener('click', () => {
+                if (isPlayingAudio) {
+                    stopAudioPreview();
+                } else {
+                    startAudioPreview(activeDepartment ? activeDepartment.baseFreq : 110, 0);
+                }
+            });
+
+            document.getElementById('cyclePresetSoundBtn').addEventListener('click', () => {
+                currentHarmonicPreset = (currentHarmonicPreset + 1) % 2;
+                const freq = (activeDepartment ? activeDepartment.baseFreq : 110) * (currentHarmonicPreset === 1 ? 1.25 : 1.0);
+                generateWaveformData(freq);
+                startAudioPreview(freq, 0);
+            });
+
+            document.getElementById('waveformBox').addEventListener('click', (e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                drawWaveformCanvas(ratio);
+                startAudioPreview(activeDepartment ? activeDepartment.baseFreq : 110, ratio);
+            });
+
+            document.getElementById('downloadCurrentWavZipBtn').addEventListener('click', () => {
+                const dept = activeDepartment || DEPARTMENTS[0];
+                triggerWorkerZipDownload({
+                    zipFilename: `${dept.id}_MasterStem.zip`,
+                    bundleType: 'wav_stem',
+                    payload: { stemName: `${dept.id}_44kHz_PCM`, freq: dept.baseFreq }
+                });
+            });
+
+            document.getElementById('downloadDeptBundleBtn').addEventListener('click', () => {
+                const dept = activeDepartment || DEPARTMENTS[0];
+                triggerWorkerZipDownload({
+                    zipFilename: `Cihannuma_${dept.id}_CompletePack.zip`,
+                    bundleType: 'dept_bundle',
+                    payload: {
+                        deptId: dept.id,
+                        title: dept.name,
+                        baseFreq: dept.baseFreq,
+                        exportedAt: new Date().toISOString()
+                    }
+                });
+            });
+
+            document.getElementById('closeTomeModalBtn').addEventListener('click', () => {
+                document.getElementById('tomeModalBackdrop').classList.add('hidden');
+            });
+
+            document.getElementById('saveBookMetaBtn').addEventListener('click', () => {
+                const newTitle = document.getElementById('modalBookTitleInput').value.trim() || 'Untitled Tome';
+                const newDept = document.getElementById('modalBookDeptSelect').value;
+                const newTags = document.getElementById('modalBookTagsInput').value.trim();
+                updateBookMetadata(selectedBookId, { title: newTitle, deptId: newDept, tags: newTags });
+                showToast('Tome spine & metadata stamped');
+            });
+
+            document.getElementById('downloadSingleTomeZipBtn').addEventListener('click', () => {
+                const bData = getBookData(selectedBookId);
+                triggerWorkerZipDownload({
+                    zipFilename: `Tome_${selectedBookId}_${bData.title.replace(/[^a-zA-Z0-9]+/g, '_')}.zip`,
+                    bundleType: 'tome_export',
+                    payload: { tomeData: bData }
+                });
+            });
+
+            document.querySelectorAll('.asset-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentAssetTabType = btn.dataset.type;
+                    document.querySelectorAll('.asset-tab-btn').forEach(b => {
+                        const active = b.dataset.type === currentAssetTabType;
+                        b.className = `asset-tab-btn px-2 py-1.5 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 ${
+                            active ? 'bg-[#4a2e16] text-amber-100' : 'bg-[#e2d1b0] text-[#3d2814]'
+                        }`;
+                    });
+                });
+            });
+
+            document.getElementById('newAssetFileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                document.getElementById('newAssetTitleInput').value = file.name;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    document.getElementById('newAssetContentInput').value = String(reader.result).slice(0, 6000);
+                };
+                if (file.type.startsWith('image/')) {
+                    currentAssetTabType = 'image';
+                    reader.readAsDataURL(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            });
+
+            document.getElementById('addAssetToTomeBtn').addEventListener('click', () => {
+                const titleInput = document.getElementById('newAssetTitleInput');
+                const contentInput = document.getElementById('newAssetContentInput');
+                const title = titleInput.value.trim() || `Archival ${currentAssetTabType.toUpperCase()} Entry`;
+                const content = contentInput.value.trim() || (currentAssetTabType === 'audio' ? '144' : 'https://example.com');
+
+                const bData = getBookData(selectedBookId);
+                const updatedAssets = [
+                    { id: 'asset-' + Date.now(), type: currentAssetTabType, title, content },
+                    ...bData.assets
+                ];
+                updateBookMetadata(selectedBookId, { assets: updatedAssets });
+                titleInput.value = '';
+                contentInput.value = '';
+                openTomeSpreadModal(selectedBookId);
+                showToast('New asset inscribed into tome');
+            });
+
+            const searchInput = document.getElementById('globalSearchInput');
+            const searchPanel = document.getElementById('searchResultsPanel');
+            const searchList = document.getElementById('searchResultsList');
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.trim().toLowerCase();
+                if (!q) {
+                    searchPanel.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
+                    return;
+                }
+                clearBtn.classList.remove('hidden');
+                searchPanel.classList.remove('hidden');
+
+                const matches = [];
+                DEPARTMENTS.forEach(d => {
+                    if (d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)) {
+                        matches.push({ isDept: true, dept: d });
+                    }
+                });
+
+                for (let i = 0; i < totalBooksCount && matches.length < 18; i += 17) {
+                    const bData = getBookData(i);
+                    if (
+                        bData.title.toLowerCase().includes(q) ||
+                        bData.tags.toLowerCase().includes(q) ||
+                        bData.deptName.toLowerCase().includes(q)
+                    ) {
+                        matches.push({ isDept: false, book: bData });
+                    }
+                }
+
+                document.getElementById('searchCountLabel').textContent = `${matches.length} archival matches`;
+                searchList.innerHTML = '';
+
+                matches.forEach(m => {
+                    const row = document.createElement('button');
+                    row.className = 'w-full text-left p-2 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-400/40 flex items-center justify-between gap-2 transition';
+                    if (m.isDept) {
+                        row.innerHTML = `
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid ${m.dept.icon} text-amber-400 text-xs"></i>
+                                <div>
+                                    <div class="text-xs font-bold text-amber-100">${m.dept.name}</div>
+                                    <div class="text-[10px] text-stone-400">${m.dept.desc}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-mono-code text-amber-300 shrink-0">Department Wing →</span>
+                        `;
+                        row.addEventListener('click', () => {
+                            searchPanel.classList.add('hidden');
+                            glideToDepartment(m.dept.id);
+                        });
+                    } else {
+                        row.innerHTML = `
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="w-2.5 h-5 rounded-sm shrink-0" style="background:${m.book.colorHex}"></span>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold text-white truncate">${m.book.title}</div>
+                                    <div class="text-[10px] font-mono-code text-stone-400">${m.book.callNumber} · ${m.book.deptName}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-mono-code text-amber-300 shrink-0">Glide to Shelf →</span>
+                        `;
+                        row.addEventListener('click', () => {
+                            searchPanel.classList.add('hidden');
+                            glideToDepartment(m.book.deptId, m.book.instanceId);
+                        });
+                    }
+                    searchList.appendChild(row);
+                });
+            });
+
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchPanel.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+            });
+
+            document.getElementById('exportLibraryBtn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(customBookDeltas, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cihannuma_library_backup.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Exported library vault backup (.JSON)');
+            });
+
+            document.getElementById('importLibraryInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const parsed = JSON.parse(reader.result);
+                        customBookDeltas = parsed || {};
+                        saveBookDeltas();
+                        showToast('Restored library vault from backup');
+                    } catch (err) {
+                        showToast('Invalid JSON backup file');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== searchInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                    e.preventDefault();
+                    searchInput.focus();
+                } else if (e.key === 'Escape') {
+                    document.getElementById('tomeModalBackdrop').classList.add('hidden');
+                    searchPanel.classList.add('hidden');
+                }
+            });
+        }
+
+        function animateLoop() {
+            requestAnimationFrame(animateLoop);
+
+            const damping = 0.085;
+            camOrbit.theta = smoothLerp(camOrbit.theta, camOrbit.desiredTheta, damping);
+            camOrbit.phi = smoothLerp(camOrbit.phi, camOrbit.desiredPhi, damping);
+            camOrbit.radius = smoothLerp(camOrbit.radius, camOrbit.desiredRadius, damping);
+            camOrbit.targetX = smoothLerp(camOrbit.targetX, camOrbit.desiredTargetX, damping);
+            camOrbit.targetY = smoothLerp(camOrbit.targetY, camOrbit.desiredTargetY, damping);
+            camOrbit.targetZ = smoothLerp(camOrbit.targetZ, camOrbit.desiredTargetZ, damping);
+
+            const sinPhi = Math.sin(camOrbit.phi);
+            const cosPhi = Math.cos(camOrbit.phi);
+            camera.position.set(
+                camOrbit.targetX + camOrbit.radius * sinPhi * Math.cos(camOrbit.theta),
+                camOrbit.targetY + camOrbit.radius * cosPhi,
+                camOrbit.targetZ + camOrbit.radius * sinPhi * Math.sin(camOrbit.theta)
+            );
+            camera.lookAt(camOrbit.targetX, camOrbit.targetY, camOrbit.targetZ);
+
+            const globe = scene.getObjectByName('centralGlobe');
+            if (globe) globe.rotation.y += 0.0015;
+
+            if (isPlayingAudio) {
+                const elapsedSec = (performance.now() - audioPlayStartTime) / 1000;
+                if (elapsedSec >= audioDuration) {
+                    stopAudioPreview();
+                    drawWaveformCanvas(0);
+                    document.getElementById('waveformTimeLabel').textContent = `00:00 / 00:04`;
+                } else {
+                    const ratio = elapsedSec / audioDuration;
+                    drawWaveformCanvas(ratio);
+                    document.getElementById('waveformTimeLabel').textContent = `00:0${Math.floor(elapsedSec)} / 00:04`;
+                }
+            }
+
+            updateSpatialPlaquesProjection();
+            renderer.render(scene, camera);
+        }
+
+        window.onload = async function () {
+            loadBookDeltas();
+            await initWasmMathKernel();
+            init3DRotundaScene();
+            initUIEvents();
+            generateWaveformData(110);
+            animateLoop();
+        };
+    </script>
+</body>
+</html>
