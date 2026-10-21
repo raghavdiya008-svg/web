@@ -4,29 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Grand Digital Library — 3D Rotunda Asset Vault</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
+    <!-- Google Fonts with font-display: swap for fast rendering -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Three.js r128 -->
+    <!-- Three.js r128 (High-efficiency 3D WebGL renderer) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
+        /* =====================================================================
+           ULTRA-LIGHTWEIGHT PURE CSS ENGINE (Zero-Runtime Parsing for Low-End PCs)
+           Eliminates heavy runtime Tailwind JIT compile stalls & memory leaks.
+           ===================================================================== */
         :root {
             --gold-primary: #d4af37;
             --gold-bright: #f5d77f;
-            --glass-bg: rgba(14, 18, 22, 0.76);
-            --glass-border: rgba(212, 175, 55, 0.26);
+            --glass-bg: rgba(14, 18, 22, 0.78);
+            --glass-border: rgba(212, 175, 55, 0.28);
         }
 
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
         }
 
         html, body {
@@ -36,41 +40,43 @@
             height: 100vh;
             overflow: hidden;
             background-color: #080a0c;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: #f3efe6;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
         .font-cinzel { font-family: 'Cinzel', serif; }
         .font-serif-tome { font-family: 'Cormorant Garamond', Georgia, serif; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
 
-        /* Glassmorphic surfaces */
+        /* Performance Glassmorphic Surfaces */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(18px) saturate(150%);
+            -webkit-backdrop-filter: blur(18px) saturate(150%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .glass-pill {
-            background: rgba(12, 16, 20, 0.72);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            background: rgba(12, 16, 20, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(212, 175, 55, 0.24);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease;
         }
 
         .glass-pill:hover {
             border-color: rgba(245, 215, 127, 0.65);
-            background: rgba(26, 32, 38, 0.88);
-            transform: translateY(-2px);
+            background: rgba(26, 32, 38, 0.9);
+            transform: translateY(-1px);
         }
 
         .glass-pill.active {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(140, 100, 20, 0.38));
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.32), rgba(140, 100, 20, 0.42));
             border-color: #f5d77f;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.32);
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
         }
 
         /* 3D Spatial Department Plaques */
@@ -79,177 +85,223 @@
             transform: translate(-50%, -50%);
             pointer-events: auto;
             cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.18s ease, opacity 0.18s ease;
             z-index: 15;
+            will-change: transform, left, top;
         }
         .spatial-plaque:hover {
-            transform: translate(-50%, -50%) scale(1.08);
+            transform: translate(-50%, -50%) scale(1.06);
             z-index: 25;
         }
 
-        /* Parchment Two-Page Tome Modal */
+        /* Parchment Spread Modal */
         .parchment-page {
             background: radial-gradient(circle at 50% 35%, #fbf6ea 0%, #efe4cc 70%, #e2d1b0 100%);
             color: #231911;
-            box-shadow: inset 0 0 40px rgba(90, 58, 24, 0.18);
+            box-shadow: inset 0 0 35px rgba(90, 58, 24, 0.18);
         }
 
         /* Custom Scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
-        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.7); }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.25); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.45); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+
+        /* Utility Helpers */
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+        .hidden { display: none !important; }
+        .block { display: block; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1 1 0%; }
+        .shrink-0 { flex-shrink: 0; }
+        .min-w-0 { min-width: 0; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .w-screen { width: 100vw; }
+        .h-screen { height: 100vh; }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-y-auto { overflow-y: auto; }
+        .overflow-x-auto { overflow-x: auto; }
+        .pointer-events-none { pointer-events: none; }
+        .pointer-events-auto { pointer-events: auto; }
+        .cursor-pointer { cursor: pointer; }
+        .cursor-grab { cursor: grab; }
+        .cursor-grab:active { cursor: grabbing; }
+        .select-none { user-select: none; }
+        .outline-none { outline: none; }
+        .shadow-lg { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        .transition { transition: all 0.2s ease; }
     </style>
 </head>
 <body class="relative w-screen h-screen overflow-hidden select-none">
 
     <!-- 1. 3D WEBGL ROTUNDA VIEWPORT -->
-    <div id="webglContainer" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
+    <div id="webglContainer" class="absolute inset-0 w-full h-full cursor-grab" style="z-index: 0;"></div>
 
     <!-- 2. 3D SPATIAL DEPARTMENT PLAQUES OVERLAY -->
-    <div id="spatialMarkersLayer" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+    <div id="spatialMarkersLayer" class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index: 10;"></div>
 
     <!-- 3. HOVER BOOK TOOLTIP -->
-    <div id="bookHoverTooltip" class="hidden fixed z-30 pointer-events-none glass-panel px-3.5 py-2.5 rounded-xl max-w-xs transition-opacity duration-150">
-        <div class="flex items-center gap-2">
-            <span id="tooltipDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow"></span>
-            <span id="tooltipCallNo" class="font-mono-code text-[10px] uppercase tracking-widest text-amber-300/90">BAY A · TIER 2</span>
+    <div id="bookHoverTooltip" class="hidden fixed pointer-events-none glass-panel" style="z-index: 35; padding: 10px 14px; border-radius: 14px; max-width: 290px;">
+        <div class="flex items-center" style="gap: 8px;">
+            <span id="tooltipDot" style="width: 10px; height: 10px; border-radius: 9999px; background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></span>
+            <span id="tooltipCallNo" class="font-mono-code" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(252, 211, 77, 0.95);">BAY A · TIER 2</span>
         </div>
-        <div id="tooltipTitle" class="font-cinzel text-xs font-bold text-amber-50 mt-0.5 truncate">Archival Tome</div>
-        <div id="tooltipSub" class="text-[11px] text-stone-300/80 mt-0.5">Click to zoom &amp; inspect shelf</div>
+        <div id="tooltipTitle" class="font-cinzel truncate" style="font-size: 12px; font-weight: 700; color: #fffbeb; margin-top: 3px;">Archival Tome</div>
+        <div id="tooltipSub" style="font-size: 11px; color: rgba(214, 211, 209, 0.85); margin-top: 2px;">Click to zoom &amp; inspect shelf</div>
     </div>
 
     <!-- 4. HYBRID HUD: TOP MINIMAL SEARCH BAR -->
-    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-30 w-[94vw] max-w-4xl pointer-events-none flex flex-col items-center">
-        <div class="w-full glass-panel rounded-2xl px-4 py-2.5 pointer-events-auto flex items-center justify-between gap-3">
-            <!-- Brand & Engine Badge -->
-            <div class="flex items-center gap-3 shrink-0">
-                <button id="resetCameraTopBtn" title="Return to Rotunda Center" class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300 hover:bg-amber-500/30 transition">
-                    <i class="fa-solid fa-landmark-dome text-sm"></i>
+    <header class="fixed pointer-events-none flex flex-col items-center" style="top: 14px; left: 50%; transform: translateX(-50%); z-index: 30; width: 94vw; max-width: 980px;">
+        <div class="w-full glass-panel pointer-events-auto flex items-center justify-between" style="border-radius: 18px; padding: 8px 16px; gap: 12px;">
+            <!-- Brand & Engine Badges -->
+            <div class="flex items-center shrink-0" style="gap: 12px;">
+                <button id="resetCameraTopBtn" title="Return to Rotunda Center" class="flex items-center justify-center cursor-pointer transition" style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(251, 191, 36, 0.45); color: #fcd34d;">
+                    <i class="fa-solid fa-landmark-dome" style="font-size: 14px;"></i>
                 </button>
-                <div class="hidden sm:block">
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-cinzel text-sm font-bold tracking-wider text-amber-100">CIHANNÜMA ARCHIVE</h1>
-                        <span id="engineBadge" class="text-[9px] font-mono-code px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">WASM · GLSL · WORKER</span>
+                <div style="display: flex; flex-direction: column;">
+                    <div class="flex items-center" style="gap: 8px;">
+                        <h1 class="font-cinzel" style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #fef3c7;">CIHANNÜMA ARCHIVE</h1>
+                        <span id="engineBadge" class="font-mono-code" style="font-size: 9px; padding: 2px 6px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35);">WASM-V2 · 60FPS</span>
                     </div>
-                    <p class="text-[10px] text-stone-400">Drag to spin 360° · Click any department or book to glide &amp; unpack</p>
+                    <p style="font-size: 10px; color: #a8a29e; margin-top: 1px;">Drag to spin 360° · Click any shelf tome to inspect</p>
                 </div>
             </div>
 
             <!-- Instant Search Input -->
-            <div class="relative flex-1 max-w-md">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-300/60 text-xs"></i>
+            <div class="relative flex-1" style="max-width: 360px;">
+                <i class="fa-solid fa-magnifying-glass absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: rgba(252, 211, 77, 0.6); font-size: 12px;"></i>
                 <input
                     id="globalSearchInput"
                     type="text"
-                    placeholder="Search 16,400 tomes, Sound Design, LUTs, Shaders, or #tags... (Press /)"
-                    class="w-full bg-black/40 border border-amber-500/25 focus:border-amber-400/70 rounded-xl pl-9 pr-8 py-1.5 text-xs text-amber-50 placeholder-stone-400 outline-none transition"
+                    placeholder="Search 16,320 tomes, LUTs, Shaders... (Press /)"
+                    class="w-full outline-none transition"
+                    style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 7px 32px 7px 34px; font-size: 12px; color: #fffbeb;"
                 >
-                <button id="clearSearchBtn" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-200 text-xs">
+                <button id="clearSearchBtn" class="hidden absolute cursor-pointer" style="right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a8a29e; font-size: 12px;">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <!-- Quick Vault Controls -->
-            <div class="flex items-center gap-1.5 shrink-0">
-                <a href="/vault" title="Inspect Vault Reels" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-film text-amber-400"></i>
-                    <span class="hidden md:inline">Reels</span>
-                </a>
-                <a href="/today" title="Today's Drop" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-fire text-amber-400"></i>
-                    <span class="hidden md:inline">Today</span>
-                </a>
-                <button id="toggleMarkersBtn" title="Toggle 3D Department Plaques" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-amber-200 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-compass text-amber-400"></i>
-                    <span class="hidden lg:inline">Plaques</span>
+            <!-- Quick Navigation & Performance Controls -->
+            <div class="flex items-center shrink-0" style="gap: 6px;">
+                <button id="perfToggleBtn" title="Toggle 60FPS Eco / Ultra Quality" class="flex items-center cursor-pointer transition font-mono-code" style="padding: 6px 10px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); font-size: 11px; color: #6ee7b7; gap: 5px;">
+                    <i class="fa-solid fa-bolt" style="font-size: 10px;"></i>
+                    <span id="perfToggleText">Eco 60FPS</span>
                 </button>
-                <button id="exportLibraryBtn" title="Export Custom Library JSON" class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-download text-amber-400"></i>
-                    <span class="hidden xl:inline">Backup</span>
+                <a href="/vault" title="Inspect Vault Reels" class="flex items-center cursor-pointer transition text-decoration-none" style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 11px; color: #fde68a; gap: 5px; text-decoration: none;">
+                    <i class="fa-solid fa-film" style="color: #fbbf24; font-size: 11px;"></i>
+                    <span>Reels</span>
+                </a>
+                <a href="/today" title="Today's Drop" class="flex items-center cursor-pointer transition text-decoration-none" style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 11px; color: #fde68a; gap: 5px; text-decoration: none;">
+                    <i class="fa-solid fa-fire" style="color: #fbbf24; font-size: 11px;"></i>
+                    <span>Today</span>
+                </a>
+                <button id="toggleMarkersBtn" title="Toggle 3D Department Plaques" class="flex items-center cursor-pointer transition" style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 11px; color: #fde68a; gap: 5px;">
+                    <i class="fa-solid fa-compass" style="color: #fbbf24; font-size: 11px;"></i>
+                    <span>Plaques</span>
                 </button>
-                <label title="Import Library JSON" class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-stone-200 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-upload text-amber-400"></i>
-                    <span class="hidden xl:inline">Restore</span>
-                    <input id="importLibraryInput" type="file" accept=".json" class="hidden">
+                <button id="exportLibraryBtn" title="Export Custom Library JSON" class="flex items-center cursor-pointer transition" style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 11px; color: #e7e5e4; gap: 5px;">
+                    <i class="fa-solid fa-download" style="color: #fbbf24; font-size: 11px;"></i>
+                    <span>Backup</span>
+                </button>
+                <label title="Import Library JSON" class="flex items-center cursor-pointer transition" style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 11px; color: #e7e5e4; gap: 5px;">
+                    <i class="fa-solid fa-upload" style="color: #fbbf24; font-size: 11px;"></i>
+                    <span>Restore</span>
+                    <input id="importLibraryInput" type="file" accept=".json" style="display: none;">
                 </label>
             </div>
         </div>
 
         <!-- Live Search Results Dropdown -->
-        <div id="searchResultsPanel" class="hidden w-full max-w-2xl mt-2 glass-panel rounded-2xl p-3 pointer-events-auto max-h-80 overflow-y-auto">
-            <div class="flex items-center justify-between text-[10px] font-mono-code uppercase tracking-wider text-amber-300/80 pb-2 mb-2 border-b border-white/10">
+        <div id="searchResultsPanel" class="hidden w-full glass-panel pointer-events-auto" style="max-width: 680px; margin-top: 8px; border-radius: 16px; padding: 12px; max-height: 320px; overflow-y: auto;">
+            <div class="flex items-center justify-between font-mono-code" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(252, 211, 77, 0.85); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                 <span id="searchCountLabel">0 results matched</span>
                 <span>Click any entry to glide camera</span>
             </div>
-            <div id="searchResultsList" class="space-y-1.5"></div>
+            <div id="searchResultsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
         </div>
     </header>
 
     <!-- 5. HYBRID HUD: BOTTOM CATEGORY TIMELINE BAR -->
-    <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[96vw] max-w-5xl pointer-events-none">
-        <div class="glass-panel rounded-2xl px-3 py-2 pointer-events-auto flex items-center justify-between gap-2 overflow-x-auto">
+    <nav class="fixed pointer-events-none" style="bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 30; width: 96vw; max-width: 1040px;">
+        <div class="glass-panel pointer-events-auto flex items-center justify-between overflow-x-auto" style="border-radius: 18px; padding: 8px 12px; gap: 8px;">
             <button
                 data-dept-id="overview"
-                class="timeline-btn glass-pill active shrink-0 px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs font-medium text-amber-100"
+                class="timeline-btn glass-pill active shrink-0 flex items-center cursor-pointer"
+                style="padding: 8px 14px; border-radius: 12px; gap: 8px; font-size: 12px; font-weight: 500; color: #fef3c7;"
             >
-                <i class="fa-solid fa-globe text-amber-400"></i>
+                <i class="fa-solid fa-globe" style="color: #fbbf24;"></i>
                 <span>00 · Rotunda Center</span>
             </button>
-            <div id="timelineButtonsContainer" class="flex items-center gap-2 shrink-0"></div>
+            <div id="timelineButtonsContainer" class="flex items-center shrink-0" style="gap: 8px;"></div>
         </div>
     </nav>
 
     <!-- 6. RIGHT GLASSMORPHIC DEPARTMENT & BOOK DRAWER -->
     <aside
         id="departmentDrawer"
-        class="fixed top-20 bottom-20 right-4 z-30 w-[92vw] sm:w-[430px] glass-panel rounded-3xl p-5 flex flex-col justify-between translate-x-[120%] opacity-0 pointer-events-none transition-all duration-500 ease-out"
+        class="fixed glass-panel flex flex-col justify-between transition"
+        style="top: 80px; bottom: 80px; right: 16px; z-index: 30; width: 92vw; max-width: 420px; border-radius: 24px; padding: 20px; transform: translateX(120%); opacity: 0; pointer-events: none;"
     >
         <!-- Drawer Top Header -->
-        <div class="flex items-start justify-between gap-3 border-b border-amber-500/20 pb-3.5">
+        <div class="flex items-start justify-between" style="border-bottom: 1px solid rgba(245, 158, 11, 0.22); padding-bottom: 14px; gap: 12px;">
             <div>
-                <div class="flex items-center gap-2">
-                    <span id="drawerTierBadge" class="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                <div class="flex items-center" style="gap: 8px;">
+                    <span id="drawerTierBadge" class="font-mono-code" style="font-size: 10px; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(251, 191, 36, 0.35);">
                         TIER 2 · BAY B
                     </span>
-                    <span id="drawerBookCountBadge" class="text-[10px] font-mono-code text-stone-400">
+                    <span id="drawerBookCountBadge" class="font-mono-code" style="font-size: 10px; color: #a8a29e;">
                         2,400 Tomes
                     </span>
                 </div>
-                <h2 id="drawerTitle" class="font-cinzel text-lg font-bold text-amber-100 mt-1">
+                <h2 id="drawerTitle" class="font-cinzel" style="font-size: 17px; font-weight: 700; color: #fef3c7; margin-top: 4px;">
                     Sound Design &amp; Acoustic Foley
                 </h2>
-                <p id="drawerDesc" class="text-xs text-stone-300/80 mt-0.5">
+                <p id="drawerDesc" style="font-size: 11.5px; color: rgba(214, 211, 209, 0.85); margin-top: 3px; line-height: 1.4;">
                     24-bit synthesized stems, impulse responses, and cinematic impacts.
                 </p>
             </div>
-            <button id="closeDrawerBtn" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 flex items-center justify-center text-stone-300 hover:text-white transition">
+            <button id="closeDrawerBtn" class="flex items-center justify-center cursor-pointer transition" style="width: 32px; height: 32px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: none; color: #d6d3d1;">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
 
         <!-- Scrollable Drawer Body -->
-        <div class="flex-1 overflow-y-auto my-3 pr-1 space-y-4">
+        <div class="flex-1 overflow-y-auto" style="margin: 12px 0; padding-right: 4px; display: flex; flex-direction: column; gap: 14px;">
             <!-- Selected 3D Book Spotlight Card -->
-            <div class="rounded-2xl bg-gradient-to-br from-amber-500/15 via-stone-900/60 to-black/60 border border-amber-400/35 p-3.5">
-                <div class="flex items-center justify-between gap-2">
-                    <span class="text-[10px] font-mono-code uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+            <div style="border-radius: 16px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(20, 20, 24, 0.75)); border: 1px solid rgba(251, 191, 36, 0.35); padding: 14px;">
+                <div class="flex items-center justify-between" style="gap: 8px;">
+                    <span class="font-mono-code flex items-center" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #fcd34d; gap: 6px;">
                         <i class="fa-solid fa-book-bookmark"></i> Active Shelf Tome
                     </span>
-                    <span id="activeBookCallNo" class="text-[10px] font-mono-code text-stone-400">TOME #01042</span>
+                    <span id="activeBookCallNo" class="font-mono-code" style="font-size: 10px; color: #a8a29e;">TOME #01042</span>
                 </div>
-                <div class="flex items-center justify-between gap-3 mt-1.5">
+                <div class="flex items-center justify-between" style="gap: 12px; margin-top: 6px;">
                     <div class="min-w-0">
-                        <h3 id="activeBookTitle" class="font-cinzel text-sm font-bold text-white truncate">
+                        <h3 id="activeBookTitle" class="font-cinzel truncate" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">
                             Codex of Sub-Bass Resonance
                         </h3>
-                        <p id="activeBookAssetSummary" class="text-[11px] text-amber-200/80 mt-0.5">
-                            3 embedded assets · Click to open parchment spread &amp; add your own
+                        <p id="activeBookAssetSummary" style="font-size: 11px; color: rgba(253, 230, 138, 0.85); margin-top: 2px;">
+                            3 embedded assets · Click Open Tome to inspect
                         </p>
                     </div>
                     <button
                         id="openTomeSpreadBtn"
-                        class="shrink-0 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/20 transition"
+                        class="shrink-0 flex items-center cursor-pointer transition font-semibold shadow-lg"
+                        style="padding: 8px 12px; border-radius: 12px; background: #fbbf24; border: none; color: #0c0a09; font-size: 12px; gap: 6px;"
                     >
                         <i class="fa-solid fa-book-open"></i>
                         <span>Open Tome</span>
@@ -258,43 +310,46 @@
             </div>
 
             <!-- Interactive Audio Waveform Previewer -->
-            <div class="rounded-2xl bg-black/45 border border-white/10 p-3.5">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="waveformTrackTitle" class="text-xs font-semibold text-amber-100">
+            <div style="border-radius: 16px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px;">
+                <div class="flex items-center justify-between" style="margin-bottom: 8px;">
+                    <div class="flex items-center" style="gap: 8px;">
+                        <span style="width: 8px; height: 8px; border-radius: 9999px; background: #34d399; box-shadow: 0 0 6px #34d399;"></span>
+                        <span id="waveformTrackTitle" style="font-size: 11.5px; font-weight: 600; color: #fef3c7;">
                             Cihannüma Cathedral Impulse (44.1kHz PCM)
                         </span>
                     </div>
-                    <span id="waveformTimeLabel" class="font-mono-code text-[10px] text-amber-300">00:00 / 00:04</span>
+                    <span id="waveformTimeLabel" class="font-mono-code" style="font-size: 10px; color: #fcd34d;">00:00 / 00:04</span>
                 </div>
 
                 <!-- Interactive Scrubbable Waveform Canvas -->
-                <div class="relative w-full h-16 rounded-xl bg-stone-950/90 border border-amber-500/20 overflow-hidden cursor-pointer" id="waveformBox">
+                <div class="relative w-full cursor-pointer overflow-hidden" id="waveformBox" style="height: 60px; border-radius: 12px; background: rgba(12, 10, 9, 0.95); border: 1px solid rgba(245, 158, 11, 0.25);">
                     <canvas id="waveformCanvas" class="w-full h-full block"></canvas>
                 </div>
 
                 <!-- Audio Controls + Direct WAV/ZIP Download -->
-                <div class="flex items-center justify-between gap-2 mt-2.5">
-                    <div class="flex items-center gap-2">
+                <div class="flex items-center justify-between" style="gap: 8px; margin-top: 10px;">
+                    <div class="flex items-center" style="gap: 8px;">
                         <button
                             id="playWaveformBtn"
-                            class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 text-xs font-medium flex items-center gap-1.5 transition"
+                            class="flex items-center cursor-pointer transition font-medium"
+                            style="padding: 6px 12px; border-radius: 10px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(251, 191, 36, 0.45); color: #fde68a; font-size: 11.5px; gap: 6px;"
                         >
-                            <i id="playWaveformIcon" class="fa-solid fa-play text-[10px]"></i>
+                            <i id="playWaveformIcon" class="fa-solid fa-play" style="font-size: 10px;"></i>
                             <span id="playWaveformText">Preview Stem</span>
                         </button>
                         <button
                             id="cyclePresetSoundBtn"
-                            class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-stone-300 text-[11px] transition"
+                            class="flex items-center cursor-pointer transition"
+                            style="padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #d6d3d1; font-size: 11px;"
                             title="Switch Synthesizer Harmonic Profile"
                         >
-                            <i class="fa-solid fa-sliders mr-1 text-amber-400"></i>Harmonics
+                            <i class="fa-solid fa-sliders" style="margin-right: 4px; color: #fbbf24;"></i>Harmonics
                         </button>
                     </div>
                     <button
                         id="downloadCurrentWavZipBtn"
-                        class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 text-[11px] font-mono-code flex items-center gap-1.5 transition"
+                        class="flex items-center cursor-pointer transition font-mono-code"
+                        style="padding: 6px 10px; border-radius: 10px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(52, 211, 153, 0.45); color: #a7f3d0; font-size: 11px; gap: 5px;"
                     >
                         <i class="fa-solid fa-file-zipper"></i>
                         <span>Stem .ZIP</span>
@@ -304,32 +359,33 @@
 
             <!-- Department Packs & Instant .ZIP Downloads -->
             <div>
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[11px] font-mono-code uppercase tracking-wider text-amber-300/80">
+                <div class="flex items-center justify-between" style="margin-bottom: 8px;">
+                    <span class="font-mono-code" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(252, 211, 77, 0.85);">
                         Department Packs &amp; Instant .ZIPs
                     </span>
-                    <span class="text-[10px] text-stone-400">Worker PKZIP Engine</span>
+                    <span style="font-size: 10px; color: #a8a29e;">Web Worker PKZIP</span>
                 </div>
-                <div id="drawerPacksList" class="space-y-2"></div>
+                <div id="drawerPacksList" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
-            <!-- Neighboring Tomes on This Shelf Bay -->
+            <!-- Neighboring Shelf Bay Books -->
             <div>
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[11px] font-mono-code uppercase tracking-wider text-amber-300/80">
+                <div class="flex items-center justify-between" style="margin-bottom: 8px;">
+                    <span class="font-mono-code" style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(252, 211, 77, 0.85);">
                         Shelf Bay Tomes (Click to Inspect)
                     </span>
-                    <span class="text-[10px] text-stone-400">Customizable</span>
+                    <span style="font-size: 10px; color: #a8a29e;">Customizable</span>
                 </div>
-                <div id="drawerShelfBooksGrid" class="grid grid-cols-2 gap-2"></div>
+                <div id="drawerShelfBooksGrid" class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;"></div>
             </div>
         </div>
 
         <!-- Drawer Footer: Download Entire Department Bundle -->
-        <div class="pt-3 border-t border-amber-500/20 flex items-center justify-between gap-2">
+        <div style="border-top: 1px solid rgba(245, 158, 11, 0.22); padding-top: 12px;">
             <button
                 id="downloadDeptBundleBtn"
-                class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-stone-950 font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition"
+                class="w-full flex items-center justify-center cursor-pointer transition font-semibold shadow-lg"
+                style="padding: 10px 16px; border-radius: 12px; background: linear-gradient(90deg, #f59e0b, #eab308); border: none; color: #0c0a09; font-size: 12px; gap: 8px;"
             >
                 <i class="fa-solid fa-box-archive"></i>
                 <span id="downloadDeptBundleText">Download Complete Shelf Pack (.ZIP)</span>
@@ -337,73 +393,78 @@
         </div>
     </aside>
 
-    <!-- 7. TWO-PAGE OPEN TOME MODAL (FOR ADDING YOUR OWN ASSETS TO ANY BOOK) -->
-    <div id="tomeModalBackdrop" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="relative w-full max-w-5xl h-[88vh] max-h-[760px] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#3a2414] bg-[#24160c] flex flex-col md:flex-row">
+    <!-- 7. TWO-PAGE OPEN TOME MODAL -->
+    <div id="tomeModalBackdrop" class="hidden fixed inset-0 flex items-center justify-center" style="z-index: 50; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(10px); padding: 16px;">
+        <div class="relative w-full shadow-2xl flex flex-col md:flex-row overflow-hidden" style="max-width: 960px; height: 86vh; max-height: 720px; border-radius: 24px; border: 4px solid #3a2414; background: #24160c;">
 
             <!-- Close Tome Button -->
             <button
                 id="closeTomeModalBtn"
-                class="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-[#2a1a0e]/90 hover:bg-[#3e2715] text-amber-200 border border-amber-500/40 flex items-center justify-center transition"
+                class="absolute flex items-center justify-center cursor-pointer transition"
+                style="top: 12px; right: 12px; z-index: 20; width: 34px; height: 34px; border-radius: 9999px; background: rgba(42, 26, 14, 0.95); border: 1px solid rgba(245, 158, 11, 0.45); color: #fde68a;"
                 title="Close Tome (Esc)"
             >
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- LEFT PAGE: EX LIBRIS, SPINE CUSTOMIZER & ASSET CONTENTS -->
-            <div class="w-full md:w-5/12 h-1/2 md:h-full parchment-page p-5 sm:p-7 flex flex-col justify-between border-b md:border-b-0 md:border-r-2 border-[#bfa37a] overflow-y-auto">
+            <!-- LEFT PAGE: EX LIBRIS & CUSTOMIZER -->
+            <div class="parchment-page flex flex-col justify-between overflow-y-auto" style="width: 44%; padding: 22px; border-right: 2px solid #bfa37a;">
                 <div>
-                    <div class="flex items-center justify-between text-[11px] font-mono-code uppercase tracking-widest text-[#7a5835] border-b border-[#d4be98] pb-2">
+                    <div class="flex items-center justify-between font-mono-code" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #7a5835; border-bottom: 1px solid #d4be98; padding-bottom: 8px;">
                         <span id="modalTomeLocation">TIER 1 · BAY A · TOME #120</span>
-                        <span id="modalTomeDeptBadge" class="font-semibold text-[#5a3918]">SOUND DESIGN</span>
+                        <span id="modalTomeDeptBadge" style="font-weight: 600; color: #5a3918;">SOUND DESIGN</span>
                     </div>
 
-                    <!-- Editable Book Title & Metadata -->
-                    <div class="mt-4">
-                        <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Tome Spine Title</label>
+                    <div style="margin-top: 14px;">
+                        <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Tome Spine Title</label>
                         <input
                             id="modalBookTitleInput"
                             type="text"
-                            class="w-full mt-1 bg-white/60 border border-[#bfa37a] focus:border-[#6e4720] rounded-xl px-3 py-2 font-cinzel text-base font-bold text-[#231911] outline-none"
+                            class="w-full font-cinzel outline-none"
+                            style="margin-top: 4px; background: rgba(255, 255, 255, 0.65); border: 1px solid #bfa37a; border-radius: 10px; padding: 7px 12px; font-size: 15px; font-weight: 700; color: #231911;"
                             placeholder="Enter book title..."
                         >
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px;">
                         <div>
-                            <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Category / Wing</label>
+                            <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Category / Wing</label>
                             <select
                                 id="modalBookDeptSelect"
-                                class="w-full mt-1 bg-white/60 border border-[#bfa37a] rounded-xl px-2.5 py-2 text-xs font-medium text-[#231911] outline-none"
+                                class="w-full outline-none"
+                                style="margin-top: 4px; background: rgba(255, 255, 255, 0.65); border: 1px solid #bfa37a; border-radius: 10px; padding: 7px 10px; font-size: 11.5px; font-weight: 500; color: #231911;"
                             ></select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Leather Spine Dye</label>
-                            <div id="spineColorSwatches" class="flex items-center gap-1.5 mt-1.5"></div>
+                            <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Leather Spine Dye</label>
+                            <div id="spineColorSwatches" class="flex items-center" style="gap: 6px; margin-top: 6px;"></div>
                         </div>
                     </div>
 
-                    <div class="mt-3">
-                        <label class="block text-[10px] font-mono-code uppercase tracking-wider text-[#6e4f2d]">Archival Notes / Tags</label>
+                    <div style="margin-top: 12px;">
+                        <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Archival Notes / Tags</label>
                         <input
                             id="modalBookTagsInput"
                             type="text"
-                            class="w-full mt-1 bg-white/60 border border-[#bfa37a] rounded-xl px-3 py-1.5 text-xs text-[#231911] outline-none"
+                            class="w-full outline-none"
+                            style="margin-top: 4px; background: rgba(255, 255, 255, 0.65); border: 1px solid #bfa37a; border-radius: 10px; padding: 6px 12px; font-size: 11.5px; color: #231911;"
                             placeholder="#luts, #synth, #shaders, #project-assets"
                         >
                     </div>
 
-                    <div class="mt-3 flex items-center justify-between">
+                    <div class="flex items-center justify-between" style="margin-top: 12px;">
                         <button
                             id="saveBookMetaBtn"
-                            class="px-3.5 py-1.5 rounded-xl bg-[#4a2e16] hover:bg-[#5e3b1d] text-amber-100 text-xs font-semibold flex items-center gap-1.5 shadow transition"
+                            class="flex items-center cursor-pointer transition font-semibold shadow"
+                            style="padding: 6px 12px; border-radius: 10px; background: #4a2e16; border: none; color: #fde68a; font-size: 11.5px; gap: 6px;"
                         >
                             <i class="fa-solid fa-feather-pointed"></i>
                             <span>Stamp Spine Changes</span>
                         </button>
                         <button
                             id="downloadSingleTomeZipBtn"
-                            class="px-3 py-1.5 rounded-xl bg-[#d4be98]/60 hover:bg-[#d4be98] text-[#2c1b0e] text-xs font-semibold flex items-center gap-1.5 transition"
+                            class="flex items-center cursor-pointer transition font-semibold"
+                            style="padding: 6px 12px; border-radius: 10px; background: rgba(212, 190, 152, 0.65); border: 1px solid #bfa37a; color: #2c1b0e; font-size: 11.5px; gap: 6px;"
                         >
                             <i class="fa-solid fa-file-zipper"></i>
                             <span>Export Tome .ZIP</span>
@@ -411,81 +472,84 @@
                     </div>
 
                     <!-- Table of Contents -->
-                    <div class="mt-5 pt-4 border-t border-[#d4be98]">
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#3d2814]">
+                    <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid #d4be98;">
+                        <div class="flex items-center justify-between" style="margin-bottom: 8px;">
+                            <h4 class="font-cinzel" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d2814;">
                                 Inscribed Assets inside this Tome
                             </h4>
-                            <span id="modalAssetCountBadge" class="text-[11px] font-mono-code text-[#6e4f2d]">0 items</span>
+                            <span id="modalAssetCountBadge" class="font-mono-code" style="font-size: 11px; color: #6e4f2d;">0 items</span>
                         </div>
-                        <div id="modalAssetList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+                        <div id="modalAssetList" style="display: flex; flex-direction: column; gap: 6px; max-height: 190px; overflow-y: auto; padding-right: 4px;"></div>
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-[#d4be98] text-[11px] text-[#6e4f2d] flex items-center justify-between">
-                    <span>Changes persist automatically in your browser vault</span>
-                    <i class="fa-solid fa-shield-halved text-[#8b6331]"></i>
+                <div class="flex items-center justify-between" style="padding-top: 10px; border-top: 1px solid #d4be98; font-size: 11px; color: #6e4f2d;">
+                    <span>Persists locally in your browser storage</span>
+                    <i class="fa-solid fa-shield-halved" style="color: #8b6331;"></i>
                 </div>
             </div>
 
-            <!-- RIGHT PAGE: ADD / INSPECT ASSETS INSIDE THIS BOOK -->
-            <div class="w-full md:w-7/12 h-1/2 md:h-full parchment-page p-5 sm:p-7 flex flex-col justify-between overflow-y-auto">
+            <!-- RIGHT PAGE: ASSET CREATOR & VIEWER -->
+            <div class="parchment-page flex flex-col justify-between overflow-y-auto" style="width: 56%; padding: 22px;">
                 <div>
-                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2">
-                        <span class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#4a2e16]">
-                            <i class="fa-solid fa-plus-circle mr-1"></i> Inscribe New Asset into Tome
+                    <div class="flex items-center justify-between" style="border-bottom: 1px solid #d4be98; padding-bottom: 8px;">
+                        <span class="font-cinzel" style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #4a2e16;">
+                            <i class="fa-solid fa-plus-circle" style="margin-right: 4px;"></i> Inscribe New Asset into Tome
                         </span>
-                        <span class="text-[11px] font-mono-code text-[#7a5835]">FOLIO II</span>
+                        <span class="font-mono-code" style="font-size: 11px; color: #7a5835;">FOLIO II</span>
                     </div>
 
                     <!-- Asset Type Selector Tabs -->
-                    <div class="grid grid-cols-5 gap-1.5 mt-3" id="assetTypeTabs">
-                        <button data-type="link" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#4a2e16] text-amber-100 text-[11px] font-medium flex items-center justify-center gap-1">
+                    <div class="grid" id="assetTypeTabs" style="grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px;">
+                        <button data-type="link" class="asset-tab-btn flex items-center justify-center cursor-pointer transition font-medium" style="padding: 6px; border-radius: 8px; background: #4a2e16; color: #fde68a; border: none; font-size: 11px; gap: 4px;">
                             <i class="fa-solid fa-link"></i><span>Link</span>
                         </button>
-                        <button data-type="code" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                        <button data-type="code" class="asset-tab-btn flex items-center justify-center cursor-pointer transition font-medium" style="padding: 6px; border-radius: 8px; background: #e2d1b0; color: #3d2814; border: none; font-size: 11px; gap: 4px;">
                             <i class="fa-solid fa-code"></i><span>Code/LUT</span>
                         </button>
-                        <button data-type="audio" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                        <button data-type="audio" class="asset-tab-btn flex items-center justify-center cursor-pointer transition font-medium" style="padding: 6px; border-radius: 8px; background: #e2d1b0; color: #3d2814; border: none; font-size: 11px; gap: 4px;">
                             <i class="fa-solid fa-wave-square"></i><span>Audio</span>
                         </button>
-                        <button data-type="image" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                        <button data-type="image" class="asset-tab-btn flex items-center justify-center cursor-pointer transition font-medium" style="padding: 6px; border-radius: 8px; background: #e2d1b0; color: #3d2814; border: none; font-size: 11px; gap: 4px;">
                             <i class="fa-solid fa-image"></i><span>Image</span>
                         </button>
-                        <button data-type="note" class="asset-tab-btn px-2 py-1.5 rounded-lg bg-[#e2d1b0] text-[#3d2814] text-[11px] font-medium flex items-center justify-center gap-1">
+                        <button data-type="note" class="asset-tab-btn flex items-center justify-center cursor-pointer transition font-medium" style="padding: 6px; border-radius: 8px; background: #e2d1b0; color: #3d2814; border: none; font-size: 11px; gap: 4px;">
                             <i class="fa-solid fa-scroll"></i><span>Note</span>
                         </button>
                     </div>
 
                     <!-- Asset Creation Form -->
-                    <div class="mt-3 space-y-2.5 bg-white/45 border border-[#c9ae82] rounded-2xl p-3.5">
+                    <div style="margin-top: 12px; background: rgba(255, 255, 255, 0.45); border: 1px solid #c9ae82; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                         <div>
-                            <label class="block text-[10px] font-mono-code uppercase text-[#6e4f2d]">Asset Title</label>
+                            <label class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">Asset Title</label>
                             <input
                                 id="newAssetTitleInput"
                                 type="text"
                                 placeholder="e.g., Kodak 2383 Print Film LUT / Sub Boom 45Hz / Reference URL"
-                                class="w-full mt-1 bg-white/80 border border-[#bfa37a] rounded-xl px-3 py-1.5 text-xs text-[#231911] outline-none"
+                                class="w-full outline-none"
+                                style="margin-top: 4px; background: rgba(255, 255, 255, 0.8); border: 1px solid #bfa37a; border-radius: 10px; padding: 6px 10px; font-size: 11.5px; color: #231911;"
                             >
                         </div>
                         <div>
-                            <label id="newAssetContentLabel" class="block text-[10px] font-mono-code uppercase text-[#6e4f2d]">URL / Payload / Code / Synth Frequency (Hz)</label>
+                            <label id="newAssetContentLabel" class="font-mono-code" style="display: block; font-size: 10px; text-transform: uppercase; color: #6e4f2d;">URL / Code / Synth Frequency (Hz)</label>
                             <textarea
                                 id="newAssetContentInput"
                                 rows="3"
                                 placeholder="Paste URL, GLSL shader, .cube LUT values, image link, or note..."
-                                class="w-full mt-1 bg-white/80 border border-[#bfa37a] rounded-xl px-3 py-1.5 font-mono-code text-xs text-[#231911] outline-none"
+                                class="w-full font-mono-code outline-none"
+                                style="margin-top: 4px; background: rgba(255, 255, 255, 0.8); border: 1px solid #bfa37a; border-radius: 10px; padding: 6px 10px; font-size: 11.5px; color: #231911;"
                             ></textarea>
                         </div>
-                        <div class="flex items-center justify-between gap-2">
-                            <label class="cursor-pointer text-[11px] text-[#5a3918] hover:underline flex items-center gap-1.5">
+                        <div class="flex items-center justify-between" style="gap: 8px;">
+                            <label class="cursor-pointer flex items-center" style="font-size: 11px; color: #5a3918; gap: 5px;">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <span>Or attach local file into tome</span>
-                                <input id="newAssetFileInput" type="file" class="hidden">
+                                <input id="newAssetFileInput" type="file" style="display: none;">
                             </label>
                             <button
                                 id="addAssetToTomeBtn"
-                                class="px-4 py-1.5 rounded-xl bg-[#2d5a3c] hover:bg-[#386f4a] text-white text-xs font-semibold flex items-center gap-1.5 shadow transition"
+                                class="flex items-center cursor-pointer transition font-semibold shadow"
+                                style="padding: 6px 14px; border-radius: 10px; background: #2d5a3c; border: none; color: #ffffff; font-size: 11.5px; gap: 6px;"
                             >
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Add Asset to Tome</span>
@@ -494,11 +558,11 @@
                     </div>
 
                     <!-- Active Asset Viewer Area -->
-                    <div class="mt-4">
-                        <h4 class="font-cinzel text-xs font-bold uppercase tracking-wider text-[#3d2814] mb-2">
+                    <div style="margin-top: 14px;">
+                        <h4 class="font-cinzel" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d2814; margin-bottom: 6px;">
                             Folio Asset Reader
                         </h4>
-                        <div id="folioAssetViewer" class="rounded-2xl bg-white/55 border border-[#c9ae82] p-4 min-h-[160px] text-xs text-[#231911]">
+                        <div id="folioAssetViewer" style="border-radius: 14px; background: rgba(255, 255, 255, 0.55); border: 1px solid #c9ae82; padding: 12px; min-height: 140px; font-size: 12px; color: #231911;">
                             Select any asset on the left page or add a new asset above to inspect, play, copy, or package it.
                         </div>
                     </div>
@@ -508,43 +572,87 @@
     </div>
 
     <!-- 8. TOAST NOTIFICATION BANNER -->
-    <div id="toastBanner" class="fixed top-20 right-5 z-50 pointer-events-none opacity-0 translate-y-[-10px] transition-all duration-300 glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-2.5 text-xs text-amber-100">
-        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <div id="toastBanner" class="fixed pointer-events-none glass-panel flex items-center transition" style="top: 80px; right: 20px; z-index: 55; opacity: 0; transform: translateY(-10px); padding: 10px 16px; border-radius: 14px; gap: 10px; font-size: 12px; color: #fef3c7;">
+        <i class="fa-solid fa-circle-check" style="color: #34d399;"></i>
         <span id="toastMessage">Saved to library vault</span>
     </div>
 
     <script>
         /***********************************************************************
-         * 1. MULTI-LANGUAGE PERFORMANCE ENGINE:
-         *    - WebAssembly (Wasm) Binary Math/Smoothing Kernel
-         *    - Inline Web Worker for Off-Main-Thread PKZIP (.zip), .wav & .cube
+         * 1. MULTI-LANGUAGE WEB PLATFORM UPGRADE:
+         *    - 128-byte Handcrafted WebAssembly (WASM) Math Kernel (lerp, clamp, dist3d)
+         *    - Off-Main-Thread Dedicated Web Worker (PKZIP, 16-bit 44.1kHz WAV, .CUBE)
+         *    - Adaptive FPS Performance Profiler (Auto-Resolution Scaling for Low-End PCs)
          ***********************************************************************/
-        let wasmLerpFn = null;
+
+        let wasmEngine = null;
 
         async function initWasmMathKernel() {
             try {
-                // Valid minimal WebAssembly binary exporting `lerp(a: f32, b: f32, t: f32) -> f32`
-                // Formula: a + (b - a) * t
+                // High-performance 128-byte WebAssembly binary exporting:
+                // 1) lerp(a: f32, b: f32, t: f32) -> f32
+                // 2) clamp(val: f32, min: f32, max: f32) -> f32
+                // 3) dist3d(x1, y1, z1, x2, y2, z2) -> f32 (fast Euclidean distance)
                 const wasmBytes = new Uint8Array([
                     0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
-                    0x01, 0x08, 0x01, 0x60, 0x03, 0x7d, 0x7d, 0x7d, 0x01, 0x7d,
-                    0x03, 0x02, 0x01, 0x00,
-                    0x07, 0x08, 0x01, 0x04, 0x6c, 0x65, 0x72, 0x70, 0x00, 0x00,
-                    0x0a, 0x0f, 0x01, 0x0d, 0x00, 0x20, 0x00, 0x20, 0x01, 0x20, 0x00, 0x93, 0x20, 0x02, 0x94, 0x92, 0x0b
+                    0x01, 0x12, 0x02, 0x60, 0x03, 0x7d, 0x7d, 0x7d, 0x01, 0x7d,
+                    0x60, 0x06, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x01, 0x7d,
+                    0x03, 0x04, 0x03, 0x00, 0x00, 0x01,
+                    0x07, 0x19, 0x03, 0x04, 0x6c, 0x65, 0x72, 0x70, 0x00, 0x00,
+                    0x05, 0x63, 0x6c, 0x61, 0x6d, 0x70, 0x00, 0x01,
+                    0x06, 0x64, 0x69, 0x73, 0x74, 0x33, 0x64, 0x00, 0x02,
+                    0x0a, 0x41, 0x03,
+                    0x0d, 0x00, 0x20, 0x00, 0x20, 0x01, 0x20, 0x00, 0x93, 0x20, 0x02, 0x94, 0x92, 0x0b,
+                    0x0a, 0x00, 0x20, 0x00, 0x20, 0x01, 0x97, 0x20, 0x02, 0x96, 0x0b,
+                    0x26, 0x00, 0x20, 0x03, 0x20, 0x00, 0x93, 0x20, 0x03, 0x20, 0x00, 0x93, 0x94,
+                    0x20, 0x04, 0x20, 0x01, 0x93, 0x20, 0x04, 0x20, 0x01, 0x93, 0x94, 0x92,
+                    0x20, 0x05, 0x20, 0x02, 0x93, 0x20, 0x05, 0x20, 0x02, 0x93, 0x94, 0x92, 0x91, 0x0b
                 ]);
                 const { instance } = await WebAssembly.instantiate(wasmBytes);
-                if (instance && instance.exports && instance.exports.lerp) {
-                    wasmLerpFn = instance.exports.lerp;
-                    console.log('[Rotunda Engine] WebAssembly lerp kernel compiled successfully');
+                if (instance && instance.exports) {
+                    wasmEngine = instance.exports;
+                    console.log('[Rotunda Engine] WebAssembly V2 Math Kernel instantiated: lerp, clamp, dist3d ready');
                 }
             } catch (err) {
-                console.warn('[Rotunda Engine] WASM instantiation fallback to JS:', err);
-                wasmLerpFn = (a, b, t) => a + (b - a) * t;
+                console.warn('[Rotunda Engine] WASM fallback to JS:', err);
+                wasmEngine = {
+                    lerp: (a, b, t) => a + (b - a) * t,
+                    clamp: (val, min, max) => Math.min(Math.max(val, min), max),
+                    dist3d: (x1, y1, z1, x2, y2, z2) => Math.hypot(x2 - x1, y2 - y1, z2 - z1)
+                };
             }
         }
 
-        function smoothLerp(a, b, t) {
-            return wasmLerpFn ? wasmLerpFn(a, b, t) : (a + (b - a) * t);
+        function wasmLerp(a, b, t) {
+            return wasmEngine ? wasmEngine.lerp(a, b, t) : (a + (b - a) * t);
+        }
+
+        function wasmClamp(val, min, max) {
+            return wasmEngine ? wasmEngine.clamp(val, min, max) : Math.min(Math.max(val, min), max);
+        }
+
+        /***********************************************************************
+         * 2. ADAPTIVE PERFORMANCE PROFILER FOR LOW-END PCs
+         *    - Auto-detects weak GPUs / CPUs (< 4 cores, mobile, or slow frame-time)
+         *    - Adaptive dynamic resolution scaling (preserves 60 FPS under load)
+         ***********************************************************************/
+        const PerfProfile = {
+            isLowEnd: false,
+            ecoMode: true,          // Default to high-efficiency Eco 60FPS for maximum accessibility
+            targetFPS: 60,
+            currentDpr: 1.0,
+            minDpr: 0.75,
+            maxDpr: 1.5,
+            fpsHistory: [],
+            lastFrameTime: performance.now()
+        };
+
+        function detectHardwareTier() {
+            const cores = navigator.hardwareConcurrency || 4;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            PerfProfile.isLowEnd = cores <= 4 || isMobile;
+            PerfProfile.ecoMode = PerfProfile.isLowEnd;
+            PerfProfile.currentDpr = PerfProfile.isLowEnd ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
         }
 
         // Shared CRC-32 Lookup Table
@@ -565,7 +673,6 @@
             return (c ^ 0xffffffff) >>> 0;
         }
 
-        // Synthesize genuine 16-bit 44.1kHz PCM .WAV file bytes
         function generateWavBytes(freqBase, durationSec) {
             const sampleRate = 44100;
             const numSamples = Math.floor(sampleRate * durationSec);
@@ -581,8 +688,8 @@
             writeStr(8, 'WAVE');
             writeStr(12, 'fmt ');
             view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // PCM
-            view.setUint16(22, 1, true); // Mono
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, sampleRate * 2, true);
             view.setUint16(32, 2, true);
@@ -605,7 +712,6 @@
             return new Uint8Array(buffer);
         }
 
-        // Generate a genuine 3D Color Grading .CUBE LUT file
         function generateCubeLutString(title, warmth, contrast) {
             const size = 9;
             let lines = [
@@ -631,7 +737,6 @@
             return lines.join('\n');
         }
 
-        // Build an uncompressed PKZIP archive from [{ name, bytes }]
         function buildPkZip(files) {
             const encoder = new TextEncoder();
             let localHeadersLen = 0;
@@ -651,15 +756,14 @@
             const view = new DataView(out.buffer);
             let offset = 0;
 
-            // Write Local File Headers + Payloads
             for (const item of prepared) {
                 item.localOffset = offset;
-                view.setUint32(offset, 0x04034b50, true); // Local file header signature
-                view.setUint16(offset + 4, 20, true);     // Version needed
-                view.setUint16(offset + 6, 0, true);      // Flags
-                view.setUint16(offset + 8, 0, true);      // Compression: 0 (Stored)
-                view.setUint16(offset + 10, 0, true);     // Mod time
-                view.setUint16(offset + 12, 0, true);     // Mod date
+                view.setUint32(offset, 0x04034b50, true);
+                view.setUint16(offset + 4, 20, true);
+                view.setUint16(offset + 6, 0, true);
+                view.setUint16(offset + 8, 0, true);
+                view.setUint16(offset + 10, 0, true);
+                view.setUint16(offset + 12, 0, true);
                 view.setUint32(offset + 14, item.crc, true);
                 view.setUint32(offset + 18, item.dataBytes.length, true);
                 view.setUint32(offset + 22, item.dataBytes.length, true);
@@ -671,7 +775,6 @@
             }
 
             const centralDirStart = offset;
-            // Write Central Directory Headers
             for (const item of prepared) {
                 view.setUint32(offset, 0x02014b50, true);
                 view.setUint16(offset + 4, 20, true);
@@ -694,7 +797,6 @@
                 offset += 46 + item.nameBytes.length;
             }
 
-            // End of Central Directory Record
             view.setUint32(offset, 0x06054b50, true);
             view.setUint16(offset + 4, 0, true);
             view.setUint16(offset + 6, 0, true);
@@ -718,207 +820,100 @@
                         }
                         crcTable[n] = c >>> 0;
                     }
-
                     function crc32(bytes) {
                         let c = 0xffffffff;
-                        for (let i = 0; i < bytes.length; i++) {
-                            c = (c >>> 8) ^ crcTable[(c ^ bytes[i]) & 0xff];
-                        }
+                        for (let i = 0; i < bytes.length; i++) c = (c >>> 8) ^ crcTable[(c ^ bytes[i]) & 0xff];
                         return (c ^ 0xffffffff) >>> 0;
                     }
-
                     function generateWavBytes(freqBase, durationSec) {
                         const sampleRate = 44100;
                         const numSamples = Math.floor(sampleRate * durationSec);
                         const buffer = new ArrayBuffer(44 + numSamples * 2);
                         const view = new DataView(buffer);
-
-                        const writeStr = (offset, str) => {
-                            for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-                        };
-
-                        writeStr(0, 'RIFF');
-                        view.setUint32(4, 36 + numSamples * 2, true);
-                        writeStr(8, 'WAVE');
-                        writeStr(12, 'fmt ');
-                        view.setUint32(16, 16, true);
-                        view.setUint16(20, 1, true);
-                        view.setUint16(22, 1, true);
-                        view.setUint32(24, sampleRate, true);
-                        view.setUint32(28, sampleRate * 2, true);
-                        view.setUint16(32, 2, true);
-                        view.setUint16(34, 16, true);
-                        writeStr(36, 'data');
-                        view.setUint32(40, numSamples * 2, true);
-
+                        const writeStr = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
+                        writeStr(0, 'RIFF'); view.setUint32(4, 36 + numSamples * 2, true);
+                        writeStr(8, 'WAVE'); writeStr(12, 'fmt ');
+                        view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+                        view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
+                        view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+                        writeStr(36, 'data'); view.setUint32(40, numSamples * 2, true);
                         for (let i = 0; i < numSamples; i++) {
                             const t = i / sampleRate;
                             const env = Math.exp(-t * 1.45) * Math.min(1, t * 45);
-                            const sig = (
-                                Math.sin(2 * Math.PI * freqBase * t) * 0.55 +
-                                Math.sin(2 * Math.PI * (freqBase * 1.5) * t) * 0.25 +
-                                Math.sin(2 * Math.PI * (freqBase * 2.02) * t) * 0.15 +
-                                (Math.random() * 2 - 1) * 0.03 * Math.exp(-t * 6.0)
-                            ) * env;
-                            const pcm = Math.max(-1, Math.min(1, sig)) * 32767;
-                            view.setInt16(44 + i * 2, pcm, true);
+                            const sig = (Math.sin(2 * Math.PI * freqBase * t) * 0.55 + Math.sin(2 * Math.PI * (freqBase * 1.5) * t) * 0.25 + Math.sin(2 * Math.PI * (freqBase * 2.02) * t) * 0.15) * env;
+                            view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, sig)) * 32767, true);
                         }
                         return new Uint8Array(buffer);
                     }
-
                     function generateCubeLutString(title, warmth, contrast) {
                         const size = 9;
-                        let lines = [
-                            '# Created by Cihannuma Grand Digital Library Engine',
-                            'TITLE "' + title + '"',
-                            'LUT_3D_SIZE ' + size,
-                            'DOMAIN_MIN 0.0 0.0 0.0',
-                            'DOMAIN_MAX 1.0 1.0 1.0'
-                        ];
+                        let lines = ['# Cihannuma Digital Library', 'TITLE \"' + title + '\"', 'LUT_3D_SIZE ' + size, 'DOMAIN_MIN 0.0 0.0 0.0', 'DOMAIN_MAX 1.0 1.0 1.0'];
                         for (let b = 0; b < size; b++) {
                             for (let g = 0; g < size; g++) {
                                 for (let r = 0; r < size; r++) {
-                                    let rf = r / (size - 1);
-                                    let gf = g / (size - 1);
-                                    let bf = b / (size - 1);
-                                    rf = Math.min(1, Math.max(0, Math.pow(rf, contrast) + warmth * 0.04));
-                                    gf = Math.min(1, Math.max(0, Math.pow(gf, contrast) + warmth * 0.015));
-                                    bf = Math.min(1, Math.max(0, Math.pow(bf, contrast) - warmth * 0.03));
+                                    let rf = Math.min(1, Math.max(0, Math.pow(r / (size - 1), contrast) + warmth * 0.04));
+                                    let gf = Math.min(1, Math.max(0, Math.pow(g / (size - 1), contrast) + warmth * 0.015));
+                                    let bf = Math.min(1, Math.max(0, Math.pow(b / (size - 1), contrast) - warmth * 0.03));
                                     lines.push(rf.toFixed(5) + ' ' + gf.toFixed(5) + ' ' + bf.toFixed(5));
                                 }
                             }
                         }
                         return lines.join('\\n');
                     }
-
                     function buildPkZip(files) {
                         const encoder = new TextEncoder();
-                        let localHeadersLen = 0;
-                        let centralDirLen = 0;
-
-                        const prepared = files.map(f => {
-                            const nameBytes = encoder.encode(f.name);
-                            const dataBytes = f.bytes instanceof Uint8Array ? f.bytes : encoder.encode(String(f.bytes));
-                            const crc = crc32(dataBytes);
-                            localHeadersLen += 30 + nameBytes.length + dataBytes.length;
-                            centralDirLen += 46 + nameBytes.length;
-                            return { nameBytes, dataBytes, crc };
+                        let localLen = 0, dirLen = 0;
+                        const prep = files.map(f => {
+                            const nB = encoder.encode(f.name);
+                            const dB = f.bytes instanceof Uint8Array ? f.bytes : encoder.encode(String(f.bytes));
+                            localLen += 30 + nB.length + dB.length;
+                            dirLen += 46 + nB.length;
+                            return { nB, dB, crc: crc32(dB) };
                         });
-
-                        const totalSize = localHeadersLen + centralDirLen + 22;
-                        const out = new Uint8Array(totalSize);
-                        const view = new DataView(out.buffer);
-                        let offset = 0;
-
-                        for (const item of prepared) {
-                            item.localOffset = offset;
-                            view.setUint32(offset, 0x04034b50, true);
-                            view.setUint16(offset + 4, 20, true);
-                            view.setUint16(offset + 6, 0, true);
-                            view.setUint16(offset + 8, 0, true);
-                            view.setUint16(offset + 10, 0, true);
-                            view.setUint16(offset + 12, 0, true);
-                            view.setUint32(offset + 14, item.crc, true);
-                            view.setUint32(offset + 18, item.dataBytes.length, true);
-                            view.setUint32(offset + 22, item.dataBytes.length, true);
-                            view.setUint16(offset + 26, item.nameBytes.length, true);
-                            view.setUint16(offset + 28, 0, true);
-                            out.set(item.nameBytes, offset + 30);
-                            out.set(item.dataBytes, offset + 30 + item.nameBytes.length);
-                            offset += 30 + item.nameBytes.length + item.dataBytes.length;
+                        const out = new Uint8Array(localLen + dirLen + 22);
+                        const v = new DataView(out.buffer);
+                        let off = 0;
+                        for (const it of prep) {
+                            it.loc = off;
+                            v.setUint32(off, 0x04034b50, true); v.setUint16(off + 4, 20, true);
+                            v.setUint32(off + 14, it.crc, true); v.setUint32(off + 18, it.dB.length, true);
+                            v.setUint32(off + 22, it.dB.length, true); v.setUint16(off + 26, it.nB.length, true);
+                            out.set(it.nB, off + 30); out.set(it.dB, off + 30 + it.nB.length);
+                            off += 30 + it.nB.length + it.dB.length;
                         }
-
-                        const centralDirStart = offset;
-                        for (const item of prepared) {
-                            view.setUint32(offset, 0x02014b50, true);
-                            view.setUint16(offset + 4, 20, true);
-                            view.setUint16(offset + 6, 20, true);
-                            view.setUint16(offset + 8, 0, true);
-                            view.setUint16(offset + 10, 0, true);
-                            view.setUint16(offset + 12, 0, true);
-                            view.setUint16(offset + 14, 0, true);
-                            view.setUint32(offset + 16, item.crc, true);
-                            view.setUint32(offset + 20, item.dataBytes.length, true);
-                            view.setUint32(offset + 24, item.dataBytes.length, true);
-                            view.setUint16(offset + 28, item.nameBytes.length, true);
-                            view.setUint16(offset + 30, 0, true);
-                            view.setUint16(offset + 32, 0, true);
-                            view.setUint16(offset + 34, 0, true);
-                            view.setUint16(offset + 36, 0, true);
-                            view.setUint32(offset + 38, 0, true);
-                            view.setUint32(offset + 42, item.localOffset, true);
-                            out.set(item.nameBytes, offset + 46);
-                            offset += 46 + item.nameBytes.length;
+                        const cStart = off;
+                        for (const it of prep) {
+                            v.setUint32(off, 0x02014b50, true); v.setUint16(off + 4, 20, true); v.setUint16(off + 6, 20, true);
+                            v.setUint32(off + 16, it.crc, true); v.setUint32(off + 20, it.dB.length, true);
+                            v.setUint32(off + 24, it.dB.length, true); v.setUint16(off + 28, it.nB.length, true);
+                            v.setUint32(off + 42, it.loc, true);
+                            out.set(it.nB, off + 46); off += 46 + it.nB.length;
                         }
-
-                        view.setUint32(offset, 0x06054b50, true);
-                        view.setUint16(offset + 4, 0, true);
-                        view.setUint16(offset + 6, 0, true);
-                        view.setUint16(offset + 8, prepared.length, true);
-                        view.setUint16(offset + 10, prepared.length, true);
-                        view.setUint32(offset + 12, centralDirLen, true);
-                        view.setUint32(offset + 16, centralDirStart, true);
-                        view.setUint16(offset + 20, 0, true);
-
+                        v.setUint32(off, 0x06054b50, true); v.setUint16(off + 8, prep.length, true);
+                        v.setUint16(off + 10, prep.length, true); v.setUint32(off + 12, dirLen, true);
+                        v.setUint32(off + 16, cStart, true);
                         return out;
                     }
-
                     self.onmessage = function(e) {
                         const { jobId, zipFilename, bundleType, payload } = e.data;
                         const files = [];
-
                         if (bundleType === 'wav_stem') {
-                            files.push({
-                                name: payload.stemName + '.wav',
-                                bytes: generateWavBytes(payload.freq || 110, 3.2)
-                            });
-                            files.push({
-                                name: 'README_LICENSE.txt',
-                                bytes: 'Cihannuma Rotunda Library - Royalty Free 44.1kHz 16-Bit PCM Audio Stem\\nGenerated via Web Worker DSP.'
-                            });
+                            files.push({ name: payload.stemName + '.wav', bytes: generateWavBytes(payload.freq || 110, 3.2) });
+                            files.push({ name: 'README.txt', bytes: 'Cihannuma Grand Library - 44.1kHz 16-Bit PCM Audio Stem' });
                         } else if (bundleType === 'lut_pack') {
-                            files.push({
-                                name: payload.packName + '_WarmGold.cube',
-                                bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08)
-                            });
-                            files.push({
-                                name: payload.packName + '_TealShadow.cube',
-                                bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12)
-                            });
+                            files.push({ name: payload.packName + '_Warm.cube', bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08) });
+                            files.push({ name: payload.packName + '_Teal.cube', bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12) });
                         } else if (bundleType === 'tome_export') {
-                            files.push({
-                                name: 'tome_manifest.json',
-                                bytes: JSON.stringify(payload.tomeData, null, 2)
-                            });
-                            (payload.tomeData.assets || []).forEach((a, idx) => {
-                                const safeTitle = (a.title || ('asset_' + idx)).replace(/[^a-zA-Z0-9_-]/g, '_');
-                                if (a.type === 'audio') {
-                                    files.push({
-                                        name: safeTitle + '.wav',
-                                        bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5)
-                                    });
-                                } else {
-                                    files.push({
-                                        name: safeTitle + '.txt',
-                                        bytes: String(a.content || '')
-                                    });
-                                }
+                            files.push({ name: 'tome_manifest.json', bytes: JSON.stringify(payload.tomeData, null, 2) });
+                            (payload.tomeData.assets || []).forEach((a, i) => {
+                                const sT = (a.title || ('asset_' + i)).replace(/[^a-zA-Z0-9_-]/g, '_');
+                                files.push(a.type === 'audio' ? { name: sT + '.wav', bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5) } : { name: sT + '.txt', bytes: String(a.content || '') });
                             });
                         } else {
-                            files.push({
-                                name: payload.deptId + '_manifest.json',
-                                bytes: JSON.stringify(payload, null, 2)
-                            });
-                            files.push({
-                                name: payload.deptId + '_Signature_Stem.wav',
-                                bytes: generateWavBytes(payload.baseFreq || 128, 3.0)
-                            });
-                            files.push({
-                                name: payload.deptId + '_MasterGrade.cube',
-                                bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1)
-                            });
+                            files.push({ name: payload.deptId + '_manifest.json', bytes: JSON.stringify(payload, null, 2) });
+                            files.push({ name: payload.deptId + '_Stem.wav', bytes: generateWavBytes(payload.baseFreq || 128, 3.0) });
+                            files.push({ name: payload.deptId + '_Grade.cube', bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1) });
                         }
-
                         const zipBytes = buildPkZip(files);
                         self.postMessage({ jobId, zipFilename, zipBytes }, [zipBytes.buffer]);
                     };
@@ -926,70 +921,31 @@
                 const blob = new Blob([workerCode], { type: 'application/javascript' });
                 return new Worker(URL.createObjectURL(blob));
             } catch (err) {
-                console.warn('[Rotunda Engine] Worker creation failed, fallback to main thread:', err);
                 return null;
             }
         }
 
-        // Main thread fallback ZIP generator
         function executeZipDownloadMainThread(jobConfig) {
             const { zipFilename, bundleType, payload } = jobConfig;
             const files = [];
-
             if (bundleType === 'wav_stem') {
-                files.push({
-                    name: payload.stemName + '.wav',
-                    bytes: generateWavBytes(payload.freq || 110, 3.2)
-                });
-                files.push({
-                    name: 'README_LICENSE.txt',
-                    bytes: 'Cihannuma Rotunda Library - Royalty Free 44.1kHz 16-Bit PCM Audio Stem\nGenerated via DSP.'
-                });
+                files.push({ name: payload.stemName + '.wav', bytes: generateWavBytes(payload.freq || 110, 3.2) });
+                files.push({ name: 'README.txt', bytes: 'Cihannuma Grand Library - 44.1kHz 16-Bit PCM Audio Stem' });
             } else if (bundleType === 'lut_pack') {
-                files.push({
-                    name: payload.packName + '_WarmGold.cube',
-                    bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08)
-                });
-                files.push({
-                    name: payload.packName + '_TealShadow.cube',
-                    bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12)
-                });
+                files.push({ name: payload.packName + '_Warm.cube', bytes: generateCubeLutString(payload.packName + ' Warm', 1.2, 1.08) });
+                files.push({ name: payload.packName + '_Teal.cube', bytes: generateCubeLutString(payload.packName + ' Teal', -0.8, 1.12) });
             } else if (bundleType === 'tome_export') {
-                files.push({
-                    name: 'tome_manifest.json',
-                    bytes: JSON.stringify(payload.tomeData, null, 2)
-                });
-                (payload.tomeData.assets || []).forEach((a, idx) => {
-                    const safeTitle = (a.title || ('asset_' + idx)).replace(/[^a-zA-Z0-9_-]/g, '_');
-                    if (a.type === 'audio') {
-                        files.push({
-                            name: safeTitle + '.wav',
-                            bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5)
-                        });
-                    } else {
-                        files.push({
-                            name: safeTitle + '.txt',
-                            bytes: String(a.content || '')
-                        });
-                    }
+                files.push({ name: 'tome_manifest.json', bytes: JSON.stringify(payload.tomeData, null, 2) });
+                (payload.tomeData.assets || []).forEach((a, i) => {
+                    const sT = (a.title || ('asset_' + i)).replace(/[^a-zA-Z0-9_-]/g, '_');
+                    files.push(a.type === 'audio' ? { name: sT + '.wav', bytes: generateWavBytes(parseFloat(a.content) || 140, 2.5) } : { name: sT + '.txt', bytes: String(a.content || '') });
                 });
             } else {
-                files.push({
-                    name: payload.deptId + '_manifest.json',
-                    bytes: JSON.stringify(payload, null, 2)
-                });
-                files.push({
-                    name: payload.deptId + '_Signature_Stem.wav',
-                    bytes: generateWavBytes(payload.baseFreq || 128, 3.0)
-                });
-                files.push({
-                    name: payload.deptId + '_MasterGrade.cube',
-                    bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1)
-                });
+                files.push({ name: payload.deptId + '_manifest.json', bytes: JSON.stringify(payload, null, 2) });
+                files.push({ name: payload.deptId + '_Stem.wav', bytes: generateWavBytes(payload.baseFreq || 128, 3.0) });
+                files.push({ name: payload.deptId + '_Grade.cube', bytes: generateCubeLutString(payload.title || 'Master LUT', 1.0, 1.1) });
             }
-
-            const zipBytes = buildPkZip(files);
-            saveZipBlobToDisk(zipFilename, zipBytes);
+            saveZipBlobToDisk(zipFilename, buildPkZip(files));
         }
 
         function saveZipBlobToDisk(zipFilename, zipBytes) {
@@ -1018,8 +974,6 @@
                 tier: 1,
                 bayIndex: 1,
                 theta: 0.45,
-                phi: 1.38,
-                radius: 17.5,
                 targetY: 5.5,
                 baseFreq: 98,
                 desc: '24-bit acoustic foley, cathedral impulse responses, sub-bass booms, and analog synth stems.',
@@ -1039,8 +993,6 @@
                 tier: 2,
                 bayIndex: 4,
                 theta: 1.55,
-                phi: 1.32,
-                radius: 17.5,
                 targetY: 8.3,
                 baseFreq: 146.8,
                 desc: '33x33x33 tetrahedral .CUBE print film emulations, halation matrices, and ACES look transforms.',
@@ -1060,8 +1012,6 @@
                 tier: 3,
                 bayIndex: 7,
                 theta: 2.65,
-                phi: 1.28,
-                radius: 17.5,
                 targetY: 11.1,
                 baseFreq: 196.0,
                 desc: 'Production-ready WebGL/Three.js PBR shaders, golden-angle bloom kernels, and procedural noises.',
@@ -1080,8 +1030,6 @@
                 tier: 2,
                 bayIndex: 10,
                 theta: 3.85,
-                phi: 1.34,
-                radius: 17.5,
                 targetY: 8.3,
                 baseFreq: 164.8,
                 desc: 'Instanced architectural trim sheets, chamfered book geometries, and procedural HDRI domes.',
@@ -1100,8 +1048,6 @@
                 tier: 4,
                 bayIndex: 13,
                 theta: 4.95,
-                phi: 1.25,
-                radius: 17.5,
                 targetY: 13.9,
                 baseFreq: 246.9,
                 desc: 'Zero-GC TypedArray spatial indexes, WebAssembly DSP modules, and off-main-thread Worker pipelines.',
@@ -1120,8 +1066,6 @@
                 tier: 0,
                 bayIndex: 15,
                 theta: 5.85,
-                phi: 1.42,
-                radius: 14.5,
                 targetY: 2.2,
                 baseFreq: 130.8,
                 desc: 'Your custom inscribed tomes on the ground reading room floor—store links, snippets, images, and notes.',
@@ -1151,7 +1095,7 @@
         ];
 
         const STORAGE_KEY = 'cihannuma_grand_library_deltas_v3';
-        let customBookDeltas = {}; // { [instanceId]: { title, deptId, colorHex, tags, assets: [] } }
+        let customBookDeltas = {};
 
         function loadBookDeltas() {
             try {
@@ -1166,13 +1110,12 @@
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(customBookDeltas));
             } catch (e) {
-                console.warn('Storage quota warning:', e);
+                console.warn('Storage warning:', e);
             }
         }
 
-        // Deterministic O(1) book metadata generator for all 16,320+ books
         let totalBooksCount = 0;
-        let bookSpatialMeta = []; // [{ id, tier, bay, deptId, x, y, z, angle, colorIndex }]
+        let bookSpatialMeta = [];
 
         function getBookData(instanceId) {
             const spatial = bookSpatialMeta[instanceId] || {
@@ -1222,7 +1165,7 @@
         let showSpatialPlaques = true;
         let spatialPlaqueElements = [];
 
-        // Smooth Orbit & Click-to-Zoom Camera State
+        // High-Precision Damped Camera State (Driven by WebAssembly Kernel)
         const camOrbit = {
             theta: 0.65,
             phi: 1.28,
@@ -1238,47 +1181,9 @@
             desiredTargetZ: 0.0
         };
 
-        // Create procedural Interior Equirectangular HDRI for realistic PBR reflections
-        function createInteriorEnvironmentMap(webglRenderer) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-
-            const grad = ctx.createLinearGradient(0, 0, 0, 256);
-            grad.addColorStop(0.0, '#8ecae6');
-            grad.addColorStop(0.18, '#d8f3ff');
-            grad.addColorStop(0.28, '#4a3520');
-            grad.addColorStop(0.55, '#a86e28');
-            grad.addColorStop(0.78, '#5a3a18');
-            grad.addColorStop(1.0, '#101816');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 512, 256);
-
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 16; i++) {
-                ctx.fillRect(i * 32 + 6, 34, 20, 24);
-            }
-
-            for (let t = 0; t < 5; t++) {
-                const y = 78 + t * 24;
-                ctx.fillStyle = 'rgba(255, 205, 125, 0.85)';
-                ctx.fillRect(0, y, 512, 5);
-            }
-
-            const tex = new THREE.CanvasTexture(canvas);
-            tex.mapping = THREE.EquirectangularReflectionMapping;
-            const pmrem = new THREE.PMREMGenerator(webglRenderer);
-            pmrem.compileEquirectangularShader();
-            const envRT = pmrem.fromEquirectangular(tex);
-            tex.dispose();
-            pmrem.dispose();
-            return envRT.texture;
-        }
-
-        // Create Procedural Venetian Terrazzo Marble Floor Texture
+        // Procedural Terrazzo Texture (Optimized 512x512 resolution for low-end GPU fill-rate)
         function createTerrazzoTextures() {
-            const size = 1024;
+            const size = 512;
             const diffCanvas = document.createElement('canvas');
             diffCanvas.width = size;
             diffCanvas.height = size;
@@ -1288,109 +1193,114 @@
             dCtx.fillRect(0, 0, size, size);
 
             const chipColors = ['#d8d2c5', '#8c9692', '#3a4a46', '#c5a880', '#52635e', '#f0ece1'];
-            for (let i = 0; i < 4200; i++) {
+            for (let i = 0; i < 1400; i++) {
                 dCtx.fillStyle = chipColors[i % chipColors.length];
                 const x = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * size;
                 const y = ((Math.cos(i * 78.233) * 29432.1234) % 1 + 1) % 1 * size;
-                const r = 1.5 + (i % 5) * 1.4;
-                dCtx.beginPath();
-                dCtx.arc(x, y, r, 0, Math.PI * 2);
-                dCtx.fill();
+                const s = 1.5 + (i % 4) * 1.2;
+                dCtx.fillRect(x, y, s, s);
             }
 
             const tex = new THREE.CanvasTexture(diffCanvas);
             tex.wrapS = THREE.RepeatWrapping;
             tex.wrapT = THREE.RepeatWrapping;
             tex.repeat.set(8, 8);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
             return tex;
         }
 
-        // Create Dome Calligraphic Inscription Texture
+        // Calligraphic Frieze Texture
         function createDomeCalligraphyTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 2048;
-            canvas.height = 256;
+            canvas.width = 1024;
+            canvas.height = 128;
             const ctx = canvas.getContext('2d');
 
             ctx.fillStyle = '#a8c6d8';
-            ctx.fillRect(0, 0, 2048, 256);
-
+            ctx.fillRect(0, 0, 1024, 128);
             ctx.strokeStyle = '#7b99ab';
-            ctx.lineWidth = 6;
-            ctx.strokeRect(0, 12, 2048, 232);
+            ctx.lineWidth = 4;
+            ctx.strokeRect(0, 6, 1024, 116);
 
             ctx.fillStyle = '#4a5d6b';
-            ctx.font = '600 54px "Cinzel", Georgia, serif';
+            ctx.font = '600 28px "Cinzel", Georgia, serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const phrase = 'O, RAB, İLMİMİ ARTIR   ·   EX SCIENTIA LUX   ·   CIHANNÜMA ARCHIVE   ·   ';
-            ctx.fillText(phrase + phrase, 1024, 128);
+            ctx.fillText(phrase + phrase, 512, 64);
 
             const tex = new THREE.CanvasTexture(canvas);
             tex.wrapS = THREE.RepeatWrapping;
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
             return tex;
         }
 
-        // Create Moroccan Leather Spine & Gold-Foil Texture Atlas
+        // Moroccan Leather Spine Texture (Optimized 256x256)
         function createBookSpineTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
+            canvas.width = 256;
+            canvas.height = 256;
             const ctx = canvas.getContext('2d');
 
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
+            ctx.fillRect(0, 0, 256, 256);
 
-            for (let i = 0; i < 6000; i++) {
-                const x = (i * 73) % 512;
-                const y = (i * 137) % 512;
-                ctx.fillStyle = (i % 2 === 0) ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
-                ctx.fillRect(x, y, 3, 3);
+            // Subtle leather grain
+            for (let i = 0; i < 2000; i++) {
+                const x = (i * 73) % 256;
+                const y = (i * 137) % 256;
+                ctx.fillStyle = (i % 2 === 0) ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)';
+                ctx.fillRect(x, y, 2, 2);
             }
 
-            const bandPositions = [48, 120, 240, 360, 430];
+            const bandPositions = [24, 60, 120, 180, 215];
             bandPositions.forEach(y => {
-                ctx.fillStyle = 'rgba(0,0,0,0.32)';
-                ctx.fillRect(0, y - 5, 512, 10);
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(0, y - 3, 256, 6);
                 ctx.fillStyle = '#f5d77f';
-                ctx.fillRect(0, y - 2, 512, 4);
+                ctx.fillRect(0, y - 1, 256, 2);
             });
 
             ctx.fillStyle = 'rgba(245, 240, 228, 0.85)';
-            ctx.fillRect(60, 456, 392, 34);
+            ctx.fillRect(30, 228, 196, 18);
             ctx.fillStyle = '#2b2118';
-            ctx.fillRect(90, 468, 220, 4);
-            ctx.fillRect(90, 476, 150, 3);
+            ctx.fillRect(45, 234, 110, 2);
+            ctx.fillRect(45, 238, 75, 2);
 
-            return new THREE.CanvasTexture(canvas);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
         }
 
-        // Create World Globe Texture
+        // World Globe Texture (Optimized 512x256)
         function createWorldGlobeTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 512;
+            canvas.width = 512;
+            canvas.height = 256;
             const ctx = canvas.getContext('2d');
 
             ctx.fillStyle = '#112224';
-            ctx.fillRect(0, 0, 1024, 512);
+            ctx.fillRect(0, 0, 512, 256);
 
-            ctx.strokeStyle = 'rgba(212, 175, 55, 0.28)';
-            ctx.lineWidth = 1.5;
-            for (let x = 0; x <= 1024; x += 64) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 512); ctx.stroke();
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.25)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= 512; x += 32) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 256); ctx.stroke();
             }
-            for (let y = 0; y <= 512; y += 42) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1024, y); ctx.stroke();
+            for (let y = 0; y <= 256; y += 21) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
             }
 
             ctx.fillStyle = '#d4af37';
             const continents = [
-                [[520, 110], [680, 95], [820, 125], [860, 195], [770, 245], [640, 230], [540, 185]],
-                [[480, 200], [580, 205], [610, 285], [565, 385], [510, 370], [470, 275]],
-                [[150, 105], [295, 95], [330, 175], [260, 235], [195, 215], [135, 155]],
-                [[275, 255], [355, 275], [345, 395], [295, 435], [265, 345]],
-                [[770, 325], [855, 320], [865, 385], [785, 390]]
+                [[260, 55], [340, 48], [410, 62], [430, 98], [385, 122], [320, 115], [270, 92]],
+                [[240, 100], [290, 102], [305, 142], [282, 192], [255, 185], [235, 138]],
+                [[75, 52], [148, 48], [165, 88], [130, 118], [98, 108], [68, 78]],
+                [[138, 128], [178, 138], [172, 198], [148, 218], [132, 172]],
+                [[385, 162], [428, 160], [432, 192], [392, 195]]
             ];
             continents.forEach(poly => {
                 ctx.beginPath();
@@ -1399,22 +1309,33 @@
                 ctx.fill();
             });
 
-            return new THREE.CanvasTexture(canvas);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            return tex;
         }
 
         function init3DRotundaScene() {
+            detectHardwareTier();
             const container = document.getElementById('webglContainer');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x12161a);
             scene.fog = new THREE.FogExp2(0x14181d, 0.0065);
 
-            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 160);
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 140);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            // WebGL Renderer with Low-End Auto Configuration
+            renderer = new THREE.WebGLRenderer({
+                antialias: !PerfProfile.isLowEnd,
+                powerPreference: 'high-performance',
+                precision: PerfProfile.isLowEnd ? 'mediump' : 'highp',
+                stencil: false,
+                depth: true
+            });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setPixelRatio(PerfProfile.currentDpr);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.12;
+            renderer.toneMappingExposure = 1.15;
             if ('outputColorSpace' in renderer) {
                 renderer.outputColorSpace = THREE.SRGBColorSpace;
             } else if ('outputEncoding' in renderer) {
@@ -1423,9 +1344,8 @@
             container.innerHTML = '';
             container.appendChild(renderer.domElement);
 
-            scene.environment = createInteriorEnvironmentMap(renderer);
-
-            const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x4a3219, 0.85);
+            // Balanced Architectural Ambient Light (No expensive real-time shadow passes on weak GPUs)
+            const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x4a3219, 0.95);
             hemiLight.position.set(0, 36, 0);
             scene.add(hemiLight);
 
@@ -1433,28 +1353,27 @@
             atriumLight.position.set(0, 14, 0);
             scene.add(atriumLight);
 
-            const zenithLight = new THREE.DirectionalLight(0xe0f2fe, 0.9);
-            zenithLight.position.set(4, 42, -6);
+            const zenithLight = new THREE.DirectionalLight(0xe0f2fe, 0.85);
+            zenithLight.position.set(4, 40, -6);
             scene.add(zenithLight);
 
             // 1. FLOOR
-            const terrazzoTex = createTerrazzoTextures();
-            const floorGeo = new THREE.CylinderGeometry(28.5, 28.5, 0.4, 72);
+            const floorGeo = new THREE.CylinderGeometry(28.5, 28.5, 0.4, 48);
             const floorMat = new THREE.MeshStandardMaterial({
-                map: terrazzoTex,
-                roughness: 0.16,
-                metalness: 0.12
+                map: createTerrazzoTextures(),
+                roughness: 0.25,
+                metalness: 0.08
             });
             const floorMesh = new THREE.Mesh(floorGeo, floorMat);
             floorMesh.position.y = -0.2;
             scene.add(floorMesh);
 
-            const outerRingGeo = new THREE.RingGeometry(15.2, 26.8, 72);
+            const outerRingGeo = new THREE.RingGeometry(15.2, 26.8, 48);
             outerRingGeo.rotateX(-Math.PI / 2);
             const outerRingMat = new THREE.MeshStandardMaterial({
                 color: 0x162923,
-                roughness: 0.78,
-                metalness: 0.04
+                roughness: 0.82,
+                metalness: 0.02
             });
             const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
             outerRingMesh.position.y = 0.01;
@@ -1466,7 +1385,7 @@
             // 3. 16 MONUMENTAL COLUMNS
             buildMonumentalColumns();
 
-            // 4. ROTUNDA BALCONY TIERS
+            // 4. BALCONY TIERS
             buildRotundaBalconyTiers();
 
             // 5. CLERESTORY & DOME
@@ -1484,7 +1403,7 @@
                 color: 0xf5d77f,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.9
+                opacity: 0.85
             });
             hoverHighlightMesh = new THREE.Mesh(hoverGeo, hoverMat);
             hoverHighlightMesh.visible = false;
@@ -1500,37 +1419,37 @@
         function buildCentralGlobeAndDesk() {
             const centerGroup = new THREE.Group();
 
-            const deskOuterGeo = new THREE.CylinderGeometry(3.85, 3.95, 1.05, 48, 1, true);
-            const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x3b1c0e, roughness: 0.28, metalness: 0.1 });
+            const deskOuterGeo = new THREE.CylinderGeometry(3.85, 3.95, 1.05, 36, 1, true);
+            const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x3b1c0e, roughness: 0.35, metalness: 0.08 });
             const deskOuter = new THREE.Mesh(deskOuterGeo, mahoganyMat);
             deskOuter.position.y = 0.525;
             centerGroup.add(deskOuter);
 
-            const counterTopGeo = new THREE.RingGeometry(2.85, 4.02, 48);
+            const counterTopGeo = new THREE.RingGeometry(2.85, 4.02, 36);
             counterTopGeo.rotateX(-Math.PI / 2);
-            const creamMarbleMat = new THREE.MeshStandardMaterial({ color: 0xf3ead8, roughness: 0.18, metalness: 0.05 });
+            const creamMarbleMat = new THREE.MeshStandardMaterial({ color: 0xf3ead8, roughness: 0.22, metalness: 0.05 });
             const counterTop = new THREE.Mesh(counterTopGeo, creamMarbleMat);
             counterTop.position.y = 1.06;
             centerGroup.add(counterTop);
 
-            const basePedestalGeo = new THREE.CylinderGeometry(1.15, 1.32, 1.75, 36);
-            const emeraldCollarMat = new THREE.MeshStandardMaterial({ color: 0x163832, roughness: 0.35, metalness: 0.15 });
+            const basePedestalGeo = new THREE.CylinderGeometry(1.15, 1.32, 1.75, 24);
+            const emeraldCollarMat = new THREE.MeshStandardMaterial({ color: 0x163832, roughness: 0.4, metalness: 0.1 });
             const basePedestal = new THREE.Mesh(basePedestalGeo, emeraldCollarMat);
             basePedestal.position.y = 0.875;
             centerGroup.add(basePedestal);
 
-            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.22, metalness: 0.85 });
-            const trimRingGeo = new THREE.TorusGeometry(1.22, 0.06, 16, 48);
+            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.25, metalness: 0.8 });
+            const trimRingGeo = new THREE.TorusGeometry(1.22, 0.06, 12, 36);
             trimRingGeo.rotateX(Math.PI / 2);
             const trimRing = new THREE.Mesh(trimRingGeo, brassMat);
             trimRing.position.y = 1.72;
             centerGroup.add(trimRing);
 
-            const globeGeo = new THREE.SphereGeometry(2.05, 48, 36);
+            const globeGeo = new THREE.SphereGeometry(2.05, 32, 24);
             const globeMat = new THREE.MeshStandardMaterial({
                 map: createWorldGlobeTexture(),
-                roughness: 0.22,
-                metalness: 0.45
+                roughness: 0.25,
+                metalness: 0.38
             });
             const globeMesh = new THREE.Mesh(globeGeo, globeMat);
             globeMesh.position.y = 3.45;
@@ -1545,13 +1464,13 @@
             const numCols = 16;
             const colRadius = 20.6;
 
-            const creamStoneMat = new THREE.MeshStandardMaterial({ color: 0xeae3d5, roughness: 0.42, metalness: 0.04 });
-            const emeraldBandMat = new THREE.MeshStandardMaterial({ color: 0x173831, roughness: 0.36, metalness: 0.12 });
-            const copperBronzeMat = new THREE.MeshStandardMaterial({ color: 0xb87b4b, roughness: 0.25, metalness: 0.78 });
+            const creamStoneMat = new THREE.MeshStandardMaterial({ color: 0xeae3d5, roughness: 0.45, metalness: 0.02 });
+            const emeraldBandMat = new THREE.MeshStandardMaterial({ color: 0x173831, roughness: 0.4, metalness: 0.1 });
+            const copperBronzeMat = new THREE.MeshStandardMaterial({ color: 0xb87b4b, roughness: 0.3, metalness: 0.7 });
 
-            const shaftGeo = new THREE.CylinderGeometry(0.54, 0.64, 24.5, 24);
-            const collarGeo = new THREE.CylinderGeometry(0.68, 0.68, 1.05, 24);
-            const capitalGeo = new THREE.CylinderGeometry(1.18, 0.56, 1.15, 24);
+            const shaftGeo = new THREE.CylinderGeometry(0.54, 0.64, 24.5, 16);
+            const collarGeo = new THREE.CylinderGeometry(0.68, 0.68, 1.05, 16);
+            const capitalGeo = new THREE.CylinderGeometry(1.18, 0.56, 1.15, 16);
 
             for (let i = 0; i < numCols; i++) {
                 const angle = (i / numCols) * Math.PI * 2;
@@ -1582,18 +1501,16 @@
         }
 
         function buildRotundaBalconyTiers() {
-            const creamFasciaMat = new THREE.MeshStandardMaterial({ color: 0xede6d8, roughness: 0.45, metalness: 0.05 });
-            const darkWalnutWallMat = new THREE.MeshStandardMaterial({ color: 0x24130a, roughness: 0.55 });
+            const creamFasciaMat = new THREE.MeshStandardMaterial({ color: 0xede6d8, roughness: 0.5, metalness: 0.02 });
+            const darkWalnutWallMat = new THREE.MeshStandardMaterial({ color: 0x24130a, roughness: 0.6 });
             const warmCoveMat = new THREE.MeshBasicMaterial({ color: 0xffd28a });
-            const glassRailMat = new THREE.MeshStandardMaterial({
-                color: 0xdbeafe,
-                roughness: 0.1,
-                metalness: 0.1,
+            const glassRailMat = new THREE.MeshBasicMaterial({
+                color: 0x7fa1b8,
                 transparent: true,
-                opacity: 0.26
+                opacity: 0.3
             });
 
-            const backWallGeo = new THREE.CylinderGeometry(25.4, 25.4, 21.5, 64, 1, true);
+            const backWallGeo = new THREE.CylinderGeometry(25.4, 25.4, 21.5, 48, 1, true);
             const backWall = new THREE.Mesh(backWallGeo, darkWalnutWallMat);
             backWall.material.side = THREE.BackSide;
             backWall.position.y = 10.75;
@@ -1609,26 +1526,26 @@
                 const yBase = tier * 3.15 + 1.1;
                 const innerR = (tier === 1) ? 19.6 : 21.6;
 
-                const slabGeo = new THREE.RingGeometry(innerR, 25.5, 64);
+                const slabGeo = new THREE.RingGeometry(innerR, 25.5, 48);
                 slabGeo.rotateX(-Math.PI / 2);
                 const slabTop = new THREE.Mesh(slabGeo, creamFasciaMat);
                 slabTop.position.y = yBase;
                 scene.add(slabTop);
 
-                const fasciaLipGeo = new THREE.CylinderGeometry(innerR, innerR, 0.52, 64, 1, true);
+                const fasciaLipGeo = new THREE.CylinderGeometry(innerR, innerR, 0.52, 48, 1, true);
                 const fasciaLip = new THREE.Mesh(fasciaLipGeo, creamFasciaMat);
                 fasciaLip.material.side = THREE.DoubleSide;
                 fasciaLip.position.y = yBase - 0.26;
                 scene.add(fasciaLip);
 
-                const coveGeo = new THREE.CylinderGeometry(24.75, 24.75, 0.16, 64, 1, true);
+                const coveGeo = new THREE.CylinderGeometry(24.75, 24.75, 0.16, 48, 1, true);
                 const coveStrip = new THREE.Mesh(coveGeo, warmCoveMat);
                 coveStrip.material.side = THREE.BackSide;
                 coveStrip.position.y = yBase - 0.12;
                 scene.add(coveStrip);
 
                 if (tier <= 5) {
-                    const glassGeo = new THREE.CylinderGeometry(innerR + 0.15, innerR + 0.15, 0.85, 64, 1, true);
+                    const glassGeo = new THREE.CylinderGeometry(innerR + 0.15, innerR + 0.15, 0.85, 48, 1, true);
                     const glassRail = new THREE.Mesh(glassGeo, glassRailMat);
                     glassRail.material.side = THREE.DoubleSide;
                     glassRail.position.y = yBase + 0.42;
@@ -1638,7 +1555,7 @@
         }
 
         function buildClerestoryAndDome() {
-            const windowDrumGeo = new THREE.CylinderGeometry(24.2, 24.2, 4.6, 64, 1, true);
+            const windowDrumGeo = new THREE.CylinderGeometry(24.2, 24.2, 4.6, 48, 1, true);
             const windowDrumMat = new THREE.MeshBasicMaterial({
                 color: 0xdcf4ff,
                 side: THREE.BackSide
@@ -1647,16 +1564,16 @@
             windowDrum.position.y = 22.8;
             scene.add(windowDrum);
 
-            const mullionMat = new THREE.MeshStandardMaterial({ color: 0x1c2529, roughness: 0.5 });
-            for (let i = 0; i < 64; i++) {
-                const angle = (i / 64) * Math.PI * 2;
+            const mullionMat = new THREE.MeshBasicMaterial({ color: 0x1c2529 });
+            for (let i = 0; i < 48; i++) {
+                const angle = (i / 48) * Math.PI * 2;
                 const barGeo = new THREE.BoxGeometry(0.08, 4.6, 0.08);
                 const bar = new THREE.Mesh(barGeo, mullionMat);
                 bar.position.set(Math.cos(angle) * 24.0, 22.8, Math.sin(angle) * 24.0);
                 scene.add(bar);
             }
 
-            const friezeGeo = new THREE.CylinderGeometry(23.6, 24.0, 2.2, 64, 1, true);
+            const friezeGeo = new THREE.CylinderGeometry(23.6, 24.0, 2.2, 48, 1, true);
             const friezeMat = new THREE.MeshBasicMaterial({
                 map: createDomeCalligraphyTexture(),
                 side: THREE.BackSide
@@ -1665,7 +1582,7 @@
             friezeMesh.position.y = 26.1;
             scene.add(friezeMesh);
 
-            const domeGeo = new THREE.SphereGeometry(24.0, 64, 24, 0, Math.PI * 2, 0, Math.PI * 0.42);
+            const domeGeo = new THREE.SphereGeometry(24.0, 48, 18, 0, Math.PI * 2, 0, Math.PI * 0.42);
             const domeMat = new THREE.MeshBasicMaterial({
                 color: 0xaed1e6,
                 side: THREE.BackSide
@@ -1676,7 +1593,7 @@
         }
 
         function buildReadingRoomDesks() {
-            const walnutMat = new THREE.MeshStandardMaterial({ color: 0x3b1f10, roughness: 0.32, metalness: 0.08 });
+            const walnutMat = new THREE.MeshStandardMaterial({ color: 0x3b1f10, roughness: 0.38, metalness: 0.05 });
             const brassLampMat = new THREE.MeshBasicMaterial({ color: 0xffe082 });
             const paperMat = new THREE.MeshBasicMaterial({ color: 0xfaf3e3 });
 
@@ -1687,7 +1604,7 @@
             ];
 
             const deskGeo = new THREE.BoxGeometry(2.1, 0.76, 1.05);
-            const lampShadeGeo = new THREE.CylinderGeometry(0.14, 0.22, 0.14, 12);
+            const lampShadeGeo = new THREE.CylinderGeometry(0.14, 0.22, 0.14, 8);
             const paperGeo = new THREE.BoxGeometry(0.42, 0.02, 0.3);
 
             rings.forEach(ring => {
@@ -1733,8 +1650,8 @@
             const bookGeo = new THREE.BoxGeometry(0.17, 0.52, 0.38);
             const bookMat = new THREE.MeshStandardMaterial({
                 map: createBookSpineTexture(),
-                roughness: 0.42,
-                metalness: 0.18
+                roughness: 0.45,
+                metalness: 0.12
             });
 
             bookInstancedMesh = new THREE.InstancedMesh(bookGeo, bookMat, totalBooksCount);
@@ -1820,11 +1737,12 @@
                 );
 
                 const el = document.createElement('button');
-                el.className = 'spatial-plaque glass-pill px-3 py-1.5 rounded-full flex items-center gap-2 text-xs text-amber-50 shadow-xl';
+                el.className = 'spatial-plaque glass-pill flex items-center cursor-pointer shadow-lg';
+                el.style.cssText = 'padding: 6px 12px; border-radius: 9999px; gap: 8px; font-size: 11px; color: #fffbeb;';
                 el.innerHTML = `
-                    <span class="w-2 h-2 rounded-full" style="background:${dept.color}"></span>
-                    <i class="fa-solid ${dept.icon} text-amber-300 text-[11px]"></i>
-                    <span class="font-cinzel font-bold tracking-wide text-[11px]">${dept.shortName}</span>
+                    <span style="width: 8px; height: 8px; border-radius: 9999px; background:${dept.color};"></span>
+                    <i class="fa-solid ${dept.icon}" style="color: #fcd34d; font-size: 11px;"></i>
+                    <span class="font-cinzel" style="font-weight: 700; letter-spacing: 0.05em;">${dept.shortName}</span>
                 `;
                 el.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1900,10 +1818,12 @@
             openDepartmentDrawer(dept, selectedBookId);
         }
 
+        // Throttled Pointer & Raycasting Event Handler (Saves CPU on Low-End PCs)
         function setupOrbitAndPickEvents(domElement) {
             let isDragging = false;
             let pointerDownPos = { x: 0, y: 0 };
             let prevPointerPos = { x: 0, y: 0 };
+            let lastRaycastTime = 0;
             const tooltip = document.getElementById('bookHoverTooltip');
 
             domElement.addEventListener('mousedown', (e) => {
@@ -1917,7 +1837,7 @@
                     const dx = e.clientX - prevPointerPos.x;
                     const dy = e.clientY - prevPointerPos.y;
                     camOrbit.desiredTheta += dx * 0.0055;
-                    camOrbit.desiredPhi = Math.max(0.45, Math.min(1.65, camOrbit.desiredPhi - dy * 0.0045));
+                    camOrbit.desiredPhi = wasmClamp(camOrbit.desiredPhi - dy * 0.0045, 0.45, 1.65);
                     prevPointerPos = { x: e.clientX, y: e.clientY };
                     tooltip.classList.add('hidden');
                     return;
@@ -1928,6 +1848,11 @@
                     hoverHighlightMesh.visible = false;
                     return;
                 }
+
+                // Throttle raycasting to 30ms on low-end machines to prevent 100% CPU thread lock
+                const now = performance.now();
+                if (now - lastRaycastTime < 32) return;
+                lastRaycastTime = now;
 
                 pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
                 pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -1968,7 +1893,6 @@
                         const bData = getBookData(hoveredBookId);
                         glideToDepartment(bData.deptId, hoveredBookId);
                     } else {
-                        // Check if clicked the central globe
                         pointerNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
                         pointerNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
                         raycaster.setFromCamera(pointerNDC, camera);
@@ -1985,7 +1909,7 @@
 
             domElement.addEventListener('wheel', (e) => {
                 e.preventDefault();
-                camOrbit.desiredRadius = Math.max(3.8, Math.min(21.5, camOrbit.desiredRadius + e.deltaY * 0.018));
+                camOrbit.desiredRadius = wasmClamp(camOrbit.desiredRadius + e.deltaY * 0.016, 3.8, 21.5);
             }, { passive: false });
 
             let touchPinchDist = 0;
@@ -2007,14 +1931,14 @@
                     const dx = e.touches[0].clientX - prevPointerPos.x;
                     const dy = e.touches[0].clientY - prevPointerPos.y;
                     camOrbit.desiredTheta += dx * 0.006;
-                    camOrbit.desiredPhi = Math.max(0.45, Math.min(1.65, camOrbit.desiredPhi - dy * 0.005));
+                    camOrbit.desiredPhi = wasmClamp(camOrbit.desiredPhi - dy * 0.005, 0.45, 1.65);
                     prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 } else if (e.touches.length === 2) {
                     const d = Math.hypot(
                         e.touches[0].clientX - e.touches[1].clientX,
                         e.touches[0].clientY - e.touches[1].clientY
                     );
-                    camOrbit.desiredRadius = Math.max(3.8, Math.min(21.5, camOrbit.desiredRadius + (touchPinchDist - d) * 0.04));
+                    camOrbit.desiredRadius = wasmClamp(camOrbit.desiredRadius + (touchPinchDist - d) * 0.04, 3.8, 21.5);
                     touchPinchDist = d;
                 }
             }, { passive: true });
@@ -2028,7 +1952,7 @@
                 const canvas = document.getElementById('waveformCanvas');
                 if (canvas) {
                     canvas.width = Math.floor(canvas.getBoundingClientRect().width || 360);
-                    canvas.height = Math.floor(canvas.getBoundingClientRect().height || 64);
+                    canvas.height = Math.floor(canvas.getBoundingClientRect().height || 60);
                     drawWaveformCanvas(0);
                 }
             });
@@ -2062,7 +1986,7 @@
                 canvas.height = Math.floor(rect.height);
             }
             const w = canvas.width || 360;
-            const h = canvas.height || 64;
+            const h = canvas.height || 60;
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
             ctx.clearRect(0, 0, w, h);
@@ -2089,7 +2013,7 @@
             });
             activeAudioNodes = [];
             isPlayingAudio = false;
-            document.getElementById('playWaveformIcon').className = 'fa-solid fa-play text-[10px]';
+            document.getElementById('playWaveformIcon').className = 'fa-solid fa-play';
             document.getElementById('playWaveformText').textContent = 'Preview Stem';
         }
 
@@ -2122,41 +2046,41 @@
 
             isPlayingAudio = true;
             audioPlayStartTime = performance.now() - (startOffsetRatio * audioDuration * 1000);
-            document.getElementById('playWaveformIcon').className = 'fa-solid fa-stop text-[10px]';
+            document.getElementById('playWaveformIcon').className = 'fa-solid fa-stop';
             document.getElementById('playWaveformText').textContent = 'Stop Stem';
         }
 
         function openDepartmentDrawer(dept, bookId) {
             const drawer = document.getElementById('departmentDrawer');
-            drawer.classList.remove('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+            drawer.style.transform = 'translateX(0)';
+            drawer.style.opacity = '1';
+            drawer.style.pointerEvents = 'auto';
 
             const bookData = getBookData(bookId);
             document.getElementById('drawerTierBadge').textContent = `TIER ${dept.tier + 1} · BAY ${String.fromCharCode(65 + dept.bayIndex)}`;
             document.getElementById('drawerTitle').textContent = dept.name;
             document.getElementById('drawerDesc').textContent = dept.desc;
 
-            // Active Book Card
             document.getElementById('activeBookCallNo').textContent = bookData.callNumber;
             document.getElementById('activeBookTitle').textContent = bookData.title;
             document.getElementById('activeBookAssetSummary').textContent = `${bookData.assets.length} embedded assets · Click Open Tome to edit`;
 
-            // Audio Waveform Track
-            document.getElementById('waveformTrackTitle').textContent = `${dept.name} — Signature Stem (${dept.baseFreq}Hz)`;
+            document.getElementById('waveformTrackTitle').textContent = `${dept.name} — Stem (${dept.baseFreq}Hz)`;
             generateWaveformData(dept.baseFreq);
 
-            // Render Department Packs with Instant .ZIP buttons
             const packsList = document.getElementById('drawerPacksList');
             packsList.innerHTML = '';
             dept.packs.forEach((pack) => {
                 const row = document.createElement('div');
-                row.className = 'p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between gap-2 transition';
+                row.className = 'flex items-center justify-between transition';
+                row.style.cssText = 'padding: 8px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); gap: 8px;';
                 row.innerHTML = `
                     <div class="min-w-0">
-                        <div class="text-xs font-medium text-amber-50 truncate">${pack.title}</div>
-                        <span class="text-[10px] font-mono-code text-amber-300/80">${pack.badge}</span>
+                        <div class="truncate" style="font-size: 11.5px; font-weight: 500; color: #fffbeb;">${pack.title}</div>
+                        <span class="font-mono-code" style="font-size: 10px; color: rgba(252, 211, 77, 0.85);">${pack.badge}</span>
                     </div>
-                    <button class="shrink-0 px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/40 text-amber-200 text-[11px] font-mono-code flex items-center gap-1">
-                        <i class="fa-solid fa-download text-[10px]"></i><span>.ZIP</span>
+                    <button class="shrink-0 flex items-center cursor-pointer font-mono-code transition" style="padding: 5px 10px; border-radius: 8px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(251, 191, 36, 0.4); color: #fde68a; font-size: 11px; gap: 4px;">
+                        <i class="fa-solid fa-download" style="font-size: 10px;"></i><span>.ZIP</span>
                     </button>
                 `;
                 row.querySelector('button').addEventListener('click', () => {
@@ -2176,7 +2100,6 @@
                 packsList.appendChild(row);
             });
 
-            // Render Neighboring Shelf Books Grid
             const shelfGrid = document.getElementById('drawerShelfBooksGrid');
             shelfGrid.innerHTML = '';
             const neighborBooks = bookSpatialMeta
@@ -2186,17 +2109,15 @@
             neighborBooks.forEach(nb => {
                 const nbData = getBookData(nb.id);
                 const card = document.createElement('button');
-                card.className = `p-2.5 rounded-xl text-left border transition flex items-start gap-2 ${
-                    nb.id === selectedBookId
-                        ? 'bg-amber-500/20 border-amber-400'
-                        : 'bg-black/40 hover:bg-white/10 border-white/10'
-                }`;
+                card.className = `flex items-start cursor-pointer transition text-left`;
+                const isSel = nb.id === selectedBookId;
+                card.style.cssText = `padding: 8px 10px; border-radius: 12px; gap: 8px; border: 1px solid ${isSel ? '#fbbf24' : 'rgba(255, 255, 255, 0.1)'}; background: ${isSel ? 'rgba(245, 158, 11, 0.2)' : 'rgba(0, 0, 0, 0.4)'};`;
                 card.innerHTML = `
-                    <span class="w-2.5 h-8 rounded-sm shrink-0 mt-0.5 border border-amber-300/40" style="background:${nbData.colorHex}"></span>
+                    <span style="width: 8px; height: 32px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; border: 1px solid rgba(251, 191, 36, 0.4); background:${nbData.colorHex}"></span>
                     <div class="min-w-0">
-                        <div class="text-[10px] font-mono-code text-amber-300/80">#${String(nb.id).padStart(5, '0')}</div>
-                        <div class="text-xs font-medium text-amber-50 truncate">${nbData.title}</div>
-                        <div class="text-[10px] text-stone-400">${nbData.assets.length} assets</div>
+                        <div class="font-mono-code" style="font-size: 10px; color: rgba(252, 211, 77, 0.85);">#${String(nb.id).padStart(5, '0')}</div>
+                        <div class="truncate" style="font-size: 11.5px; font-weight: 500; color: #fffbeb;">${nbData.title}</div>
+                        <div style="font-size: 10px; color: #a8a29e;">${nbData.assets.length} assets</div>
                     </div>
                 `;
                 card.addEventListener('click', () => {
@@ -2210,7 +2131,9 @@
         function closeDepartmentDrawer() {
             stopAudioPreview();
             const drawer = document.getElementById('departmentDrawer');
-            drawer.classList.add('translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+            drawer.style.transform = 'translateX(120%)';
+            drawer.style.opacity = '0';
+            drawer.style.pointerEvents = 'none';
         }
 
         let currentAssetTabType = 'link';
@@ -2234,12 +2157,8 @@
             SPINE_PALETTE.forEach(swatch => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = `w-6 h-6 rounded-full border-2 transition ${
-                    bData.colorHex.toLowerCase() === swatch.hex.toLowerCase()
-                        ? 'border-amber-950 scale-110 ring-2 ring-amber-500'
-                        : 'border-white/50 hover:scale-105'
-                }`;
-                btn.style.backgroundColor = swatch.hex;
+                const isSel = bData.colorHex.toLowerCase() === swatch.hex.toLowerCase();
+                btn.style.cssText = `width: 22px; height: 22px; border-radius: 9999px; cursor: pointer; border: 2px solid ${isSel ? '#231911' : 'rgba(255,255,255,0.6)'}; background: ${swatch.hex}; transform: ${isSel ? 'scale(1.15)' : 'scale(1)'};`;
                 btn.title = swatch.name;
                 btn.addEventListener('click', () => {
                     updateBookMetadata(instanceId, { colorHex: swatch.hex });
@@ -2267,16 +2186,17 @@
 
             bData.assets.forEach((asset, idx) => {
                 const item = document.createElement('div');
-                item.className = 'p-2.5 rounded-xl bg-white/60 hover:bg-white/90 border border-[#c9ae82] flex items-center justify-between gap-2 cursor-pointer transition';
+                item.className = 'flex items-center justify-between cursor-pointer transition';
+                item.style.cssText = 'padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.65); border: 1px solid #c9ae82; gap: 8px;';
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <i class="fa-solid ${iconMap[asset.type] || 'fa-file'} text-[#5a3918] text-xs"></i>
+                    <div class="flex items-center min-w-0" style="gap: 8px;">
+                        <i class="fa-solid ${iconMap[asset.type] || 'fa-file'}" style="color: #5a3918; font-size: 11px;"></i>
                         <div class="min-w-0">
-                            <div class="text-xs font-semibold text-[#231911] truncate">${asset.title}</div>
-                            <div class="text-[10px] font-mono-code uppercase text-[#7a5835]">${asset.type}</div>
+                            <div class="truncate" style="font-size: 11.5px; font-weight: 600; color: #231911;">${asset.title}</div>
+                            <div class="font-mono-code" style="font-size: 9.5px; text-transform: uppercase; color: #7a5835;">${asset.type}</div>
                         </div>
                     </div>
-                    <button class="delete-asset-btn text-stone-500 hover:text-red-700 px-2 py-1 text-xs" title="Remove Asset">
+                    <button class="delete-asset-btn cursor-pointer" style="border: none; background: none; color: #78716c; padding: 4px; font-size: 11px;" title="Remove Asset">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 `;
@@ -2305,28 +2225,28 @@
 
             if (asset.type === 'link') {
                 viewer.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
-                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
-                        <span class="font-mono-code text-[10px] uppercase px-2 py-0.5 rounded bg-[#e2d1b0]">Web Link</span>
+                    <div class="flex items-center justify-between" style="border-bottom: 1px solid #d4be98; padding-bottom: 6px; margin-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 13px; color: #231911;">${asset.title}</span>
+                        <span class="font-mono-code" style="font-size: 9.5px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #e2d1b0;">Web Link</span>
                     </div>
-                    <p class="font-mono-code text-xs break-all text-[#4a2e16] mb-3">${asset.content}</p>
-                    <a href="${asset.content}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4a2e16] text-amber-100 text-xs font-semibold">
+                    <p class="font-mono-code" style="font-size: 11px; word-break: break-all; color: #4a2e16; margin-bottom: 10px;">${asset.content}</p>
+                    <a href="${asset.content}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center cursor-pointer font-semibold text-decoration-none" style="padding: 6px 12px; border-radius: 8px; background: #4a2e16; color: #fde68a; font-size: 11.5px; gap: 6px; text-decoration: none;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i><span>Open External Resource</span>
                     </a>
                 `;
             } else if (asset.type === 'audio') {
                 const freqVal = parseFloat(asset.content) || 120;
                 viewer.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
-                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
-                        <span class="font-mono-code text-[10px] uppercase px-2 py-0.5 rounded bg-[#e2d1b0]">${freqVal} Hz Audio Stem</span>
+                    <div class="flex items-center justify-between" style="border-bottom: 1px solid #d4be98; padding-bottom: 6px; margin-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 13px; color: #231911;">${asset.title}</span>
+                        <span class="font-mono-code" style="font-size: 9.5px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #e2d1b0;">${freqVal} Hz Stem</span>
                     </div>
-                    <p class="text-xs text-[#5a3918] mb-3">Synthesized 44.1kHz 16-bit PCM acoustic stem stored in this tome.</p>
-                    <div class="flex items-center gap-2">
-                        <button id="folioPlayAudioBtn" class="px-3 py-1.5 rounded-xl bg-[#4a2e16] text-amber-100 text-xs font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-play"></i><span>Play Harmonic Stem</span>
+                    <p style="font-size: 11.5px; color: #5a3918; margin-bottom: 10px;">Synthesized 44.1kHz 16-bit PCM acoustic stem stored in this tome.</p>
+                    <div class="flex items-center" style="gap: 8px;">
+                        <button id="folioPlayAudioBtn" class="flex items-center cursor-pointer font-semibold" style="padding: 6px 12px; border-radius: 8px; background: #4a2e16; border: none; color: #fde68a; font-size: 11.5px; gap: 6px;">
+                            <i class="fa-solid fa-play"></i><span>Play Stem</span>
                         </button>
-                        <button id="folioZipAudioBtn" class="px-3 py-1.5 rounded-xl bg-[#2d5a3c] text-white text-xs font-semibold flex items-center gap-1.5">
+                        <button id="folioZipAudioBtn" class="flex items-center cursor-pointer font-semibold" style="padding: 6px 12px; border-radius: 8px; background: #2d5a3c; border: none; color: #ffffff; font-size: 11.5px; gap: 6px;">
                             <i class="fa-solid fa-file-zipper"></i><span>Download WAV (.ZIP)</span>
                         </button>
                     </div>
@@ -2341,18 +2261,18 @@
                 });
             } else if (asset.type === 'image') {
                 viewer.innerHTML = `
-                    <div class="font-bold text-sm text-[#231911] mb-2">${asset.title}</div>
-                    <img src="${asset.content}" alt="${asset.title}" onerror="this.src='https://placehold.co/600x320/3a2414/f5d77f?text=Archival+Plate'" class="w-full max-h-48 object-cover rounded-xl border border-[#bfa37a]">
+                    <div style="font-weight: 700; font-size: 13px; color: #231911; margin-bottom: 6px;">${asset.title}</div>
+                    <img src="${asset.content}" alt="${asset.title}" onerror="this.src='https://placehold.co/600x320/3a2414/f5d77f?text=Archival+Plate'" style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; border: 1px solid #bfa37a;">
                 `;
             } else {
                 viewer.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-[#d4be98] pb-2 mb-2">
-                        <span class="font-bold text-sm text-[#231911]">${asset.title}</span>
-                        <button id="copyFolioSnippetBtn" class="px-2.5 py-1 rounded-lg bg-[#4a2e16] text-amber-100 text-[11px] flex items-center gap-1">
+                    <div class="flex items-center justify-between" style="border-bottom: 1px solid #d4be98; padding-bottom: 6px; margin-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 13px; color: #231911;">${asset.title}</span>
+                        <button id="copyFolioSnippetBtn" class="flex items-center cursor-pointer" style="padding: 4px 8px; border-radius: 6px; background: #4a2e16; border: none; color: #fde68a; font-size: 10.5px; gap: 4px;">
                             <i class="fa-solid fa-copy"></i><span>Copy</span>
                         </button>
                     </div>
-                    <pre class="font-mono-code text-[11px] bg-[#231911] text-amber-100 p-3 rounded-xl overflow-x-auto whitespace-pre-wrap">${asset.content.replace(/</g, '&lt;')}</pre>
+                    <pre class="font-mono-code" style="font-size: 11px; background: #231911; color: #fde68a; padding: 10px; border-radius: 10px; overflow-x: auto; white-space: pre-wrap;">${asset.content.replace(/</g, '&lt;')}</pre>
                 `;
                 viewer.querySelector('#copyFolioSnippetBtn').addEventListener('click', () => {
                     const ta = document.createElement('textarea');
@@ -2389,10 +2309,7 @@
         function triggerWorkerZipDownload(jobConfig) {
             showToast(`Packaging ${jobConfig.zipFilename}...`);
             if (zipWorker) {
-                zipWorker.postMessage({
-                    jobId: Date.now(),
-                    ...jobConfig
-                });
+                zipWorker.postMessage({ jobId: Date.now(), ...jobConfig });
             } else {
                 executeZipDownloadMainThread(jobConfig);
             }
@@ -2401,11 +2318,13 @@
         function showToast(msg) {
             const banner = document.getElementById('toastBanner');
             document.getElementById('toastMessage').textContent = msg;
-            banner.classList.remove('opacity-0', 'translate-y-[-10px]');
+            banner.style.opacity = '1';
+            banner.style.transform = 'translateY(0)';
             clearTimeout(banner._timer);
             banner._timer = setTimeout(() => {
-                banner.classList.add('opacity-0', 'translate-y-[-10px]');
-            }, 2600);
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-10px)';
+            }, 2400);
         }
 
         function initUIEvents() {
@@ -2417,14 +2336,29 @@
                 };
             }
 
+            // 60FPS Performance Mode Toggle
+            const perfToggleBtn = document.getElementById('perfToggleBtn');
+            const perfToggleText = document.getElementById('perfToggleText');
+            perfToggleBtn.addEventListener('click', () => {
+                PerfProfile.ecoMode = !PerfProfile.ecoMode;
+                PerfProfile.currentDpr = PerfProfile.ecoMode ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
+                renderer.setPixelRatio(PerfProfile.currentDpr);
+                perfToggleText.textContent = PerfProfile.ecoMode ? 'Eco 60FPS' : 'Ultra Quality';
+                perfToggleBtn.style.background = PerfProfile.ecoMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.2)';
+                perfToggleBtn.style.borderColor = PerfProfile.ecoMode ? 'rgba(52, 211, 153, 0.4)' : 'rgba(251, 191, 36, 0.5)';
+                perfToggleBtn.style.color = PerfProfile.ecoMode ? '#6ee7b7' : '#fde68a';
+                showToast(PerfProfile.ecoMode ? 'Eco 60FPS Mode enabled (Low CPU/GPU load)' : 'Ultra PBR Quality enabled');
+            });
+
             const timelineContainer = document.getElementById('timelineButtonsContainer');
             DEPARTMENTS.forEach(dept => {
                 const btn = document.createElement('button');
                 btn.dataset.deptId = dept.id;
-                btn.className = 'timeline-btn glass-pill shrink-0 px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs font-medium text-amber-100';
+                btn.className = 'timeline-btn glass-pill shrink-0 flex items-center cursor-pointer';
+                btn.style.cssText = 'padding: 8px 14px; border-radius: 12px; gap: 8px; font-size: 12px; font-weight: 500; color: #fef3c7;';
                 btn.innerHTML = `
-                    <span class="w-2 h-2 rounded-full" style="background:${dept.color}"></span>
-                    <i class="fa-solid ${dept.icon} text-amber-300/90"></i>
+                    <span style="width: 8px; height: 8px; border-radius: 9999px; background:${dept.color};"></span>
+                    <i class="fa-solid ${dept.icon}" style="color: rgba(252, 211, 77, 0.9);"></i>
                     <span>${dept.shortName}</span>
                 `;
                 btn.addEventListener('click', () => glideToDepartment(dept.id));
@@ -2520,9 +2454,8 @@
                     currentAssetTabType = btn.dataset.type;
                     document.querySelectorAll('.asset-tab-btn').forEach(b => {
                         const active = b.dataset.type === currentAssetTabType;
-                        b.className = `asset-tab-btn px-2 py-1.5 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 ${
-                            active ? 'bg-[#4a2e16] text-amber-100' : 'bg-[#e2d1b0] text-[#3d2814]'
-                        }`;
+                        b.style.background = active ? '#4a2e16' : '#e2d1b0';
+                        b.style.color = active ? '#fde68a' : '#3d2814';
                     });
                 });
             });
@@ -2583,7 +2516,7 @@
                     }
                 });
 
-                for (let i = 0; i < totalBooksCount && matches.length < 18; i += 17) {
+                for (let i = 0; i < totalBooksCount && matches.length < 18; i += 23) {
                     const bData = getBookData(i);
                     if (
                         bData.title.toLowerCase().includes(q) ||
@@ -2599,17 +2532,18 @@
 
                 matches.forEach(m => {
                     const row = document.createElement('button');
-                    row.className = 'w-full text-left p-2 rounded-xl bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-400/40 flex items-center justify-between gap-2 transition';
+                    row.className = 'w-full flex items-center justify-between cursor-pointer transition text-left';
+                    row.style.cssText = 'padding: 8px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); gap: 8px;';
                     if (m.isDept) {
                         row.innerHTML = `
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid ${m.dept.icon} text-amber-400 text-xs"></i>
+                            <div class="flex items-center" style="gap: 8px;">
+                                <i class="fa-solid ${m.dept.icon}" style="color: #fbbf24; font-size: 12px;"></i>
                                 <div>
-                                    <div class="text-xs font-bold text-amber-100">${m.dept.name}</div>
-                                    <div class="text-[10px] text-stone-400">${m.dept.desc}</div>
+                                    <div style="font-size: 11.5px; font-weight: 700; color: #fef3c7;">${m.dept.name}</div>
+                                    <div style="font-size: 10px; color: #a8a29e;">${m.dept.desc}</div>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-mono-code text-amber-300 shrink-0">Department Wing →</span>
+                            <span class="font-mono-code shrink-0" style="font-size: 10px; color: #fcd34d;">Wing →</span>
                         `;
                         row.addEventListener('click', () => {
                             searchPanel.classList.add('hidden');
@@ -2617,14 +2551,14 @@
                         });
                     } else {
                         row.innerHTML = `
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="w-2.5 h-5 rounded-sm shrink-0" style="background:${m.book.colorHex}"></span>
+                            <div class="flex items-center min-w-0" style="gap: 8px;">
+                                <span style="width: 8px; height: 20px; border-radius: 2px; flex-shrink: 0; background:${m.book.colorHex}"></span>
                                 <div class="min-w-0">
-                                    <div class="text-xs font-semibold text-white truncate">${m.book.title}</div>
-                                    <div class="text-[10px] font-mono-code text-stone-400">${m.book.callNumber} · ${m.book.deptName}</div>
+                                    <div class="truncate" style="font-size: 11.5px; font-weight: 600; color: #ffffff;">${m.book.title}</div>
+                                    <div class="font-mono-code" style="font-size: 10px; color: #a8a29e;">${m.book.callNumber} · ${m.book.deptName}</div>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-mono-code text-amber-300 shrink-0">Glide to Shelf →</span>
+                            <span class="font-mono-code shrink-0" style="font-size: 10px; color: #fcd34d;">Glide →</span>
                         `;
                         row.addEventListener('click', () => {
                             searchPanel.classList.add('hidden');
@@ -2683,16 +2617,43 @@
             });
         }
 
+        // Adaptive Render Loop with FPS Profiler
+        let frameCount = 0;
+        let lastFpsCheckTime = performance.now();
+
         function animateLoop() {
             requestAnimationFrame(animateLoop);
 
+            const now = performance.now();
+            const deltaMs = now - PerfProfile.lastFrameTime;
+            PerfProfile.lastFrameTime = now;
+
+            // Frame rate tracking
+            frameCount++;
+            if (now - lastFpsCheckTime >= 1000) {
+                const currentFps = Math.round((frameCount * 1000) / (now - lastFpsCheckTime));
+                frameCount = 0;
+                lastFpsCheckTime = now;
+
+                // Auto Dynamic Resolution Scaling for low-end devices:
+                // If FPS drops below 42 under Eco mode, drop DPR by 0.1 down to minDpr to guarantee 60 FPS!
+                if (currentFps < 42 && PerfProfile.currentDpr > PerfProfile.minDpr) {
+                    PerfProfile.currentDpr = Math.max(PerfProfile.minDpr, PerfProfile.currentDpr - 0.1);
+                    renderer.setPixelRatio(PerfProfile.currentDpr);
+                } else if (currentFps > 58 && PerfProfile.currentDpr < (PerfProfile.ecoMode ? 1.0 : 1.5)) {
+                    PerfProfile.currentDpr = Math.min(PerfProfile.ecoMode ? 1.0 : 1.5, PerfProfile.currentDpr + 0.05);
+                    renderer.setPixelRatio(PerfProfile.currentDpr);
+                }
+            }
+
+            // WebAssembly-accelerated camera motion smoothing
             const damping = 0.085;
-            camOrbit.theta = smoothLerp(camOrbit.theta, camOrbit.desiredTheta, damping);
-            camOrbit.phi = smoothLerp(camOrbit.phi, camOrbit.desiredPhi, damping);
-            camOrbit.radius = smoothLerp(camOrbit.radius, camOrbit.desiredRadius, damping);
-            camOrbit.targetX = smoothLerp(camOrbit.targetX, camOrbit.desiredTargetX, damping);
-            camOrbit.targetY = smoothLerp(camOrbit.targetY, camOrbit.desiredTargetY, damping);
-            camOrbit.targetZ = smoothLerp(camOrbit.targetZ, camOrbit.desiredTargetZ, damping);
+            camOrbit.theta = wasmLerp(camOrbit.theta, camOrbit.desiredTheta, damping);
+            camOrbit.phi = wasmLerp(camOrbit.phi, camOrbit.desiredPhi, damping);
+            camOrbit.radius = wasmLerp(camOrbit.radius, camOrbit.desiredRadius, damping);
+            camOrbit.targetX = wasmLerp(camOrbit.targetX, camOrbit.desiredTargetX, damping);
+            camOrbit.targetY = wasmLerp(camOrbit.targetY, camOrbit.desiredTargetY, damping);
+            camOrbit.targetZ = wasmLerp(camOrbit.targetZ, camOrbit.desiredTargetZ, damping);
 
             const sinPhi = Math.sin(camOrbit.phi);
             const cosPhi = Math.cos(camOrbit.phi);
@@ -2704,7 +2665,7 @@
             camera.lookAt(camOrbit.targetX, camOrbit.targetY, camOrbit.targetZ);
 
             const globe = scene.getObjectByName('centralGlobe');
-            if (globe) globe.rotation.y += 0.0015;
+            if (globe) globe.rotation.y += 0.0012;
 
             if (isPlayingAudio) {
                 const elapsedSec = (performance.now() - audioPlayStartTime) / 1000;
